@@ -31,7 +31,7 @@ I will always try to keep the mod updated to work with the last game version, bu
 
 ### Install the Mod
 
-1. Download the mod by going to [the latest release page]<https://github.com/fclorenzo/pkreborn-access/releases/latest>.
+1. Download the mod by going to [the latest release page](https://github.com/fclorenzo/pkreborn-access/releases/latest).
 2. Locate the file "pkreborn-access.rb".
 3. Click on it to download.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file you just downloaded there.
