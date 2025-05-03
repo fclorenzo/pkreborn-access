@@ -42,6 +42,12 @@ If you find a bug or want to suggest a feature, your contribution is appreciated
 
 You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) and post in the `#zero-vision-reborn-blindstep` channel.
 
+## Credits
+
+- [DemICE's distance gauge mod](https://www.rebornevo.com/forums/topic/55069-pokémon-reborn-accessibility-for-blind-players/)
+- [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/)
+- [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
+
 ---
 
 Happy gaming!
