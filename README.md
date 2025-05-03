@@ -8,7 +8,7 @@ This is a mod to further enhance accessibility for blind players in the Pokémon
 
 Confirmed working with game version 19.5.26 on Windows and the NVDA screen reader: <https://www.nvaccess.org/download/>.
 
-Feedback about other platforms or game versions is welcome and encouraged!
+I will always try to keep the mod updated to work with the last game version, but feedback about other platforms or game versions is welcome and encouraged!
 
 ## Contents
 
