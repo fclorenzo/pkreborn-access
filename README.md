@@ -27,7 +27,7 @@ I will always try to keep the mod updated to work with the last game version, bu
 1. [Download the game here](https://www.rebornevo.com/pr/index.html/).
 2. Extract the ZIP folder and run the game.
 3. If prompted, apply updates. If updates break the mod, please [submit an issue](https://github.com/fclorenzo/pkreborn-access/issues).
-4. When asked for special instructions, choose “Yes” and enter the password `blindstep` to enable in-game accessibility features.
+4. When asked for special instructions, choose “Yes” and enter the password "blindstep" to enable in-game accessibility features.
 
 ### Install the Mod
 
