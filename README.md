@@ -15,12 +15,12 @@ I will always try to keep the mod updated to work with the last game version, bu
 - Pathfinding Mod.
 - Distance gauge mod.
 
-## Controls
+## How to Use
 
 - Press **F6** to activate pathfinding.
 - Hold **Alt** + arrow key to use the distance gauge.
 
-## How to Use
+## Installation
 
 ### Download the Game
 
