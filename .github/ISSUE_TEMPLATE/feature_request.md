@@ -1,14 +1,14 @@
 ---
 name: Feature Request
 about: Suggest a new idea or improvement for the Pokémon Reborn Access mod
-title: "Feature: "
+title: "Enhancement: "
 labels: enhancement
 assignees: fclorenzo
 ---
 
 > **Before you begin:**  
 > Please check the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) to see if your suggestion has already been made. If it has, feel free to add a comment there instead of opening a new issue.
-> **Keep the “Feature:” in the title, and add a short summary — like “Feature: Add sound feedback for walls”.**
+> **Keep the “Enhancement:” in the title, and add a short summary — like “Feature: Add sound feedback for walls”.**
 
 **Is your feature request related to a problem? Please describe.**  
 Describe the problem you're experiencing or trying to solve.  
