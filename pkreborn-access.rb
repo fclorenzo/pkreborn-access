@@ -1,4 +1,3 @@
-
 class Game_Player < Game_Character
 
   @@lastSelectedSearchItem = -1
@@ -894,274 +893,6 @@ end
     return passableEx?(target.x, target.y - 1, 2, false, map) || passableEx?(target.x + 1, target.y, 4, false, map) || passableEx?(target.x - 1, target.y, 6, false, map) || passableEx?(target.x, target.y + 1, 8, false, map)
   end
 
-  def pbEventAhead(x,y)
-    if $game_system.map_interpreter.running?
-      return nil
-    end
-    new_x = x + (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-    new_y = y + (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
-    for event in $game_map.events.values
-      if event.x == new_x and event.y == new_y
-        if not event.jumping? and not event.over_trigger?
-          return event
-        end
-      end
-    end
-    if $game_map.counter?(new_x, new_y)
-      new_x += (@direction == 6 ? 1 : @direction == 4 ? -1 : 0)
-      new_y += (@direction == 2 ? 1 : @direction == 8 ? -1 : 0)
-      for event in $game_map.events.values
-        if event.x == new_x and event.y == new_y
-          if not event.jumping? and not event.over_trigger?
-            return event
-          end
-        end
-      end
-    end
-    return nil
-  end
-
-  def test_down(turn_enabled = true)
-    # if turn_enabled
-      # turn_down
-    # end
-  testdir=@y
-  distance=0
-  loop do
-    if passable?(@x, testdir, 2)
-      testdir+=1
-      distance+=1
-    else
-      if distance>99
-        if pbEventAhead(@x,testdir)
-          tts("Event In")					
-          sleep(0.5)
-          tts("over 99 steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts("over 99 steps")
-        end		
-      elsif distance>50
-        first, second = distance.to_s.split('')
-        first+="0"
-        if pbEventAhead(@x,testdir)
-          tts("Event In")
-          sleep(0.5)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        end					
-      else
-        plural="steps"
-        plural="step" if distance==1
-        steps=distance.to_s+" "+plural
-        if pbEventAhead(@x,testdir)
-          tts("Event In")
-          sleep(0.5)
-          tts(steps)					
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(steps)					
-        end	
-      end	
-      break
-    end		
-  end	
-  end
-
-  def test_left(turn_enabled = true)
-    # if turn_enabled
-      # turn_left
-    # end
-  testdir=@x
-  distance=0
-  loop do
-    if passable?(testdir, @y, 4)
-      testdir-=1
-      distance+=1
-    else
-      if distance>99
-        if pbEventAhead(testdir,@y)
-          tts("Event In")					
-          sleep(0.5)
-          tts("over 99 steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts("over 99 steps")
-        end		
-      elsif distance>50
-        first, second = distance.to_s.split('')
-        first+="0"
-        if pbEventAhead(testdir,@y)
-          tts("Event In")
-          sleep(0.5)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        end					
-      else	
-        plural="steps"
-        plural="step" if distance==1
-        steps=distance.to_s+" "+plural
-        if pbEventAhead(testdir,@y)
-          tts("Event In")
-          sleep(0.5)
-          tts(steps)					
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(steps)					
-        end	
-      end	
-      break
-    end
-  end		
-  end
-
-  def test_right(turn_enabled = true)
-    # if turn_enabled
-      # turn_right
-    # end
-  testdir=@x
-  distance=0
-  loop do
-    if passable?(testdir, @y, 6)
-      testdir+=1
-      distance+=1
-    else
-      if distance>99
-        if pbEventAhead(testdir,@y)
-          tts("Event In")					
-          sleep(0.5)
-          tts("over 99 steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts("over 99 steps")
-        end		
-      elsif distance>50
-        first, second = distance.to_s.split('')
-        first+="0"
-        if pbEventAhead(testdir,@y)
-          tts("Event In")
-          sleep(0.5)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        end					
-      else	
-        plural="steps"
-        plural="step" if distance==1
-        steps=distance.to_s+" "+plural
-        if pbEventAhead(testdir,@y)
-          tts("Event In")
-          sleep(0.5)
-          tts(steps)					
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(steps)					
-        end	
-      end	
-      break
-    end
-  end		
-  end
-
-  def test_up(turn_enabled = true)
-    # if turn_enabled
-      # turn_up
-    # end
-  testdir=@y
-  distance=0
-  loop do
-    if passable?(@x, testdir, 8)
-      testdir-=1
-      distance+=1
-    else
-      if distance>99
-        if pbEventAhead(@x,testdir)
-          tts("Event In")					
-          sleep(0.5)
-          tts("over 99 steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts("over 99 steps")
-        end		
-      elsif distance>50
-        first, second = distance.to_s.split('')
-        first+="0"
-        if pbEventAhead(@x,testdir)
-          tts("Event In")
-          sleep(0.5)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(first)	
-          sleep(0.3)
-          tts(second)						
-          sleep(0.3)
-          tts("Steps")
-        end					
-      else	
-        plural="steps"
-        plural="step" if distance==1
-        steps=distance.to_s+" "+plural
-        if pbEventAhead(@x,testdir)
-          tts("Event In")
-          sleep(0.5)
-          tts(steps)					
-        else	
-          tts("Obstacle In")
-          sleep(0.8)
-          tts(steps)					
-        end	
-      end	
-      break
-    end
-  end	
-  end
-  
- 
   def update
     # Remember whether or not moving in local variables
     last_moving = moving?
@@ -1175,29 +906,13 @@ end
       if dir==@lastdir && Graphics.frame_count-@lastdirframe>2
         case dir
           when 2
-      if Input.press?(Input::ALT)
-        test_down
-      else
-        move_down
-      end
+            move_down
           when 4
-      if Input.press?(Input::ALT)
-        test_left
-      else
-        move_left
-      end
+            move_left
           when 6
-      if Input.press?(Input::ALT)
-        test_right
-      else
-        move_right
-      end
+            move_right
           when 8
-      if Input.press?(Input::ALT)
-        test_up
-      else
-        move_up
-      end
+            move_up
         end
       elsif dir!=@lastdir
         case dir
@@ -1221,10 +936,8 @@ end
     last_real_x = @real_x
     last_real_y = @real_y
     super
-    center_x = (Graphics.width/2 - Game_Map::TILEWIDTH/2) * 
-              Game_Map::XSUBPIXEL   # Center screen x-coordinate * 4
-    center_y = (Graphics.height/2 - Game_Map::TILEHEIGHT/2) * 
-              Game_Map::YSUBPIXEL   # Center screen y-coordinate * 4
+    center_x = (Graphics.width/2 - Game_Map::TILEWIDTH/2) * Game_Map::XSUBPIXEL   # Center screen x-coordinate * 4
+    center_y = (Graphics.height/2 - Game_Map::TILEHEIGHT/2) * Game_Map::YSUBPIXEL   # Center screen y-coordinate * 4
     # If character moves down and is positioned lower than the center
     # of the screen
     if @real_y > last_real_y and @real_y - $game_map.display_y > center_y
