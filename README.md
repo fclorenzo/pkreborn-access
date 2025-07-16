@@ -1,24 +1,22 @@
 # Pokémon Reborn Access
 
-V1.0.0
+V1.0.1
 
 ## Description
 
 This is a mod to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password. The mod is originally a fork of Malta 10's pathfinding mod, and DemICE's distance gauge mod.
 
-Confirmed working with game version 19.5.26 on Windows and the NVDA screen reader: <https://www.nvaccess.org/download/>.
+Confirmed working with game version 19.6 on Windows and the NVDA screen reader: <https://www.nvaccess.org/download/>.
 
-I will always try to keep the mod updated to work with the last game version, but feedback about other platforms or game versions is welcome and encouraged!
+I will always try to keep the mod updated to work with the latest game version, but feedback about other platforms or game versions is welcome and encouraged!
 
 ## Contents
 
 - Pathfinding Mod.
-- Distance gauge mod.
 
 ## How to Use
 
 - Press **F6** to activate pathfinding.
-- Hold **Alt** + arrow key to use the distance gauge.
 
 ## Installation
 
@@ -42,9 +40,12 @@ If you find a bug or want to suggest a feature, your contribution is appreciated
 
 You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) and post in the `#zero-vision-reborn-blindstep` channel.
 
+## Known Bugs
+
+- Trying to load coordinates crashes the game.
+
 ## Credits
 
-- [DemICE's distance gauge mod](https://www.rebornevo.com/forums/topic/55069-pokémon-reborn-accessibility-for-blind-players/)
 - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/)
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
 
