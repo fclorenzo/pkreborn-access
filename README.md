@@ -4,7 +4,7 @@ V1.0.1
 
 ## Description
 
-This is a mod to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password. The mod is originally a fork of Malta 10's pathfinding mod, and DemICE's distance gauge mod.
+This is a mod to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password. The mod is originally a fork of Malta 10's pathfinding mod.
 
 Confirmed working with game version 19.6 on Windows and the NVDA screen reader: <https://www.nvaccess.org/download/>.
 
