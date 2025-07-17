@@ -1,5 +1,7 @@
 class Game_Player < Game_Character
 
+  @mapevents = []
+  @selected_event_index = -1
   @@lastSelectedSearchItem = -1
   @@lastSelectedSearchDestination = nil
   @@savedNode = nil
