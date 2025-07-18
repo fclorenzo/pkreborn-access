@@ -1084,7 +1084,6 @@ end
 
 # Accessible Summary Screen Functions
 def pbDisplayBSTData(pkmn,defaultMoveID=0)
-  # ... (Method content from TMM - Decat Pokepage)
   cmdwin=pbListWindow([],200)
   commands=[]
   moveDefault=0
@@ -1196,7 +1195,6 @@ def pbDisplayBSTData(pkmn,defaultMoveID=0)
 end
 
 def torDisplayPokemonDetails(pkmn,defaultMoveID=0)
-  # ... (Method content from TMM - Decat Pokepage)
   cmdwin=pbListWindow([],500)
   commands=[]
   dexentity=$cache.pkmn[pkmn.species]
@@ -1291,7 +1289,6 @@ def torDisplayPokemonDetails(pkmn,defaultMoveID=0)
 end
 
 def torDeCapsTypings(entrytype)
-  # ... (Method content from TMM - Decat Pokepage)
   decapshash = {:NORMAL => "Normal", :FIRE => "Fire", :WATER => "Water", :GRASS  => "Grass", :ELECTRIC  => "Electric", :ICE  => "Ice", :FIGHTING  => "Fighting", :POISON  => "Poison",
   :GROUND  => "Ground", :FLYING  => "Flying", :PSYCHIC  => "Psychic", :BUG  => "Bug", :ROCK => "Rock", :GHOST  => "Ghost", :DRAGON  => "Dragon", :DARK  => "Dark", :STEEL  => "Steel",
   :FAIRY  => "Fairy"}
@@ -1303,7 +1300,6 @@ def torDeCapsTypings(entrytype)
 end
 
 def torDeCapsNature(entrynat)
-  # ... (Method content from TMM - Decat Pokepage)
   decapshash = {:HARDY => "Hardy", :LONELY => "Lonely", :ADAMANT => "Adamant", :NAUGHTY  => "Naughty", :BRAVE  => "Brave",
   :BOLD  => "Bold", :DOCILE  => "Docile", :IMPISH  => "Impish", :LAX  => "Lax", :RELAXED  => "Relaxed",
   :MODEST  => "Modest", :MILD  => "Mild", :BASHFUL => "Bashful", :RASH  => "Rash", :QUIET  => "Quiet",
