@@ -1,24 +1,36 @@
+
 # Pokémon Reborn Access
 
-V2.0.0
+V2.1.0
 
 ## Description
 
-This is a mod to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password. The mod is originally a fork of Malta 10's pathfinding mod.
+This is a mod to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password.
 
-Confirmed working with game version 19.6 on Windows and the NVDA screen reader: <https://www.nvaccess.org/download/>.
+Confirmed working with game version 19.6 on Windows and the NVDA screen reader: [https://www.nvaccess.org/download/](https://www.nvaccess.org/download/).
 
 I will always try to keep the mod updated to work with the latest game version, but feedback about other platforms or game versions is welcome and encouraged!
 
 ## Contents
 
-- Pathfinding Mod.
+- Pathfinding Mod
+- Accessible Pokémon Summary Screen
 
 ## Controls
 
-- **F6**: scan the current map's events (use this when you enter a new map or the map's events change).
-- **J, K and L**: anounce previous, current and next event in the events list.
-- **P**: anounce the path for the selected event.
+### Map Controls
+
+- **F6**: Scan the current map's events (use this when you enter a new map or the map's events change).
+- **J, K and L**: Announce previous, current, and next event in the events list.
+- **P**: Announce the path for the selected event.
+
+### Pokémon Party Menu Controls
+
+When you open the menu for a Pokémon in your party, a new option is available:
+
+- **Accessible Summary**: Selecting this opens a sub-menu with two choices:
+  - **Display BST**: Reads the Pokémon's species, form, typing, base stats, and abilities.
+  - **Pokemon Details**: Reads more in-depth information, including level, held item, nature, IVs, EVs, and moves.
 
 ## Installation
 
@@ -48,7 +60,8 @@ You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/
 
 ## Credits
 
-- [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/)
+- [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokemon stats.
+- [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
 
 ---
