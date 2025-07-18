@@ -56,8 +56,6 @@ You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/
 
 ## Known Bugs
 
-- Nothing is anounced when the cursor cycles through a teleport tile event.
-
 ## Credits
 
 - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats.
