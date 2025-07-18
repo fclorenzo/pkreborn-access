@@ -6,6 +6,36 @@ class Game_Player < Game_Character
   @@lastSelectedSearchDestination = nil
   @@savedNode = nil
   @@savedMapId = -1
+def announce_selected_event
+  return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
+  
+  event = @mapevents[@selected_event_index]
+  tts(event.name) # Announce the event's name using TTS
+end
+
+def pathfind_to_selected_event
+  return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
+  
+  target_event = @mapevents[@selected_event_index]
+  
+  # Use the existing A* and instruction logic
+  route = aStern(Node.new(@x, @y), Node.new(target_event.x, target_event.y))
+  printInstruction(convertRouteToInstructions(route))
+end
+
+  def populate_event_list
+  @mapevents = []
+  for event in $game_map.events.values
+    # We define an "interactable" event as one with a command list.
+    # This filters out decorative events.
+    if event.list && event.list.size > 1
+      @mapevents.push(event)
+    end
+  end
+  
+  # Set the index to the first event, or -1 if the list is empty.
+  @selected_event_index = @mapevents.empty? ? -1 : 0
+end
 
   class MapEventForSearch
     attr_accessor :mapId, :event
@@ -635,7 +665,7 @@ end
 
   def printInstruction(instructions)
     if instructions.length == 0
-      Kernel.pbMessage("No route to destination could be found.")
+      tts("No route to destination could be found.")
       return
     end
     s = ""
@@ -648,7 +678,7 @@ end
       s = s[0..-3]
     end
     s = s + "."
-    Kernel.pbMessage(s)
+    tts(s)
   end
 
   def distance(sx, sy, tx, ty)
@@ -969,8 +999,41 @@ end
     # If not moving
     unless moving?
       if Input.trigger?(Input::F6)
-        searchEvent()
+      populate_event_list
+      tts('Map list refreshed')
+    end
+
+        # Make sure we have events to cycle through
+    if !@mapevents.nil? && !@mapevents.empty?
+      
+      # Cycle to the PREVIOUS event
+      if Input.triggerex?(0x4A)
+        @selected_event_index -= 1
+        if @selected_event_index < 0
+          @selected_event_index = @mapevents.size - 1 # Wrap around
+        end
+        announce_selected_event
       end
+
+      # Cycle to the NEXT event
+      if Input.triggerex?(0x4C)
+        @selected_event_index += 1
+        if @selected_event_index >= @mapevents.size
+          @selected_event_index = 0 # Wrap around
+        end
+        announce_selected_event
+      end
+      
+      # ANNOUNCE the current event
+      if Input.triggerex?(0x4B)
+        announce_selected_event
+      end
+      
+      # PATHFIND to the current event
+      if Input.triggerex?(0x50)
+        pathfind_to_selected_event
+      end
+    end
       # If player was moving last time
       if last_moving
         $PokemonTemp.dependentEvents.pbTurnDependentEvents
