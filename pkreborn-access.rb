@@ -52,11 +52,33 @@ class Game_Player < Game_Character
   @@savedNode = nil
   @@savedMapId = -1
 
+def is_teleport_event?(event)
+  return false if !event || !event.list
+  for command in event.list
+    # 201 is the event code for "Transfer Player"
+    return true if command.code == 201
+  end
+  return false
+end
+
 def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
   
   event = @mapevents[@selected_event_index]
-  tts(event.name) # Announce the event's name using TTS
+  
+  # Check if the event name is empty
+  if event.name.nil? || event.name.strip.empty?
+    # If the name is empty, check if it's a teleport event
+    if is_teleport_event?(event)
+      tts("Teleport tile")
+    else
+      # Fallback for other unnamed events
+      tts("Interactable object")
+    end
+  else
+    # If the event has a name, announce it as usual
+    tts(event.name)
+  end
 end
 
 def pathfind_to_selected_event
