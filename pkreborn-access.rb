@@ -1006,7 +1006,7 @@ end
         # Make sure we have events to cycle through
     if !@mapevents.nil? && !@mapevents.empty?
       
-      # Cycle to the PREVIOUS event
+      # Cycle to the PREVIOUS event (J)
       if Input.triggerex?(0x4A)
         @selected_event_index -= 1
         if @selected_event_index < 0
@@ -1015,7 +1015,7 @@ end
         announce_selected_event
       end
 
-      # Cycle to the NEXT event
+      # Cycle to the NEXT event (L)
       if Input.triggerex?(0x4C)
         @selected_event_index += 1
         if @selected_event_index >= @mapevents.size
@@ -1024,7 +1024,7 @@ end
         announce_selected_event
       end
       
-      # ANNOUNCE the current event
+      # ANNOUNCE the current event (K)
       if Input.triggerex?(0x4B)
         announce_selected_event
       end

@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V1.0.1
+V2.0.0
 
 ## Description
 
@@ -14,9 +14,11 @@ I will always try to keep the mod updated to work with the latest game version, 
 
 - Pathfinding Mod.
 
-## How to Use
+## Controls
 
-- Press **F6** to activate pathfinding.
+- **F6**: scan the current map's events (use this when you enter a new map or the map's events change).
+- **J, K and L**: anounce previous, current and next event in the events list.
+- **P**: anounce the path for the selected event.
 
 ## Installation
 
@@ -30,8 +32,8 @@ I will always try to keep the mod updated to work with the latest game version, 
 ### Install the Mod
 
 1. Download the mod by going to [the latest release page](https://github.com/fclorenzo/pkreborn-access/releases/latest).
-2. Locate the file "pkreborn-access.rb", under the "assets" section.
-3. Click on it to download.
+2. Locate the "assets" section.
+3. Under that section, locate the file "pkreborn-access.rb" and click on it to download.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file you just downloaded there.
 
 ## Report a Bug or Suggest a Feature
@@ -42,7 +44,7 @@ You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/
 
 ## Known Bugs
 
-- Trying to load coordinates crashes the game.
+- Nothing is anounced when the cursor cycles through a teleport tile event.
 
 ## Credits
 
