@@ -1,4 +1,49 @@
 class Game_Player < Game_Character
+  alias_method :access_mod_original_update, :update # Make a copy of the original update
+  def update
+    # First, call the original update method (which includes the running logic)
+    access_mod_original_update
+
+    # Then, execute our mod's logic
+    # If not moving
+    unless moving?
+      if Input.trigger?(Input::F6)
+        populate_event_list
+        tts('Map list refreshed')
+      end
+
+      # Make sure we have events to cycle through
+      if !@mapevents.nil? && !@mapevents.empty?
+        # Cycle to the PREVIOUS event (J)
+        if Input.triggerex?(0x4A)
+          @selected_event_index -= 1
+          if @selected_event_index < 0
+            @selected_event_index = @mapevents.size - 1 # Wrap around
+          end
+          announce_selected_event
+        end
+
+        # Cycle to the NEXT event (L)
+        if Input.triggerex?(0x4C)
+          @selected_event_index += 1
+          if @selected_event_index >= @mapevents.size
+            @selected_event_index = 0 # Wrap around
+          end
+          announce_selected_event
+        end
+
+        # ANNOUNCE the current event (K)
+        if Input.triggerex?(0x4B)
+          announce_selected_event
+        end
+
+        # PATHFIND to the current event (P)
+        if Input.triggerex?(0x50)
+          pathfind_to_selected_event
+        end
+      end
+    end
+  end
 
   @mapevents = []
   @selected_event_index = -1
@@ -6,6 +51,7 @@ class Game_Player < Game_Character
   @@lastSelectedSearchDestination = nil
   @@savedNode = nil
   @@savedMapId = -1
+
 def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
   
@@ -925,7 +971,7 @@ end
     return passableEx?(target.x, target.y - 1, 2, false, map) || passableEx?(target.x + 1, target.y, 4, false, map) || passableEx?(target.x - 1, target.y, 6, false, map) || passableEx?(target.x, target.y + 1, 8, false, map)
   end
 
-  def update
+  def access_mod_update
     # Remember whether or not moving in local variables
     last_moving = moving?
     # If moving, event running, move route forcing, and message window
