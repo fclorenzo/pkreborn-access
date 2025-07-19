@@ -66,19 +66,25 @@ def announce_selected_event
   
   event = @mapevents[@selected_event_index]
   
+  # Calculate distance in steps by rounding the float value
+  dist = distance(@x, @y, event.x, event.y).round
+  
+  announcement_text = ""
+  
   # Check if the event name is empty
   if event.name.nil? || event.name.strip.empty?
-    # If the name is empty, check if it's a teleport event
     if is_teleport_event?(event)
-      tts("Teleport tile")
+      announcement_text = "Teleport tile"
     else
-      # Fallback for other unnamed events
-      tts("Interactable object")
+      announcement_text = "Interactable object"
     end
   else
-    # If the event has a name, announce it as usual
-    tts(event.name)
+    # If the event has a name, use it
+    announcement_text = event.name
   end
+  
+  # Combine the name and distance for the final announcement
+  tts("#{announcement_text}, #{dist} steps away.")
 end
 
 def pathfind_to_selected_event
