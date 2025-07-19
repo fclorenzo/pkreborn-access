@@ -50,7 +50,9 @@ class Game_Player < Game_Character
   @@lastSelectedSearchItem = -1
   @@lastSelectedSearchDestination = nil
   @@savedNode = nil
-  @@savedMapId = -1
+  @@savedMapId = -1 
+  @event_filter_modes = [:all, :connections, :npcs]
+  @event_filter_index = 0 # Default to :all
 
 def is_teleport_event?(event)
   return false if !event || !event.list
