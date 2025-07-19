@@ -65,10 +65,21 @@ def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
   
   event = @mapevents[@selected_event_index]
-  
-  # Calculate distance in steps by rounding the float value
   dist = distance(@x, @y, event.x, event.y).round
   
+  # Get player's facing direction
+  facing_direction = ""
+  case @direction
+  when 2
+    facing_direction = "facing down"
+  when 4
+    facing_direction = "facing left"
+  when 6
+    facing_direction = "facing right"
+  when 8
+    facing_direction = "facing up"
+  end
+
   announcement_text = ""
   
   # Check if the event name is empty
@@ -83,8 +94,8 @@ def announce_selected_event
     announcement_text = event.name
   end
   
-  # Combine the name and distance for the final announcement
-  tts("#{announcement_text}, #{dist} steps away.")
+  # Combine all parts for the final announcement
+  tts("#{announcement_text}, #{dist} steps away, #{facing_direction}.")
 end
 
 def pathfind_to_selected_event
