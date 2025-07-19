@@ -4,7 +4,7 @@ V2.2.0
 
 ## Description
 
-The Pokémon Reborn Access project (PRA) consists of some mods to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password.
+The Pokémon Reborn Access project (PRA) consists of mods to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password.
 
 Confirmed working with game version 19.6 on Windows and the NVDA screen reader: [https://www.nvaccess.org/download/](https://www.nvaccess.org/download/).
 

@@ -54,21 +54,21 @@ class Game_Player < Game_Character
   @event_filter_modes = [:all, :connections, :npcs]
   @event_filter_index = 0 # Default to :all
 
-def is_teleport_event?(event)
-  return false if !event || !event.list
-  for command in event.list
-    # 201 is the event code for "Transfer Player"
-    return true if command.code == 201
+  def is_teleport_event?(event)
+    return false if !event || !event.list
+    for command in event.list
+      # 201 is the event code for "Transfer Player"
+      return true if command.code == 201
   end
   return false
 end
 
-def get_teleport_destination_name(event)
-  return nil if !event || !event.list
-  for command in event.list
-    if command.code == 201 # Event command for "Transfer Player"
-      map_id = command.parameters[1]
-      # Use the Map Factory to get the destination map object
+  def get_teleport_destination_name(event)
+    return nil if !event || !event.list
+    for command in event.list
+      if command.code == 201 # Event command for "Transfer Player"
+       map_id = command.parameters[1]
+        # Use the Map Factory to get the destination map object 
       destination_map = $MapFactory.getMap(map_id)
       return destination_map.name if destination_map
     end
