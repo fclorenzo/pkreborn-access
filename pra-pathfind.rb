@@ -1400,3 +1400,17 @@ def torDeCapsNature(entrynat)
 	  return decapshash[entrynat]
 	end
 end
+
+#  Automatic Event List Refresh on Map Transfer
+class Scene_Map
+  # Create a copy of the original transfer_player method to modify
+  alias_method :access_mod_original_transfer_player, :transfer_player
+
+  def transfer_player(cancelVehicles = true)
+    # First, call the original method to perform the map transfer
+    access_mod_original_transfer_player(cancelVehicles)
+    
+    # After the transfer is complete, call our refresh method
+    $game_player.populate_event_list
+  end
+end
