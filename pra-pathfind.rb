@@ -91,7 +91,7 @@ def pathfind_to_selected_event
   printInstruction(convertRouteToInstructions(route))
 end
 
-  def populate_event_list
+def populate_event_list
   @mapevents = []
   for event in $game_map.events.values
     # We define an "interactable" event as one with a command list.
@@ -101,7 +101,10 @@ end
     end
   end
   
-  # Set the index to the first event, or -1 if the list is empty.
+  # --- NEW: Sort events by distance from the player (closest first) ---
+  @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
+  
+  # Set the index to the first event (now the closest), or -1 if the list is empty.
   @selected_event_index = @mapevents.empty? ? -1 : 0
 end
 
