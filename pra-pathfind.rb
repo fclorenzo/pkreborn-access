@@ -61,36 +61,42 @@ def is_teleport_event?(event)
   return false
 end
 
+def get_teleport_destination_name(event)
+  return nil if !event || !event.list
+  for command in event.list
+    if command.code == 201 # Event command for "Transfer Player"
+      map_id = command.parameters[1]
+      # Use the Map Factory to get the destination map object
+      destination_map = $MapFactory.getMap(map_id)
+      return destination_map.name if destination_map
+    end
+  end
+  return nil # Return nil if it's not a teleport event
+end
+
 def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
   
   event = @mapevents[@selected_event_index]
   dist = distance(@x, @y, event.x, event.y).round
   
-  # Get player's facing direction
   facing_direction = ""
   case @direction
-  when 2
-    facing_direction = "facing down"
-  when 4
-    facing_direction = "facing left"
-  when 6
-    facing_direction = "facing right"
-  when 8
-    facing_direction = "facing up"
+  when 2; facing_direction = "facing down"
+  when 4; facing_direction = "facing left"
+  when 6; facing_direction = "facing right"
+  when 8; facing_direction = "facing up"
   end
 
   announcement_text = ""
-  
-  # Check if the event name is empty
   if event.name.nil? || event.name.strip.empty?
     if is_teleport_event?(event)
-      announcement_text = "Teleport tile"
+      destination = get_teleport_destination_name(event)
+      announcement_text = "Connection to #{destination}"
     else
       announcement_text = "Interactable object"
     end
   else
-    # If the event has a name, use it
     announcement_text = event.name
   end
   
@@ -125,54 +131,12 @@ def populate_event_list
   @selected_event_index = @mapevents.empty? ? -1 : 0
 end
 
-  class MapEventForSearch
-    attr_accessor :mapId, :event
-
-    def initialize(paraMapId, paraEvent)
-      @mapId = paraMapId
-      @event = paraEvent
-    end
-  end
-
   class EventWithRelativeDirection
     attr_accessor :direction, :node
 
     def initialize(paraNode, paraDirection)
       @direction = paraDirection
       @node = paraNode
-    end
-  end
-
-  class SearchTerm
-    attr_accessor :searchTerm, :code
-
-    def initialize(paraSearchTerm, paraCode = -1)
-      @searchTerm = paraSearchTerm
-      @code = paraCode
-    end
-  end
-
-  class SearchEvent
-    attr_accessor :searchTerms, :name, :range, :trigger, :array, :id
-
-    def initialize(paraName, paraRange, paraTrigger, paraId, array = [])
-      @name = paraName
-      @range = paraRange
-      @searchTerms = array
-      @trigger = paraTrigger
-      @array = array
-      @id = paraId
-    end
-  end
-
-  class MapWithPoint
-    attr_accessor :map, :x, :y, :event, :eventArray
-    @eventArray #All found events will be saved here
-    def initialize(paraMap, paraX, paraY, paraEvent)
-      @map = paraMap
-      @x = paraX
-      @y = paraY
-      @event = paraEvent #TeleportEvent, which leads to map
     end
   end
 
@@ -234,128 +198,6 @@ end
       Kernel.pbMessage("Error: Event is not handeled in the Method eventContains")
     end
     return false
-  end
-
-  def check_event_in_range(x, y, searchEvent, map = $game_map)
-    #Kernel.pbMessage(x.to_s + ", " + y.to_s + ", " + searchEvent.range.to_s)
-    eventsArray = []
-    r = searchEvent.range.to_s == "completeMap" ? ($game_map.height < $game_map.width ? $game_map.width : $game_map.height) : searchEvent.range.to_i
-    #Kernel.pbMessage(r.to_s)
-    for event in map.events.values
-      if event.x >= x - r && event.x <= x + r && event.y >= y - r && event.y <= y + r && eventContains(event, searchEvent)
-        eventsArray.push(event)
-      end
-    end
-    if searchEvent.name.downcase == "teleport tile"
-      reduceEventsInLanes(eventsArray)
-    end
-    return eventsArray
-  end
-
-  def reduceEventsInLanes(eventsArray)
-    eventsInLane = []
-    for event in eventsArray
-      neighbourNode = getNeighbour(event, eventsArray)
-      if neighbourNode != nil
-        deleteNodesInOneLane(event, neighbourNode, eventsArray)
-      end
-    end
-  end
-
-  def getEvent(x, y, eventsArray)
-    for ea in eventsArray
-      if ea.x == x && ea.y == y
-        return ea
-      end
-    end
-    return nil
-  end
-
-  def deleteNodesInOneLane(event, neighbourNode, eventsArray)
-    nodesInLane = []
-    eventDestination = nil
-    for eventCommand in event.list
-      if eventCommand.code == 201
-        eventDestination = eventCommand.parameters[1]
-      end
-    end
-    if event.x == neighbourNode.x #y-axis
-      i = 1
-      while true
-        foundEvent = getEvent(event.x, event.y + i, eventsArray)
-        if foundEvent == nil
-          break
-        end
-        for eventCommand in foundEvent.list
-          if eventCommand.parameters[1] == eventDestination
-            eventsArray.delete(foundEvent)
-            break
-          end
-        end
-        i = i + 1
-      end
-      i = 1
-      while true
-        foundEvent = getEvent(event.x, event.y - i, eventsArray)
-        if foundEvent == nil
-          break
-        end
-        for eventCommand in foundEvent.list
-          if eventCommand.parameters[1] == eventDestination
-            eventsArray.delete(foundEvent)
-            break
-          end
-        end
-        i = i + 1
-      end
-    else
-      #x-axis
-      i = 1
-      while true
-        foundEvent = getEvent(event.x + i, event.y, eventsArray)
-        if foundEvent == nil
-          break
-        end
-        for eventCommand in foundEvent.list
-          if eventCommand.parameters[1] == eventDestination
-            eventsArray.delete(foundEvent)
-            break
-          end
-        end
-        i = i + 1
-      end
-      i = 1
-      while true
-        foundEvent = getEvent(event.x - i, event.y, eventsArray)
-        if foundEvent == nil
-          break
-        end
-        for eventCommand in foundEvent.list
-          if eventCommand.parameters[1] == eventDestination
-            eventsArray.delete(foundEvent)
-            break
-          end
-        end
-        i = i + 1
-      end
-    end
-  end
-
-  def getNeighbour(event, eventsArray)
-    for currentEvent in eventsArray
-      if (event.x - currentEvent.x).abs == 1 && event.y == currentEvent.y || (event.y - currentEvent.y).abs == 1 && event.x == currentEvent.x
-        return currentEvent
-      end
-    end
-    return nil
-  end
-
-  def isNeighbourWithMapWithEntryPointDataType(mapWithPoint, mapsWithPoints)
-    for mwp in mapsWithPoints
-      if (mapWithPoint.event.x - mwp.event.x).abs == 1 && mapWithPoint.event.y == mwp.event.y || (mapWithPoint.event.y - mwp.event.y).abs == 1 && mapWithPoint.event.x == mwp.event.x
-        return true
-      end
-    end
   end
 
   def convertRouteToInstructions(route)
@@ -420,38 +262,6 @@ end
     end
   end
 
-  def getMatchingConnectedMapsWithEntryPoint(map, searchEvent)
-    mapsWithEntryPoint = []
-    result = []
-    tempEventArray = []
-    for event in map.events.values
-      if event.list == nil
-        next
-      end
-      for eventCommand in event.list
-        if eventCommand.code == 201 #Code for teleport
-          tempEventArray.push(event)
-        end
-      end
-    end
-    reduceEventsInLanes(tempEventArray)
-    for event in tempEventArray
-      for eventCommand in event.list
-        if eventCommand.code == 201 #Code for teleport
-          mapsWithEntryPoint.push(MapWithPoint.new($MapFactory.getMap(eventCommand.parameters[1]), eventCommand.parameters[2], eventCommand.parameters[3], event))
-        end
-      end
-    end
-    for mwep in mapsWithEntryPoint
-      eventArray = check_event_in_range(mwep.x, mwep.y, searchEvent, mwep.map)
-      if eventArray.length > 0
-        mwep.eventArray = eventArray
-        result.push(mwep)
-      end
-    end
-    return result
-  end
-
   def getSaleTilesOfNPC(event, map = $game_map)
     possibleTiles = []
     if !$MapFactory.isPassable?(map.map_id, event.x, event.y + 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y + 2)
@@ -467,288 +277,6 @@ end
       possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y - 2), 8))
     end
     return possibleTiles
-  end
-
-  def searchEvent()
-
-    # List of available searchable event categories
-    searchableEvents = [
-        SearchEvent.new("Last selected category", nil, nil, 0),
-        SearchEvent.new("Healing spot", "completeMap", "0", 1),
-        SearchEvent.new("Merchant", "completeMap", "0", 2),
-        SearchEvent.new("Teleport tile", "completeMap", "1", 3),
-        #SearchEvent.new("Clickable event", 5, "0", 4),
-        SearchEvent.new("Clickable event", "completeMap", "0", 4), # Search clickable events on the entire map
-        SearchEvent.new("Save current coordinates", nil, nil, 5),
-        SearchEvent.new("Load saved coordinates", nil, nil, 6)
-    ]
-
-    # Build choice list string for the message window
-    s = "5,-1"
-    for searchableEvent in searchableEvents
-        s = s + "," + searchableEvent.name.to_s
-    end
-    Kernel.pbMessage("Please select a destination.\\ch[" + s + "]")
-
-    input = $game_variables[5] # Get selected index from the choice
-
-    # Cancelled
-    if input == -1
-        return
-
-    # Repeat last selected category
-    elsif input == 0
-        if @@lastSelectedSearchItem == -1
-            Kernel.pbMessage("No prior selected destination exists.")
-            return
-        else
-            input = @@lastSelectedSearchItem
-        end
-
-    # Save current coordinates
-    elsif input == 5
-        @@savedNode = Node.new(@x, @y)
-        @@savedMapId = $game_map.map_id
-        Kernel.pbMessage("Saved.")
-        return
-    end
-
-    # Searchable event categories that require processing
-    if input == 1 || input == 2 || input == 3 || input == 4
-        eventsArray = check_event_in_range(@x, @y, searchableEvents[input])
-
-        case input
-        when 1, 2 # Healing Spot & Merchant
-            mapsWithEntryPoint = getMatchingConnectedMapsWithEntryPoint($game_map, searchableEvents[input])
-
-            # Count all search results including teleport-connected maps
-            amountSearchResults = 0
-            for mwep in mapsWithEntryPoint
-                amountSearchResults += mwep.eventArray.length
-            end
-            Kernel.pbMessage((eventsArray.length + amountSearchResults).to_s + ' ' + searchableEvents[input].name.to_s + " detected.")
-
-            # No results found
-            if (eventsArray.length + amountSearchResults) == 0
-                return
-
-            # One result found
-            elsif (eventsArray.length + amountSearchResults) == 1
-                if eventsArray.length == 1
-                    # Event is on current map
-                    route = searchToNearestEvent(eventsArray)
-                    direction = 0
-                    if route.length == 0
-                        possibleTargets = getSaleTilesOfNPC(eventsArray[0])
-                        for pt in possibleTargets
-                            route = aStern(Node.new(@x, @y), Node.new(pt.node.x, pt.node.y))
-                            if route.length != 0
-                                direction = pt.direction
-                                break
-                            end
-                        end
-                    end
-                    if route.length == 0
-                        Kernel.pbMessage("No route to destination could be found.")
-                    else
-                        addAdjacentNode(route, direction) if direction != 0
-                        printInstruction(convertRouteToInstructions(route))
-                    end
-                else
-                    # Event is on a different map, follow teleport chain
-                    firstRoute = aStern(Node.new(@x, @y), Node.new(mapsWithEntryPoint[0].event.x, mapsWithEntryPoint[0].event.y))
-                    secondRoute = aStern(Node.new(mapsWithEntryPoint[0].x, mapsWithEntryPoint[0].y),
-                                         Node.new(mapsWithEntryPoint[0].eventArray[0].x, mapsWithEntryPoint[0].eventArray[0].y),
-                                         mapsWithEntryPoint[0].map)
-                    direction = 0
-                    if secondRoute.length == 0
-                        possibleTargets = getSaleTilesOfNPC(mapsWithEntryPoint[0].eventArray[0], mapsWithEntryPoint[0].map)
-                        for pt in possibleTargets
-                            secondRoute = aStern(Node.new(mapsWithEntryPoint[0].x, mapsWithEntryPoint[0].y),
-                                                 Node.new(pt.node.x, pt.node.y), mapsWithEntryPoint[0].map)
-                            if secondRoute.length != 0
-                                direction = pt.direction
-                                break
-                            end
-                        end
-                    end
-                    if firstRoute.length == 0 || secondRoute.length == 0
-                        Kernel.pbMessage("No route to destination could be found.")
-                    else
-                        route = firstRoute + secondRoute
-                        addAdjacentNode(route, direction) if direction != 0
-                        printInstruction(convertRouteToInstructions(route))
-                    end
-                end
-
-            # Multiple matching events, let player choose
-            elsif (eventsArray.length + amountSearchResults) > 1
-                s = "5,-1"
-                for event in eventsArray
-                    s += "," + $game_map.name + " (" + event.x.to_s + "; " + event.y.to_s + ")"
-                end
-                for mwep in mapsWithEntryPoint
-                    for event in mwep.eventArray
-                        s += "," + mwep.map.name + " (" + event.x.to_s + "; " + event.y.to_s + ")"
-                    end
-                end
-                Kernel.pbMessage("Please select a destination. Your current location is " + $game_map.name + ".\\ch[" + s + "]")
-                input2 = $game_variables[5]
-
-                # Handle second choice
-                if input2 == -1
-                    return
-                elsif input2 < eventsArray.length
-                    # Selected event from current map
-                    route = searchToNearestEvent(eventsArray[input2, 1])
-                    direction = 0
-                    if route.length == 0
-                        possibleTargets = getSaleTilesOfNPC(eventsArray[input2])
-                        for pt in possibleTargets
-                            route = aStern(Node.new(@x, @y), Node.new(pt.node.x, pt.node.y))
-                            if route.length != 0
-                                direction = pt.direction
-                                break
-                            end
-                        end
-                    end
-                    if route.length == 0
-                        Kernel.pbMessage("No route to destination could be found.")
-                    else
-                        addAdjacentNode(route, direction) if direction != 0
-                        printInstruction(convertRouteToInstructions(route))
-                    end
-                else
-                    # Selected event from other map
-                    input2 -= eventsArray.length
-                    inputMwep = nil
-                    for mwep in mapsWithEntryPoint
-                        if input2 < mwep.eventArray.length
-                            inputMwep = mwep
-                            break
-                        end
-                        input2 -= mwep.eventArray.length
-                    end
-                    return if inputMwep.nil?
-
-                    firstRoute = aStern(Node.new(@x, @y), Node.new(inputMwep.event.x, inputMwep.event.y))
-                    secondRoute = aStern(Node.new(inputMwep.x, inputMwep.y),
-                                         Node.new(inputMwep.eventArray[input2].x, inputMwep.eventArray[input2].y),
-                                         inputMwep.map)
-                    direction = 0
-                    if secondRoute.length == 0
-                        possibleTargets = getSaleTilesOfNPC(inputMwep.eventArray[input2], inputMwep.map)
-                        for pt in possibleTargets
-                            secondRoute = aStern(Node.new(inputMwep.x, inputMwep.y),
-                                                 Node.new(pt.node.x, pt.node.y), inputMwep.map)
-                            if secondRoute.length != 0
-                                direction = pt.direction
-                                break
-                            end
-                        end
-                    end
-                    if firstRoute.length == 0 || secondRoute.length == 0
-                        Kernel.pbMessage("No route to destination could be found.")
-                    else
-                        route = firstRoute + secondRoute
-                        addAdjacentNode(route, direction) if direction != 0
-                        printInstruction(convertRouteToInstructions(route))
-                    end
-                end
-            end
-
-        when 3 # Teleport Tiles
-            # Remove unreachable events
-            eventsArray.reject! { |event| aStern(Node.new(@x, @y), Node.new(event.x, event.y)).length == 0 }
-            Kernel.pbMessage(eventsArray.length.to_s + ' ' + searchableEvents[input].name.to_s + " detected.")
-
-            if eventsArray.length == 0
-                return
-            elsif eventsArray.length == 1
-                printInstruction(convertRouteToInstructions(aStern(Node.new(@x, @y), Node.new(eventsArray[0].x, eventsArray[0].y))))
-            else
-                s = "5,-1,Nearest destination"
-                for event in eventsArray
-                    teleportDestination = ""
-                    for eventCommand in event.list
-                        if eventCommand.code == 201
-                            teleportDestination = $MapFactory.getMap(eventCommand.parameters[1]).name
-                            break
-                        end
-                    end
-                    s += "," + teleportDestination + " (" + event.x.to_s + "; " + event.y.to_s + ")"
-                end
-                Kernel.pbMessage("Please select a destination. Your current location is " + $game_map.name + ".\\ch[" + s + "]")
-                input2 = $game_variables[5]
-                if input2 == -1
-                    return
-                elsif input2 == 0
-                    printInstruction(convertRouteToInstructions(searchToNearestEvent(eventsArray)))
-                else
-                    printInstruction(convertRouteToInstructions(searchToNearestEvent(eventsArray[input2 - 1, 1])))
-                end
-            end
-
-        when 4 # Clickable Events
-            Kernel.pbMessage(eventsArray.length.to_s + ' ' + searchableEvents[input].name.to_s + " detected.")
-            if eventsArray.length == 0
-                return
-            elsif eventsArray.length == 1
-                printInstruction(convertRouteToInstructions(aStern(Node.new(@x, @y), Node.new(eventsArray[0].x, eventsArray[0].y))))
-            else
-                s = "5,-1,Nearest destination"
-                for event in eventsArray
-                    s += ",(" + event.x.to_s + "; " + event.y.to_s + ")"
-                end
-                Kernel.pbMessage("Please select a destination.\\ch[" + s + "]")
-                input2 = $game_variables[5]
-                if input2 == -1
-                    return
-                elsif input2 == 0
-                    printInstruction(convertRouteToInstructions(searchToNearestEvent(eventsArray)))
-                else
-                    printInstruction(convertRouteToInstructions(searchToNearestEvent(eventsArray[input2 - 1, 1])))
-                end
-            end
-
-        else
-            Kernel.pbMessage("Error: Missing case in method searchEvent")
-        end
-
-        @@lastSelectedSearchItem = input
-        return
-    elsif input == 6
-        # Load coordinates
-        @@lastSelectedSearchItem = input
-        if @@savedNode == nil
-            Kernel.pbMessage("No coordinates have been saved")
-            return
-        end
-        if @@savedMapId != $game_map.map_id
-            Kernel.pbMessage("Previous saved coordinates are not in current map section")
-            return
-        else
-            printInstruction(convertRouteToInstructions(aStern(Node.new(@x, @y), @@savedNode)))
-        end
-
-    else
-        Kernel.pbMessage("Error: Missing number in method searchEvent cases")
-    end
-    @@lastSelectedSearchItem = input
-    return
-end
-
-  def nearestEvent(eventArray, x = @x, y = @y)
-    minDistance = -1
-    minEvent = nil
-    for event in eventArray
-      distance = distance(x, y, event.x, event.y)
-      if (minDistance < 0 || distance < minDistance)
-        minDistance = distance
-        minEvent = event
-      end
-    end
-    return minEvent
   end
 
   def printInstruction(instructions)
@@ -771,14 +299,6 @@ end
 
   def distance(sx, sy, tx, ty)
     return Math.sqrt((sx - tx) * (sx - tx) + (sy - ty) * (sy - ty))
-  end
-
-  def searchToNearestEvent(eventArray)
-    minEvent = nearestEvent(eventArray)
-    #file = File.open("testLog.txt", "a")
-    #Kernel.pbMessage("Event wird gesucht: " + minEvent.id.to_s)
-    route = aStern(Node.new(@x, @y), Node.new(minEvent.x, minEvent.y))
-    return route
   end
 
   class Node
