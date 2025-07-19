@@ -430,11 +430,11 @@ def torDeCapsTypings(entrytype)
   decapshash = {:NORMAL => "Normal", :FIRE => "Fire", :WATER => "Water", :GRASS  => "Grass", :ELECTRIC  => "Electric", :ICE  => "Ice", :FIGHTING  => "Fighting", :POISON  => "Poison",
   :GROUND  => "Ground", :FLYING  => "Flying", :PSYCHIC  => "Psychic", :BUG  => "Bug", :ROCK => "Rock", :GHOST  => "Ghost", :DRAGON  => "Dragon", :DARK  => "Dark", :STEEL  => "Steel",
   :FAIRY  => "Fairy"}
-	if entrytype.nil?
-	  return nil
-	else
-	  return decapshash[entrytype]
-	end
+  if entrytype.nil?
+    return nil
+  else
+    return decapshash[entrytype]
+  end
 end
 
 def torDeCapsNature(entrynat)
@@ -444,9 +444,9 @@ def torDeCapsNature(entrynat)
   :CALM  => "Calm", :GENTLE  => "Gentle", :CAREFUL => "Careful", :QUIRKY  => "Quirky", :SASSY  => "Sassy",
   :TIMID  => "Timid", :HASTY  => "Hasty", :JOLLY => "Jolly", :NAIVE  => "Naive", :SERIOUS  => "Serious",
   }
-	if entrynat.nil?
-	  return nil
-	else
-	  return decapshash[entrynat]
-	end
+  if entrynat.nil?
+    return nil
+  else
+    return decapshash[entrynat]
+  end
 end
