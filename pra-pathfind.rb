@@ -69,6 +69,7 @@ def get_teleport_destination_name(event)
   end
   return nil # Return nil if it's not a teleport event
 end
+
 def reduceEventsInLanes(eventsArray)
   # This method and its helpers are from the original Malta10 mod.
   eventsInLane = []
