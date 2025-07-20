@@ -69,6 +69,105 @@ def get_teleport_destination_name(event)
   end
   return nil # Return nil if it's not a teleport event
 end
+def reduceEventsInLanes(eventsArray)
+  # This method and its helpers are from the original Malta10 mod.
+  eventsInLane = []
+  for event in eventsArray
+    neighbourNode = getNeighbour(event, eventsArray)
+    if neighbourNode != nil
+      deleteNodesInOneLane(event, neighbourNode, eventsArray)
+    end
+  end
+end
+
+def getNeighbour(event, eventsArray)
+  for currentEvent in eventsArray
+    if (event.x - currentEvent.x).abs == 1 && event.y == currentEvent.y || 
+       (event.y - currentEvent.y).abs == 1 && event.x == currentEvent.x
+      return currentEvent
+    end
+  end
+  return nil
+end
+
+def getEvent(x, y, eventsArray)
+  for ea in eventsArray
+    if ea.x == x && ea.y == y
+      return ea
+    end
+  end
+  return nil
+end
+
+  def deleteNodesInOneLane(event, neighbourNode, eventsArray)
+    nodesInLane = []
+    eventDestination = nil
+    for eventCommand in event.list
+      if eventCommand.code == 201
+        eventDestination = eventCommand.parameters[1]
+      end
+    end
+    if event.x == neighbourNode.x #y-axis
+      i = 1
+      while true
+        foundEvent = getEvent(event.x, event.y + i, eventsArray)
+        if foundEvent == nil
+          break
+        end
+        for eventCommand in foundEvent.list
+          if eventCommand.parameters[1] == eventDestination
+            eventsArray.delete(foundEvent)
+            break
+          end
+        end
+        i = i + 1
+      end
+      i = 1
+      while true
+        foundEvent = getEvent(event.x, event.y - i, eventsArray)
+        if foundEvent == nil
+          break
+        end
+        for eventCommand in foundEvent.list
+          if eventCommand.parameters[1] == eventDestination
+            eventsArray.delete(foundEvent)
+            break
+          end
+        end
+        i = i + 1
+      end
+    else
+      #x-axis
+      i = 1
+      while true
+        foundEvent = getEvent(event.x + i, event.y, eventsArray)
+        if foundEvent == nil
+          break
+        end
+        for eventCommand in foundEvent.list
+          if eventCommand.parameters[1] == eventDestination
+            eventsArray.delete(foundEvent)
+            break
+          end
+        end
+        i = i + 1
+      end
+      i = 1
+      while true
+        foundEvent = getEvent(event.x - i, event.y, eventsArray)
+        if foundEvent == nil
+          break
+        end
+        for eventCommand in foundEvent.list
+          if eventCommand.parameters[1] == eventDestination
+            eventsArray.delete(foundEvent)
+            break
+          end
+        end
+        i = i + 1
+      end
+    end
+  end
 
 def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
@@ -111,19 +210,29 @@ def pathfind_to_selected_event
 end
 
 def populate_event_list
-  @mapevents = []
+  connections = []
+  other_events = []
+
+  # Separate events into two lists: connections and everything else
   for event in $game_map.events.values
-    # We define an "interactable" event as one with a command list.
-    # This filters out decorative events.
-    if event.list && event.list.size > 1
-      @mapevents.push(event)
+    next if !event.list || event.list.size <= 1
+    if is_teleport_event?(event)
+      connections.push(event)
+    else
+      other_events.push(event)
     end
   end
+
+  # Run the de-duplication logic ONLY on the list of connections
+  reduceEventsInLanes(connections)
+
+  # Combine the de-duplicated connections with the other events
+  @mapevents = other_events + connections
   
-  # --- NEW: Sort events by distance from the player (closest first) ---
+  # Sort the final, combined list by distance
   @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
   
-  # Set the index to the first event (now the closest), or -1 if the list is empty.
+  # Set the index to the first event, or -1 if the list is empty.
   @selected_event_index = @mapevents.empty? ? -1 : 0
 end
 
