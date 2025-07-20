@@ -47,6 +47,31 @@ class Game_Player < Game_Character
 
   @mapevents = []
   @selected_event_index = -1
+# --- Helper class and method for finding interactable tiles next to an event ---
+  class EventWithRelativeDirection
+    attr_accessor :direction, :node
+    def initialize(paraNode, paraDirection)
+      @direction = paraDirection
+      @node = paraNode
+    end
+  end
+
+  def getEventTiles(event, map = $game_map)
+    possibleTiles = []
+    if !$MapFactory.isPassable?(map.map_id, event.x, event.y + 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y + 2)
+      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y + 2), 2))
+    end
+    if !$MapFactory.isPassable?(map.map_id, event.x - 1, event.y) && $MapFactory.isPassable?(map.map_id, event.x - 2, event.y)
+      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x - 2, event.y), 4))
+    end
+    if !$MapFactory.isPassable?(map.map_id, event.x + 1, event.y) && $MapFactory.isPassable?(map.map_id, event.x + 2, event.y)
+      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x + 2, event.y), 6))
+    end
+    if !$MapFactory.isPassable?(map.map_id, event.x, event.y - 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y - 2)
+      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y - 2), 8))
+    end
+    return possibleTiles
+  end
 
 def is_teleport_event?(event)
   return false if !event || !event.list
@@ -69,7 +94,6 @@ def get_teleport_destination_name(event)
   end
   return nil # Return nil if it's not a teleport event
 end
-
 def reduceEventsInLanes(eventsArray)
   # This method and its helpers are from the original Malta10 mod.
   eventsInLane = []
@@ -201,12 +225,29 @@ def announce_selected_event
 end
 
 def pathfind_to_selected_event
-  return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
+  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
   
   target_event = @mapevents[@selected_event_index]
   
-  # Use the existing A* and instruction logic
+  # First, try to find a direct path to the event's coordinates
   route = aStern(Node.new(@x, @y), Node.new(target_event.x, target_event.y))
+  
+  # If the direct path fails (e.g., NPC behind a counter)
+  if route.empty?
+    # Get a list of possible adjacent tiles to interact from
+    possible_targets = getEventTiles(target_event)
+    
+    # Loop through the alternatives and try to find a path to one of them
+    for target in possible_targets
+      alternative_route = aStern(Node.new(@x, @y), target.node)
+      if !alternative_route.empty?
+        route = alternative_route # Use the first successful alternative path
+        break
+      end
+    end
+  end
+  
+  # Announce the final route, whether it was direct or an alternative
   printInstruction(convertRouteToInstructions(route))
 end
 
@@ -538,6 +579,7 @@ end
       if event.x != target.x || event.y != target.y
         next
       end
+      next if event.list.nil?
       for eventCommand in event.list
         if eventCommand.code.to_s == 111.to_s
           if eventCommand.parameters[0] != nil && eventCommand.parameters[1] != nil && eventCommand.parameters[0].to_s == 6.to_s && eventCommand.parameters[1].to_s == -1.to_s
