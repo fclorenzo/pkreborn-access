@@ -47,8 +47,6 @@ class Game_Player < Game_Character
 
   @mapevents = []
   @selected_event_index = -1
-  @event_filter_modes = [:all, :connections, :npcs]
-  @event_filter_index = 0 # Default to :all
 
 def is_teleport_event?(event)
   return false if !event || !event.list
@@ -189,23 +187,6 @@ end
     else
       Kernel.pbMessage("Error: Something went horrible wrong")
     end
-  end
-
-  def getSaleTilesOfNPC(event, map = $game_map)
-    possibleTiles = []
-    if !$MapFactory.isPassable?(map.map_id, event.x, event.y + 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y + 2)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y + 2), 2))
-    end
-    if !$MapFactory.isPassable?(map.map_id, event.x - 1, event.y) && $MapFactory.isPassable?(map.map_id, event.x - 2, event.y)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x - 2, event.y), 4))
-    end
-    if !$MapFactory.isPassable?(map.map_id, event.x + 1, event.y) && $MapFactory.isPassable?(map.map_id, event.x + 2, event.y)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x + 2, event.y), 6))
-    end
-    if !$MapFactory.isPassable?(map.map_id, event.x, event.y - 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y - 2)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y - 2), 8))
-    end
-    return possibleTiles
   end
 
   def printInstruction(instructions)
