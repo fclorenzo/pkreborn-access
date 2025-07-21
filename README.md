@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.4.0
+V2.4.1
 
 ## Description
 
