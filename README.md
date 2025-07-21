@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.3.1
+V2.4.0
 
 ## Description
 
@@ -21,8 +21,9 @@ The project is modular. You can choose to install the features you want.
 
 ### Map Controls
 
-- **F6**: Scan the current map's events (use this when you want to refresh the current map's events, for example in case they change).
+- **F5**: Refresh the scanner's list of events on the current map.
 - **J, K and L**: Announce previous, current, and next event in the events list.
+- **Shift + K**: Announce the X and Y coordinates of the selected event.
 - **P**: Announce the path for the selected event.
 
 ### Pokémon Party Menu Controls
