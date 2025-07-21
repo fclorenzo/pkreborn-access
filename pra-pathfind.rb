@@ -269,6 +269,7 @@ def populate_event_list
   # Separate events into two lists: connections and everything else
   for event in $game_map.events.values
     next if !event.list || event.list.size <= 1
+    next if event.trigger == 3 || event.trigger == 4 # Ignore Autorun and Parallel events
     if is_teleport_event?(event)
       connections.push(event)
     else
