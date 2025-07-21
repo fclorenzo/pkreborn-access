@@ -7,9 +7,11 @@ class Game_Player < Game_Character
     # Then, execute our mod's logic
     # If not moving
     unless moving?
-      # Cycle event filter (O key)
-      if Input.triggerex?(0x4F)
-        cycle_event_filter
+# Cycle event filter
+      if Input.triggerex?(0x4F) # 'O' key for next filter
+        cycle_event_filter(1)
+      elsif Input.triggerex?(0x49) # 'I' key for previous filter
+        cycle_event_filter(-1)
       end
       # If F5 is pressed, refresh the event list
       if Input.triggerex?(0x74)
@@ -61,7 +63,7 @@ alias_method :access_mod_original_initialize, :initialize
     # Now, set up our mod's variables correctly
     @mapevents = []
     @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs]
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
     @event_filter_index = 0
   end
   
@@ -91,9 +93,23 @@ alias_method :access_mod_original_initialize, :initialize
     return possibleTiles
   end
 
-def cycle_event_filter
-  # Move to the next filter index and wrap around if necessary
-  @event_filter_index = (@event_filter_index + 1) % @event_filter_modes.length
+def cycle_event_filter(direction = 1)
+  # --- Safeguard to initialize variables if they don't exist ---
+  if @event_filter_modes.nil?
+    # This will run once when loading an old save file
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
+    @event_filter_index = 0
+  end
+  
+  # Move to the next/previous filter index
+  @event_filter_index += direction
+  
+  # Wrap around if necessary
+  if @event_filter_index >= @event_filter_modes.length
+    @event_filter_index = 0
+  elsif @event_filter_index < 0
+    @event_filter_index = @event_filter_modes.length - 1
+  end
   
   # Announce the new filter mode
   current_filter = @event_filter_modes[@event_filter_index]
@@ -107,14 +123,6 @@ def is_sign_event?(event)
   return false if !event || !event.list || !event.character_name.empty?
   for command in event.list
     return true if command.code == 101 # Show Text
-  end
-  return false
-end
-
-def is_pokecenter_event?(event)
-  return false if !event || !event.list
-  for command in event.list
-    return true if command.code == 314 # Recover All
   end
   return false
 end
@@ -134,24 +142,16 @@ def is_item_event?(event)
   return event.character_name.start_with?("itemball")
 end
 
-def is_trainer_event?(event)
-  return false if !event || !event.list
-  for command in event.list
-    # Check if the command is a "Script" command (code 355)
-    if command.code == 355
-      # Check if the script content contains the trainer battle function call
-      if command.parameters[0].is_a?(String) && command.parameters[0].include?("pbTrainerBattle")
-        return true
-      end
-    end
-  end
-  return false
+def is_hidden_item_event?(event)
+  return event.name == "HiddenItem"
 end
 
 def is_npc_event?(event)
   return false if !event
-  # An NPC is an event with a character sprite that is not a connection tile.
-  return !event.character_name.empty? && !is_teleport_event?(event)
+  # An NPC is any event with a character sprite that isn't a connection or an item.
+  return !event.character_name.empty? && 
+         !is_teleport_event?(event) && 
+         !is_item_event?(event)
 end
 
 def is_teleport_event?(event)
@@ -340,11 +340,11 @@ def pathfind_to_selected_event
 end
 
 def populate_event_list
-    # --- Safeguard to initialize variables if they don't exist ---
+  # --- Safeguard to initialize variables if they don't exist ---
   if @event_filter_modes.nil?
     @mapevents = []
     @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs]
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
     @event_filter_index = 0
   end
 
@@ -370,9 +370,16 @@ def populate_event_list
       connections.push(event) if is_teleport_event?(event)
     when :npcs
       other_events.push(event) if is_npc_event?(event)
+    when :items
+      other_events.push(event) if is_item_event?(event)
+    when :merchants
+      other_events.push(event) if is_merchant_event?(event)
+    when :signs
+      other_events.push(event) if is_sign_event?(event)
+      when :hidden_items  # --- ADD THIS NEW CASE ---
+      other_events.push(event) if is_hidden_item_event?(event)
     end
   end
-
   # Run de-duplication on connections, regardless of filter
   reduceEventsInLanes(connections)
 
