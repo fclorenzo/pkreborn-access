@@ -7,7 +7,8 @@ class Game_Player < Game_Character
     # Then, execute our mod's logic
     # If not moving
     unless moving?
-      if Input.trigger?(Input::F6)
+      # If F5 is pressed, refresh the event list
+      if Input.triggerex?(0x74)
         populate_event_list
         tts('Map list refreshed')
       end
@@ -31,9 +32,12 @@ class Game_Player < Game_Character
           end
           announce_selected_event
         end
+        # Announce coordinates (Shift+K)
+        if Input.pressex?(0x10) && Input.triggerex?(0x4B)
+          announce_selected_coordinates
 
         # ANNOUNCE the current event (K)
-        if Input.triggerex?(0x4B)
+        elsif Input.triggerex?(0x4B)
           announce_selected_event
         end
 
@@ -94,6 +98,7 @@ def get_teleport_destination_name(event)
   end
   return nil # Return nil if it's not a teleport event
 end
+
 def reduceEventsInLanes(eventsArray)
   # This method and its helpers are from the original Malta10 mod.
   eventsInLane = []
@@ -193,6 +198,12 @@ end
       end
     end
   end
+
+def announce_selected_coordinates
+  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
+  event = @mapevents[@selected_event_index]
+  tts("Coordinates: X #{event.x}, Y #{event.y}")
+end
 
 def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
