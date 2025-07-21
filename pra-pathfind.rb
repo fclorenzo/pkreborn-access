@@ -7,6 +7,10 @@ class Game_Player < Game_Character
     # Then, execute our mod's logic
     # If not moving
     unless moving?
+      # Cycle event filter (O key)
+      if Input.triggerex?(0x4F)
+        cycle_event_filter
+      end
       # If F5 is pressed, refresh the event list
       if Input.triggerex?(0x74)
         populate_event_list
@@ -86,6 +90,69 @@ alias_method :access_mod_original_initialize, :initialize
     end
     return possibleTiles
   end
+
+def cycle_event_filter
+  # Move to the next filter index and wrap around if necessary
+  @event_filter_index = (@event_filter_index + 1) % @event_filter_modes.length
+  
+  # Announce the new filter mode
+  current_filter = @event_filter_modes[@event_filter_index]
+  tts("Filter set to #{current_filter.to_s}")
+  
+  # Automatically refresh the event list with the new filter
+  populate_event_list
+end
+
+def is_sign_event?(event)
+  return false if !event || !event.list || !event.character_name.empty?
+  for command in event.list
+    return true if command.code == 101 # Show Text
+  end
+  return false
+end
+
+def is_pokecenter_event?(event)
+  return false if !event || !event.list
+  for command in event.list
+    return true if command.code == 314 # Recover All
+  end
+  return false
+end
+
+def is_merchant_event?(event)
+  return false if !event || !event.list
+  for command in event.list
+    if command.code == 355 && command.parameters[0].is_a?(String)
+      return true if command.parameters[0].include?("pbPokemonMart")
+    end
+  end
+  return false
+end
+
+def is_item_event?(event)
+  return false if !event
+  return event.character_name.start_with?("itemball")
+end
+
+def is_trainer_event?(event)
+  return false if !event || !event.list
+  for command in event.list
+    # Check if the command is a "Script" command (code 355)
+    if command.code == 355
+      # Check if the script content contains the trainer battle function call
+      if command.parameters[0].is_a?(String) && command.parameters[0].include?("pbTrainerBattle")
+        return true
+      end
+    end
+  end
+  return false
+end
+
+def is_npc_event?(event)
+  return false if !event
+  # An NPC is an event with a character sprite that is not a connection tile.
+  return !event.character_name.empty? && !is_teleport_event?(event)
+end
 
 def is_teleport_event?(event)
   return false if !event || !event.list
@@ -273,30 +340,45 @@ def pathfind_to_selected_event
 end
 
 def populate_event_list
+    # --- Safeguard to initialize variables if they don't exist ---
+  if @event_filter_modes.nil?
+    @mapevents = []
+    @selected_event_index = -1
+    @event_filter_modes = [:all, :connections, :npcs]
+    @event_filter_index = 0
+  end
+
+  @mapevents = []
+  current_filter = @event_filter_modes[@event_filter_index]
+
   connections = []
   other_events = []
 
-  # Separate events into two lists: connections and everything else
   for event in $game_map.events.values
     next if !event.list || event.list.size <= 1
-    next if event.trigger == 3 || event.trigger == 4 # Ignore Autorun and Parallel events
-    if is_teleport_event?(event)
-      connections.push(event)
-    else
-      other_events.push(event)
+    next if event.trigger == 3 || event.trigger == 4 # Ignore Autorun and Parallel
+
+    # Apply the selected filter
+    case current_filter
+    when :all
+      if is_teleport_event?(event)
+        connections.push(event)
+      else
+        other_events.push(event)
+      end
+    when :connections
+      connections.push(event) if is_teleport_event?(event)
+    when :npcs
+      other_events.push(event) if is_npc_event?(event)
     end
   end
 
-  # Run the de-duplication logic ONLY on the list of connections
+  # Run de-duplication on connections, regardless of filter
   reduceEventsInLanes(connections)
 
-  # Combine the de-duplicated connections with the other events
+  # Combine the lists and sort
   @mapevents = other_events + connections
-  
-  # Sort the final, combined list by distance
   @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
-  
-  # Set the index to the first event, or -1 if the list is empty.
   @selected_event_index = @mapevents.empty? ? -1 : 0
 end
 
