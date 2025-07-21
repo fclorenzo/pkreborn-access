@@ -49,9 +49,17 @@ class Game_Player < Game_Character
     end
   end
 
-  @mapevents = []
-  @selected_event_index = -1
-# --- Helper class and method for finding interactable tiles next to an event ---
+alias_method :access_mod_original_initialize, :initialize
+  def initialize(*args)
+    # Call the original initialize method first to set up the player
+    access_mod_original_initialize(*args)
+    
+    # Now, set up our mod's variables correctly
+    @mapevents = []
+    @selected_event_index = -1
+  end
+  
+  # --- Helper class and method for finding interactable tiles next to an event ---
   class EventWithRelativeDirection
     attr_accessor :direction, :node
     def initialize(paraNode, paraDirection)
