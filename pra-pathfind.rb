@@ -57,6 +57,8 @@ alias_method :access_mod_original_initialize, :initialize
     # Now, set up our mod's variables correctly
     @mapevents = []
     @selected_event_index = -1
+    @event_filter_modes = [:all, :connections, :npcs]
+    @event_filter_index = 0
   end
   
   # --- Helper class and method for finding interactable tiles next to an event ---
