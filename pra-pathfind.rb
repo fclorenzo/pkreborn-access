@@ -95,6 +95,26 @@ alias_method :access_mod_original_initialize, :initialize
     return possibleTiles
   end
 
+def cycle_hm_toggle
+  # Move to the next toggle index and wrap around
+  @hm_toggle_index = (@hm_toggle_index + 1) % @hm_toggle_modes.length
+  
+  # Announce the new toggle mode
+  current_mode = @hm_toggle_modes[@hm_toggle_index]
+  announcement = ""
+  case current_mode
+  when :off
+    announcement = "HM pathfinding off"
+  when :surf_only
+    announcement = "HM pathfinding set to Surf only"
+  when :waterfall_only
+    announcement = "HM pathfinding set to Waterfall only"
+  when :both
+    announcement = "HM pathfinding set to Surf and Waterfall"
+  end
+  tts(announcement)
+end
+
 def cycle_event_filter(direction = 1)
   # --- Safeguard to initialize variables if they don't exist ---
   if @event_filter_modes.nil?
