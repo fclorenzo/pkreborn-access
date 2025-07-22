@@ -65,6 +65,8 @@ alias_method :access_mod_original_initialize, :initialize
     @selected_event_index = -1
     @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
     @event_filter_index = 0
+    @hm_toggle_modes = [:off, :surf_only, :waterfall_only, :both]
+    @hm_toggle_index = 0 # Default to :off
   end
   
   # --- Helper class and method for finding interactable tiles next to an event ---
