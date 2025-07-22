@@ -141,6 +141,35 @@ def cycle_event_filter(direction = 1)
   populate_event_list
 end
 
+def is_path_passable?(x, y, d)
+  # First, check if the tile is normally passable
+  return true if passable?(x, y, d)
+  
+  # If not, check if it's an HM obstacle we can pass with our toggle
+  current_mode = @hm_toggle_modes[@hm_toggle_index]
+  return false if current_mode == :off
+
+  # Get the coordinates of the tile we are trying to move to
+  new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
+  new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+  return false unless self.map.valid?(new_x, new_y)
+  
+  # Get the terrain tag of the destination tile
+  terrain_tag = self.map.terrain_tag(new_x, new_y)
+  
+  # Check for Surf
+  if pbIsPassableWaterTag?(terrain_tag)
+    return true if current_mode == :surf_only || current_mode == :both
+  end
+  
+  # Check for Waterfall
+  if terrain_tag == PBTerrain::Waterfall || terrain_tag == PBTerrain::WaterfallCrest
+    return true if current_mode == :waterfall_only || current_mode == :both
+  end
+  
+  return false
+end
+
 def is_sign_event?(event)
   return false if !event || !event.list || !event.character_name.empty?
   for command in event.list
