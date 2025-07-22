@@ -96,21 +96,21 @@ alias_method :access_mod_original_initialize, :initialize
   end
 
 def cycle_hm_toggle
-  # Move to the next toggle index and wrap around
+  # --- Safeguard for old save files ---
+  if @hm_toggle_modes.nil?
+    @hm_toggle_modes = [:off, :surf_only, :waterfall_only, :both]
+    @hm_toggle_index = 0
+  end
+
   @hm_toggle_index = (@hm_toggle_index + 1) % @hm_toggle_modes.length
   
-  # Announce the new toggle mode
   current_mode = @hm_toggle_modes[@hm_toggle_index]
   announcement = ""
   case current_mode
-  when :off
-    announcement = "HM pathfinding off"
-  when :surf_only
-    announcement = "HM pathfinding set to Surf only"
-  when :waterfall_only
-    announcement = "HM pathfinding set to Waterfall only"
-  when :both
-    announcement = "HM pathfinding set to Surf and Waterfall"
+  when :off; announcement = "HM pathfinding off"
+  when :surf_only; announcement = "HM pathfinding set to Surf only"
+  when :waterfall_only; announcement = "HM pathfinding set to Waterfall only"
+  when :both; announcement = "HM pathfinding set to Surf and Waterfall"
   end
   tts(announcement)
 end
