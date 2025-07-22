@@ -47,6 +47,11 @@ class Game_Player < Game_Character
           announce_selected_event
         end
 
+        # Cycle HM pathfinding toggle (H)
+        if Input.triggerex?(0x48)
+          cycle_hm_toggle
+        end
+
         # PATHFIND to the current event (P)
         if Input.triggerex?(0x50)
           pathfind_to_selected_event
