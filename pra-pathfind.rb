@@ -7,13 +7,20 @@ class Game_Player < Game_Character
     # Then, execute our mod's logic
     # If not moving
     unless moving?
-# Cycle event filter
-      if Input.triggerex?(0x4F) # 'O' key for next filter
+# Cycle event filter (O)
+      if Input.triggerex?(0x4F)
         cycle_event_filter(1)
-      elsif Input.triggerex?(0x49) # 'I' key for previous filter
+      # Cycle event filter backwards (I)
+      elsif Input.triggerex?(0x49)
         cycle_event_filter(-1)
       end
-      # If F5 is pressed, refresh the event list
+
+        # Cycle HM pathfinding toggle (H)
+        if Input.triggerex?(0x48)
+          cycle_hm_toggle
+        end
+
+      # Refresh the event list (F5)
       if Input.triggerex?(0x74)
         populate_event_list
         tts('Map list refreshed')
@@ -38,22 +45,22 @@ class Game_Player < Game_Character
           end
           announce_selected_event
         end
-        # Announce coordinates (Shift+K)
+
+        # Rename selected event (Shift+K)
         if Input.pressex?(0x10) && Input.triggerex?(0x4B)
-          announce_selected_coordinates
+          # todo
 
         # ANNOUNCE the current event (K)
         elsif Input.triggerex?(0x4B)
           announce_selected_event
         end
 
-        # Cycle HM pathfinding toggle (H)
-        if Input.triggerex?(0x48)
-          cycle_hm_toggle
-        end
+      # Announce coordinates (Shift+P)
+      if Input.pressex?(0x10) && Input.triggerex?(0x50)
+        announce_selected_coordinates
 
         # PATHFIND to the current event (P)
-        if Input.triggerex?(0x50)
+      elsif Input.triggerex?(0x50)
           pathfind_to_selected_event
         end
       end
@@ -70,7 +77,7 @@ alias_method :access_mod_original_initialize, :initialize
     @selected_event_index = -1
     @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
     @event_filter_index = 0
-    @hm_toggle_modes = [:off, :surf_only, :waterfall_only, :both]
+    @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
     @hm_toggle_index = 0 # Default to :off
   end
   
@@ -103,19 +110,22 @@ alias_method :access_mod_original_initialize, :initialize
 def cycle_hm_toggle
   # --- Safeguard for old save files ---
   if @hm_toggle_modes.nil?
-    @hm_toggle_modes = [:off, :surf_only, :waterfall_only, :both]
+    @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
     @hm_toggle_index = 0
   end
 
   @hm_toggle_index = (@hm_toggle_index + 1) % @hm_toggle_modes.length
   
+ 
   current_mode = @hm_toggle_modes[@hm_toggle_index]
   announcement = ""
   case current_mode
-  when :off; announcement = "HM pathfinding off"
-  when :surf_only; announcement = "HM pathfinding set to Surf only"
-  when :waterfall_only; announcement = "HM pathfinding set to Waterfall only"
-  when :both; announcement = "HM pathfinding set to Surf and Waterfall"
+  when :off
+    announcement = "HM pathfinding off"
+  when :surf_only
+    announcement = "HM pathfinding set to Surf only"
+  when :surf_and_waterfall
+    announcement = "HM pathfinding set to Surf and Waterfall"
   end
   tts(announcement)
 end
@@ -147,10 +157,16 @@ def cycle_event_filter(direction = 1)
 end
 
 def is_path_passable?(x, y, d)
+  # --- Safeguard for old save files ---
+  if @hm_toggle_modes.nil?
+    @hm_toggle_modes = [:off, :surf_only, :waterfall_only, :both]
+    @hm_toggle_index = 0
+  end
+
   # First, check if the tile is normally passable
   return true if passable?(x, y, d)
   
-  # If not, check if it's an HM obstacle we can pass with our toggle
+  # If not, check if it's an HM obstacle the player can pass with the toggle
   current_mode = @hm_toggle_modes[@hm_toggle_index]
   return false if current_mode == :off
 
@@ -161,17 +177,16 @@ def is_path_passable?(x, y, d)
   
   # Get the terrain tag of the destination tile
   terrain_tag = self.map.terrain_tag(new_x, new_y)
-  
+
   # Check for Surf
   if pbIsPassableWaterTag?(terrain_tag)
-    return true if current_mode == :surf_only || current_mode == :both
+    return true if current_mode == :surf_only || current_mode == :surf_and_waterfall
   end
   
   # Check for Waterfall
   if terrain_tag == PBTerrain::Waterfall || terrain_tag == PBTerrain::WaterfallCrest
-    return true if current_mode == :waterfall_only || current_mode == :both
-  end
-  
+    return true if current_mode == :surf_and_waterfall
+  end 
   return false
 end
 
@@ -353,18 +368,30 @@ def announce_selected_event
   end
 
   announcement_text = ""
-  if event.name.nil? || event.name.strip.empty?
-    if is_teleport_event?(event)
-      destination = get_teleport_destination_name(event)
+  
+  # First, check if the event is a connection.
+  if is_teleport_event?(event)
+    # If it is, always start the announcement with "Connection to..."
+    destination = get_teleport_destination_name(event)
+    
+    # Use the destination map's name if it's available.
+    if destination && !destination.strip.empty?
       announcement_text = "Connection to #{destination}"
+    # Otherwise, fall back to the event's own name if it has one.
+    elsif event.name && !event.name.strip.empty?
+      announcement_text = "Connection to #{event.name}"
+    # If neither is available, use a generic announcement.
     else
-      announcement_text = "Interactable object"
+      announcement_text = "Connection"
     end
-  else
+  # If it's NOT a connection, check if it has a name.
+  elsif event.name && !event.name.strip.empty?
     announcement_text = event.name
+  # If all else fails, it's an unnamed interactable object.
+  else
+    announcement_text = "Interactable object"
   end
   
-  # Combine all parts for the final announcement
   tts("#{announcement_text}, #{dist} steps away, #{facing_direction}.")
 end
 
@@ -709,34 +736,20 @@ end
     return false
   end
 
-  def getNeighbours(node, target, isTargetPassable, targetDirection, map)
+def getNeighbours(node, target, isTargetPassable, targetDirection, map)
     neighbours = []
-    if isTargetPassable || targetDirection != -1
-      if passableEx?(node.x, node.y, 2, false, map)
-        neighbours.push(Node.new(node.x, node.y + 1))
-      end
-      if passableEx?(node.x, node.y, 4, false, map)
-        neighbours.push(Node.new(node.x - 1, node.y))
-      end
-      if passableEx?(node.x, node.y, 6, false, map)
-        neighbours.push(Node.new(node.x + 1, node.y))
-      end
-      if passableEx?(node.x, node.y, 8, false, map)
-        neighbours.push(Node.new(node.x, node.y - 1))
-      end
-    else
-      if passableEx?(node.x, node.y, 2, false, map) || target.equals(Node.new(node.x, node.y + 1))
-        neighbours.push(Node.new(node.x, node.y + 1))
-      end
-      if passableEx?(node.x, node.y, 4, false, map) || target.equals(Node.new(node.x - 1, node.y))
-        neighbours.push(Node.new(node.x - 1, node.y))
-      end
-      if passableEx?(node.x, node.y, 6, false, map) || target.equals(Node.new(node.x + 1, node.y))
-        neighbours.push(Node.new(node.x + 1, node.y))
-      end
-      if passableEx?(node.x, node.y, 8, false, map) || target.equals(Node.new(node.x, node.y - 1))
-        neighbours.push(Node.new(node.x, node.y - 1))
-      end
+    # Use our new, smarter passability check
+    if is_path_passable?(node.x, node.y, 2)
+      neighbours.push(Node.new(node.x, node.y + 1))
+    end
+    if is_path_passable?(node.x, node.y, 4)
+      neighbours.push(Node.new(node.x - 1, node.y))
+    end
+    if is_path_passable?(node.x, node.y, 6)
+      neighbours.push(Node.new(node.x + 1, node.y))
+    end
+    if is_path_passable?(node.x, node.y, 8)
+      neighbours.push(Node.new(node.x, node.y - 1))
     end
     return neighbours
   end
