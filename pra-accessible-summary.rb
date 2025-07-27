@@ -163,6 +163,7 @@ def pbPokemonScreen
           sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [
             _INTL("Display BST"),
             _INTL("Pokemon Details"),
+            _INTL("Export Team"),
             _INTL("Cancel")
           ])
 
@@ -172,7 +173,9 @@ def pbPokemonScreen
             pbDisplayBSTData(pkmn)
           when 1 # Pokemon Details
             # Call the helper function we added earlier
-            torDisplayPokemonDetails(pkmn)
+            torDisplayPokemonDetails(pkmn)          when 2
+            teamtotext
+            break # Exit menu after exporting
           when -1, 2 # Cancel
             break
           end
@@ -449,4 +452,32 @@ def torDeCapsNature(entrynat)
   else
     return decapshash[entrynat]
   end
+end
+
+def teamtotext
+  # This method is adapted from cass shit.rb
+  filename = "#{$Trainer.name}'s team.txt"
+  File.open(filename, "w") { |f|
+    for poke in $Trainer.party
+      f.write(getMonName(poke.species))
+      case poke.gender
+      when 0; f.write(" (M)")
+      when 1; f.write(" (F)")
+      end
+      if poke.item
+        f.write(" @ #{getItemName(poke.item)}")
+      end
+      f.write("\nAbility: #{getAbilityName(poke.ability)}")
+      f.write("\nLevel: #{poke.level}")
+      f.write("\nShiny: Yes") if poke.isShiny?
+      f.write("\nEVs: #{poke.ev[0]} HP / #{poke.ev[1]} Atk / #{poke.ev[2]} Def / #{poke.ev[3]} SpA / #{poke.ev[4]} SpD / #{poke.ev[5]} Spe")
+      f.write("\nNature: #{getNatureName(poke.nature)}")
+      f.write("\nIVs: #{poke.iv[0]} HP / #{poke.iv[1]} Atk / #{poke.iv[2]} Def / #{poke.iv[3]} SpA / #{poke.iv[4]} SpD / #{poke.iv[5]} Spe")
+      for move in poke.moves
+        f.write("\n- #{getMoveName(move.move)}") if move && move.move
+      end
+      f.write("\n\n")
+    end
+  }
+  tts("Team exported to #{filename}")
 end
