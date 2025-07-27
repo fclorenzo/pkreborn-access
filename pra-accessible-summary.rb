@@ -481,3 +481,289 @@ def teamtotext
   }
   tts("Team exported to #{filename}")
 end
+
+#===============================================================================
+# Module to hold our PC Summary modifications
+#===============================================================================
+module PRA_AccessibleSummaryPC
+  # This is a full replacement of the pbPokemonMenu method from Storage.rb
+  # It is a copy of the original, with our new option safely injected.
+  def pbPokemonMenu(pokemon)
+    commands = []
+    cmdSummary = -1
+    cmdWithdraw = -1
+    cmdDeposit = -1
+    cmdMove = -1
+    cmdItem = -1
+    cmdMail = -1
+    cmdRelease = -1
+    cmdAccessibleSummary = -1 # Our new command variable
+
+    if pokemon.isEgg?
+      commands[cmdSummary = commands.length] = _INTL("Summary")
+    else
+      commands[cmdSummary = commands.length] = _INTL("Summary")
+      commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
+    end
+    
+    if @screen.isDeposit?(@selection)
+      commands[cmdDeposit = commands.length] = _INTL("Deposit")
+    else
+      commands[cmdWithdraw = commands.length] = _INTL("Withdraw")
+    end
+    commands[cmdMove = commands.length] = _INTL("Move")
+    if !pokemon.isEgg?
+      if pokemon.mail
+        commands[cmdMail = commands.length] = _INTL("Mail")
+      else
+        commands[cmdItem = commands.length] = _INTL("Item")
+      end
+    end
+    commands[cmdRelease = commands.length] = _INTL("Release")
+    commands[commands.length] = _INTL("Cancel")
+    
+    helptext = _INTL("{1} is selected.", pokemon.name)
+    command = pbShowCommands(helptext, commands)
+
+    if cmdAccessibleSummary >= 0 && command == cmdAccessibleSummary
+      loop do
+        sub_command = pbShowCommands(_INTL("Accessible Summary"), [
+          _INTL("Display BST"),
+          _INTL("Pokemon Details"),
+          _INTL("Cancel")
+        ])
+
+        case sub_command
+        when 0 # Display BST
+          pbDisplayBSTData(pokemon)
+        when 1 # Pokemon Details
+          torDisplayPokemonDetails(pokemon)
+        when -1, 2 # Cancel
+          break
+        end
+      end
+    elsif cmdSummary >= 0 && command == cmdSummary
+      pbSummary(pokemon, @selection)
+    elsif cmdWithdraw >= 0 && command == cmdWithdraw
+      pbWithdraw(@selection, pokemon)
+    elsif cmdDeposit >= 0 && command == cmdDeposit
+      pbDeposit(@selection, pokemon)
+    elsif cmdMove >= 0 && command == cmdMove
+      pbMove(pokemon)
+    elsif cmdItem >= 0 && command == cmdItem
+      pbItem(pokemon)
+    elsif cmdMail >= 0 && command == cmdMail
+      pbMail(pokemon)
+    elsif cmdRelease >= 0 && command == cmdRelease
+      pbRelease(@selection, pokemon)
+    end
+  end
+end
+
+#===============================================================================
+# Add "Accessible Summary" to the Pokémon Storage Screen Menu
+#===============================================================================
+class PokemonStorageScreen
+  # This is a full replacement of the pbStartScreen method from Storage.rb
+  # It is a copy of the original, with our new option safely injected into all modes.
+  def pbStartScreen(mode)
+    @heldpkmn = nil
+    if mode == 2
+      ### WITHDRAW ###################################################################
+      @scene.pbStartBox(self, mode)
+      loop do
+        selected = @scene.pbSelectBox(@storage.party)
+        if selected && selected[0] == -3 # Close box
+          break if pbConfirm(_INTL("Exit from the Box?"))
+          next
+        end
+        if selected && selected[0] == -2 # Party Pokémon
+          pbDisplay(_INTL("Which one will you take?"))
+          next
+        end
+        if selected && selected[0] == -4 # Box name
+          pbBoxCommands(mode)
+          next
+        end
+        if selected == nil
+          break unless pbConfirm(_INTL("Continue Box operations?"))
+          next
+        else
+          pokemon = @storage[selected[0], selected[1]]
+          next if !pokemon
+
+          # --- MODIFICATION FOR WITHDRAW MODE ---
+          commands = []
+          cmdWithdraw = -1; cmdSummary = -1; cmdAccessibleSummary = -1; cmdMark = -1; cmdRelease = -1
+          
+          commands[cmdWithdraw = commands.length] = _INTL("Withdraw")
+          commands[cmdSummary = commands.length] = _INTL("Summary")
+          commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary") unless pokemon.isEgg?
+          commands[cmdMark = commands.length] = _INTL("Mark")
+          commands[cmdRelease = commands.length] = _INTL("Release")
+          commands[commands.length] = _INTL("Cancel")
+          
+          command = @scene.pbShowCommands(_INTL("{1} is selected.", pokemon.name), commands)
+          
+          if command == cmdWithdraw
+            pbWithdraw(selected, nil)
+          elsif command == cmdSummary
+            pbSummary(selected, nil)
+          elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
+            loop do
+              sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Cancel")])
+              case sub_command
+              when 0; pbDisplayBSTData(pokemon)
+              when 1; torDisplayPokemonDetails(pokemon)
+              when -1, 2; break
+              end
+            end
+          elsif command == cmdMark
+            pbMark(selected, nil)
+          elsif command == cmdRelease
+            pbRelease(selected, nil)
+          end
+          # --- END MODIFICATION ---
+        end
+      end
+      @scene.pbCloseBox
+    elsif mode == 1
+      ### DEPOSIT ####################################################################
+      @scene.pbStartBox(self, mode)
+      loop do
+        selected = @scene.pbSelectParty(@storage.party)
+        if selected == -3 # Close box
+          break if pbConfirm(_INTL("Exit from the Box?"))
+          next
+        end
+        if selected < 0
+          break unless pbConfirm(_INTL("Continue Box operations?"))
+          next
+        else
+          pokemon = @storage[-1, selected]
+          next if !pokemon
+
+          # --- MODIFICATION FOR DEPOSIT MODE ---
+          commands = []
+          cmdStore = -1; cmdSummary = -1; cmdAccessibleSummary = -1; cmdMark = -1; cmdRelease = -1
+          
+          commands[cmdStore = commands.length] = _INTL("Store")
+          commands[cmdSummary = commands.length] = _INTL("Summary")
+          commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary") unless pokemon.isEgg?
+          commands[cmdMark = commands.length] = _INTL("Mark")
+          commands[cmdRelease = commands.length] = _INTL("Release")
+          commands[commands.length] = _INTL("Cancel")
+          
+          command = @scene.pbShowCommands(_INTL("{1} is selected.", pokemon.name), commands)
+          
+          if command == cmdStore
+            pbStore([-1, selected], nil)
+          elsif command == cmdSummary
+            pbSummary([-1, selected], nil)
+          elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
+            loop do
+              sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Cancel")])
+              case sub_command
+              when 0; pbDisplayBSTData(pokemon)
+              when 1; torDisplayPokemonDetails(pokemon)
+              when -1, 2; break
+              end
+            end
+          elsif command == cmdMark
+            pbMark([-1, selected], nil)
+          elsif command == cmdRelease
+            pbRelease([-1, selected], nil)
+          end
+          # --- END MODIFICATION ---
+        end
+      end
+      @scene.pbCloseBox
+    elsif mode == 0
+      ### MOVE #######################################################################
+      @scene.pbStartBox(self, mode)
+      loop do
+        selected = @scene.pbSelectBox(@storage.party)
+        # ... (original logic for Close box, empty selection, box name, shortcuts, etc.) ...
+        if selected && selected[0] == -3 # Close box
+          if pbHeldPokemon; pbDisplay(_INTL("You're holding a Pokémon!")); next; end
+          break if pbConfirm(_INTL("Exit from the Box?")); next
+        end
+        if selected == nil
+          if pbHeldPokemon; pbDisplay(_INTL("You're holding a Pokémon!")); next; end
+          break unless pbConfirm(_INTL("Continue Box operations?")); next
+        elsif !@scene.inputCtrl && selected[0] == -4 # Box name
+          pbBoxCommands(mode)
+        # ... (rest of original logic from Storage.rb) ...
+        else
+          pokemon = @storage[selected[0], selected[1]]
+          heldpoke = pbHeldPokemon
+          next if !pokemon && !heldpoke
+          
+          if @scene.quickswap
+            if @heldpkmn; pokemon ? pbSwap(selected) : pbPlace(selected)
+            else; pbHold(selected)
+            end
+          else
+            # --- MODIFICATION FOR MOVE MODE ---
+            commands = []; cmdMove = -1; cmdSummary = -1; cmdAccessibleSummary = -1
+            cmdStoreWithdraw = -1; cmdItem = -1; cmdMark = -1; cmdRelease = -1
+
+            commands[cmdMove = commands.length] = _INTL("Move")
+            commands[cmdSummary = commands.length] = _INTL("Summary")
+            if (pokemon && !pokemon.isEgg?) || (heldpoke && !heldpoke.isEgg?)
+              commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
+            end
+            commands[cmdStoreWithdraw = commands.length] = selected[0] == -1 ? _INTL("Store") : _INTL("Withdraw")
+            commands[cmdItem = commands.length] = _INTL("Item")
+            commands[cmdMark = commands.length] = _INTL("Mark")
+            commands[cmdRelease = commands.length] = _INTL("Release")
+            commands[commands.length] = _INTL("Cancel")
+            # --- END OF COMMAND BUILDING ---
+
+            if heldpoke
+              helptext = _INTL("{1} is selected.", heldpoke.name)
+              commands[cmdMove] = pokemon ? _INTL("Shift") : _INTL("Place")
+            else
+              helptext = _INTL("{1} is selected.", pokemon.name)
+            end
+            command = @scene.pbShowCommands(helptext, commands)
+            
+            if command == cmdMove
+              if @heldpkmn && pokemon; pbSwap(selected)
+              elsif @heldpkmn; pbPlace(selected)
+              else; pbHold(selected)
+              end
+            elsif command == cmdSummary
+              pbSummary(selected, @heldpkmn)
+            elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
+              pkmn_to_inspect = heldpoke || pokemon
+              loop do
+                sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Cancel")])
+                case sub_command
+                when 0; pbDisplayBSTData(pkmn_to_inspect)
+                when 1; torDisplayPokemonDetails(pkmn_to_inspect)
+                when -1, 2; break
+                end
+              end
+            elsif command == cmdStoreWithdraw
+              if selected[0] == -1; pbStore(selected, @heldpkmn)
+              else; pbWithdraw(selected, @heldpkmn)
+              end
+            elsif command == cmdItem
+              pbItem(selected, @heldpkmn)
+            elsif command == cmdMark
+              pbMark(selected, @heldpkmn)
+            elsif command == cmdRelease
+              pbRelease(selected, @heldpkmn)
+            end
+            # --- END MODIFICATION ---
+          end
+        end
+      end
+      @scene.pbCloseBox
+    elsif mode == 3
+      @scene.pbStartBox(self, mode)
+      @scene.pbCloseBox
+    end
+  end
+end
