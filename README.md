@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.6.0
+V2.7.0
 
 ## Description
 
@@ -15,7 +15,7 @@ I will always try to keep the mods updated to work with the latest game version,
 The project is modular. You can choose to install the features you want.
 
 - **Pathfinding Mod (`pra-pathfind.rb`)**: Provides a scanner to find and get pathfinding directions to events on the map. Includes a category filtering system and the ability to find paths across water (Surf and Waterfall).
-- **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party menu.
+- **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
 
 ## Controls
 
@@ -35,6 +35,11 @@ When you open the menu for a Pokémon in your party, a new option is available:
 - **Accessible Summary**: Selecting this opens a sub-menu with two choices:
   - **Display BST**: Reads the Pokémon's species, form, typing, base stats, and abilities.
   - **Pokemon Details**: Reads more in-depth information, including level, held item, nature, IVs, EVs, and moves.
+  - **Export Team**: Exports your party to a file in pokepaste format.
+
+### Pokémon PC Menu Controls
+
+The "Accessible Summary" option is also available when you select a Pokémon in a PC box. It provides the same "Display BST" and "Pokemon Details" sub-options.
 
 ## Installation
 

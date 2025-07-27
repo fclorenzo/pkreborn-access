@@ -622,7 +622,7 @@ end
     openSet.push(start)
     while openSet.length > 0 do
       iterations = iterations + 1
-      if iterations > 2000
+      if iterations > 5000
         return []
       end
       s = ""
