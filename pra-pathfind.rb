@@ -71,7 +71,7 @@ alias_method :access_mod_original_initialize, :initialize
   def initialize(*args)
     # Call the original initialize method first to set up the player
     access_mod_original_initialize(*args)
-    
+
     # Now, set up our mod's variables correctly
     @mapevents = []
     @selected_event_index = -1
@@ -159,7 +159,7 @@ end
 def is_path_passable?(x, y, d)
   # --- Safeguard for old save files ---
   if @hm_toggle_modes.nil?
-    @hm_toggle_modes = [:off, :surf_only, :waterfall_only, :both]
+    @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
     @hm_toggle_index = 0
   end
 
@@ -738,22 +738,36 @@ end
 
 def getNeighbours(node, target, isTargetPassable, targetDirection, map)
     neighbours = []
-    # Use our new, smarter passability check
-    if is_path_passable?(node.x, node.y, 2)
-      neighbours.push(Node.new(node.x, node.y + 1))
-    end
-    if is_path_passable?(node.x, node.y, 4)
-      neighbours.push(Node.new(node.x - 1, node.y))
-    end
-    if is_path_passable?(node.x, node.y, 6)
-      neighbours.push(Node.new(node.x + 1, node.y))
-    end
-    if is_path_passable?(node.x, node.y, 8)
-      neighbours.push(Node.new(node.x, node.y - 1))
+    if isTargetPassable || targetDirection != -1
+      if is_path_passable?(node.x, node.y, 2)
+        neighbours.push(Node.new(node.x, node.y + 1))
+      end
+      if is_path_passable?(node.x, node.y, 4)
+        neighbours.push(Node.new(node.x - 1, node.y))
+      end
+      if is_path_passable?(node.x, node.y, 6)
+        neighbours.push(Node.new(node.x + 1, node.y))
+      end
+      if is_path_passable?(node.x, node.y, 8)
+        neighbours.push(Node.new(node.x, node.y - 1))
+      end
+    else
+      if is_path_passable?(node.x, node.y, 2) || target.equals(Node.new(node.x, node.y + 1))
+        neighbours.push(Node.new(node.x, node.y + 1))
+      end
+      if is_path_passable?(node.x, node.y, 4) || target.equals(Node.new(node.x - 1, node.y))
+        neighbours.push(Node.new(node.x - 1, node.y))
+      end
+      if is_path_passable?(node.x, node.y, 6) || target.equals(Node.new(node.x + 1, node.y))
+        neighbours.push(Node.new(node.x + 1, node.y))
+      end
+      if is_path_passable?(node.x, node.y, 8) || target.equals(Node.new(node.x, node.y - 1))
+        neighbours.push(Node.new(node.x, node.y - 1))
+      end
     end
     return neighbours
   end
-
+  
   def getTargetDirection(target, map)
     for event in map.events.values
       if event.x != target.x || event.y != target.y
