@@ -39,7 +39,7 @@ When you open the menu for a Pokémon in your party, a new option is available:
 
 ### Pokémon PC Menu Controls
 
-The "Accessible Summary" option is also available when you select a Pokémon in a PC box. It provides the same "Display BST" and "Pokemon Details" sub-options.
+The "Accessible Summary" option is also available when you select a Pokémon in a PC box. It provides the "Display BST" and "Pokemon Details" sub-options.
 
 ## Installation
 
