@@ -10,3 +10,4 @@ shift+k should trigger event renaming
 shift+p should be announcing event's coordinates
 
 Add option to export user's team to txt
+Add accessible summary option when inspecting a pokemon in pc too

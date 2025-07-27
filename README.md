@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.5.0
+V2.6.0
 
 ## Description
 
@@ -14,7 +14,7 @@ I will always try to keep the mods updated to work with the latest game version,
 
 The project is modular. You can choose to install the features you want.
 
-- **Pathfinding Mod (`pra-pathfind.rb`)**: Provides a scanner to find and get pathfinding directions to events on the map. Includes a category filtering system to narrow your search.
+- **Pathfinding Mod (`pra-pathfind.rb`)**: Provides a scanner to find and get pathfinding directions to events on the map. Includes a category filtering system and the ability to find paths across water (Surf and Waterfall).
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party menu.
 
 ## Controls
@@ -24,8 +24,9 @@ The project is modular. You can choose to install the features you want.
 - **F5**: Refresh the scanner's list of events on the current map.
 - **O and I**: Cycle forward and backward through event filters. The available filters are: All, Connections, NPCs, Items, Merchants, Signs, and Hidden Items.
 - **J, K and L**: Announce previous, current, and next event in the events list.
-- **Shift + K**: Announce the X and Y coordinates of the selected event.
+- **Shift + P**: Announce the X and Y coordinates of the selected event.
 - **P**: Announce the path for the selected event.
+- **H**: Cycle through HM pathfinding modes. The available modes are: `Off`, `Surf Only`, and `Surf & Waterfall`.
 
 ### Pokémon Party Menu Controls
 
@@ -58,6 +59,8 @@ If you find a bug or want to suggest a feature, your contribution is appreciated
 You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) and post in the `#zero-vision-reborn-blindstep` channel.
 
 ## Known Bugs
+
+- Pathfinding may fail on complex routes that require multiple land/water transitions or other complex situations (e.g., island hopping, or platform jumping).
 
 ## Credits
 
