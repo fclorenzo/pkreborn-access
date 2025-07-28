@@ -33,7 +33,7 @@ The project is modular. You can choose to install the features you want.
 
 When you open the menu for a Pokémon in your party, a new option is available:
 
-- **Accessible Summary**: Selecting this opens a sub-menu with two choices:
+- **Accessible Summary**: Selecting this opens a sub-menu with three choices:
   - **Display BST**: Reads the Pokémon's species, form, typing, base stats, and abilities.
   - **Pokemon Details**: Reads more in-depth information, including level, held item, nature, IVs, EVs, and moves.
   - **Export Team**: Exports your party to a file in pokepaste format.
