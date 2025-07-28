@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.7.0
+V2.8.0
 
 ## Description
 
@@ -24,9 +24,10 @@ The project is modular. You can choose to install the features you want.
 - **F5**: Refresh the scanner's list of events on the current map.
 - **O and I**: Cycle forward and backward through event filters. The available filters are: All, Connections, NPCs, Items, Merchants, Signs, and Hidden Items.
 - **J, K and L**: Announce previous, current, and next event in the events list.
-- **Shift + P**: Announce the X and Y coordinates of the selected event.
+- **Shift + P**: Announce the X and Y coordinates of the selected event, as well as a description, if any exists.
 - **P**: Announce the path for the selected event.
 - **H**: Cycle through HM pathfinding modes. The available modes are: `Off`, `Surf Only`, and `Surf & Waterfall`.
+- **Shift + K**: Rename the selected event.
 
 ### Pokémon Party Menu Controls
 
