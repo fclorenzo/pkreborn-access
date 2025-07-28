@@ -705,14 +705,14 @@ class PokemonStorageScreen
             end
           else
             # --- MODIFICATION FOR MOVE MODE ---
-            commands = []; cmdMove = -1; cmdSummary = -1; cmdAccessibleSummary = -1
-            cmdStoreWithdraw = -1; cmdItem = -1; cmdMark = -1; cmdRelease = -1
-
+commands = []; cmdMove = -1; cmdSummary = -1; cmdAccessibleSummary = -1; cmdMultiMove = -1
+cmdStoreWithdraw = -1; cmdItem = -1; cmdMark = -1; cmdRelease = -1
             commands[cmdMove = commands.length] = _INTL("Move")
             commands[cmdSummary = commands.length] = _INTL("Summary")
             if (pokemon && !pokemon.isEgg?) || (heldpoke && !heldpoke.isEgg?)
               commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
             end
+            commands[cmdMultiMove = commands.length] = _INTL("Multi-Move") unless selected[0] == -1
             commands[cmdStoreWithdraw = commands.length] = selected[0] == -1 ? _INTL("Store") : _INTL("Withdraw")
             commands[cmdItem = commands.length] = _INTL("Item")
             commands[cmdMark = commands.length] = _INTL("Mark")
@@ -735,6 +735,14 @@ class PokemonStorageScreen
               end
             elsif command == cmdSummary
               pbSummary(selected, @heldpkmn)
+            elsif cmdMultiMove != -1 && command == cmdMultiMove
+              if selected[0] >= 0 && !@heldpkmn
+                pbHold(selected, true)
+              elsif @heldpkmn
+                Kernel.pbMessage("Can't Multi-Move while holding a Pokémon.")
+              else
+                Kernel.pbMessage("Can't Multi-Move a Pokémon from your party.")
+              end
             elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
               pkmn_to_inspect = heldpoke || pokemon
               loop do
