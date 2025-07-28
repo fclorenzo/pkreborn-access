@@ -155,6 +155,7 @@ def cycle_event_filter(direction = 1)
   # Automatically refresh the event list with the new filter
   populate_event_list
 end
+
 def rename_selected_event
   # Ensure an event is selected
   return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
@@ -163,8 +164,8 @@ def rename_selected_event
   # Prompt user for the new name
   new_name = Kernel.pbMessageFreeText(_INTL("Enter new name for the selected event."), "", false, 24)
   
-  # If the user entered a name (didn't cancel)
-  if new_name
+  # Check if the user entered a valid, non-blank name
+  if new_name && !new_name.strip.empty?
     # Prompt user for an optional description
     new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description."), "", false, 100)
 
@@ -190,6 +191,9 @@ def rename_selected_event
     
     # Provide feedback to the player
     tts("Event renamed to #{new_name}")
+  else
+    # If the name is blank or the user cancelled, provide feedback
+    tts("Event renaming cancelled.")
   end
 end
 
@@ -1066,9 +1070,35 @@ end
 
 # Method to save the custom names to the file
 def save_custom_names
+  # --- Documentation Header ---
+  header = <<~TEXT
+    # Pokémon Reborn Access - Custom Event Names
+    # This file allows you to provide custom, meaningful names for in-game events.
+    # The mod will automatically read this file when the game starts.
+    #
+    # --- FORMAT ---
+    # Each line must have 6 fields, separated by a semicolon (;).
+    # map_id;map_name;coord_x;coord_y;event_name;description
+    #
+    # --- HOW TO GET DATA ---
+    # Use the in-game scanner to select an event.
+    # - Press 'D' to get the Map ID and Map Name.
+    # - Press 'Shift+P' to get the X and Y coordinates.
+    #
+    # --- IMPORTANT ---
+    # - Do NOT use semicolons (;) in any of the names or descriptions.
+    # - You can also create entries in-game by pressing Shift+K on a selected event.
+    #
+    # For the full, detailed guide, please visit the project's README on GitHub:
+    # [https://github.com/fclorenzo/pkreborn-access]
+    #
+    # Link to the community-managed Google Doc:
+    # [https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing]
+  TEXT
+
   File.open(CUSTOM_NAMES_FILE, "w") do |file|
-    # Write a header for user-friendliness
-    file.puts("# map_id;map_name;coord_x;coord_y;event_name;description")
+    # Write the header to the file
+    file.puts(header)
     
     # Iterate through the in-memory hash and write each entry to the file
     $custom_event_names.each do |key, value|
