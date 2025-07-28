@@ -48,7 +48,7 @@ class Game_Player < Game_Character
 
         # Rename selected event (Shift+K)
         if Input.pressex?(0x10) && Input.triggerex?(0x4B)
-          # todo
+          rename_selected_event
 
         # ANNOUNCE the current event (K)
         elsif Input.triggerex?(0x4B)
@@ -154,6 +154,43 @@ def cycle_event_filter(direction = 1)
   
   # Automatically refresh the event list with the new filter
   populate_event_list
+end
+def rename_selected_event
+  # Ensure an event is selected
+  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
+  event = @mapevents[@selected_event_index]
+
+  # Prompt user for the new name
+  new_name = Kernel.pbMessageFreeText(_INTL("Enter new name for the selected event."), "", false, 24)
+  
+  # If the user entered a name (didn't cancel)
+  if new_name
+    # Prompt user for an optional description
+    new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description."), "", false, 100)
+
+    # Gather all necessary data
+    map_id = $game_map.map_id
+    map_name = $game_map.name
+    x = event.x
+    y = event.y
+
+    # Create the unique key and the value hash
+    key = "#{map_id};#{x};#{y}"
+    value = {
+      map_name: map_name,
+      event_name: new_name,
+      description: new_desc || ""
+    }
+
+    # Update the in-memory hash
+    $custom_event_names[key] = value
+    
+    # Save the entire hash back to the file
+    save_custom_names
+    
+    # Provide feedback to the player
+    tts("Event renamed to #{new_name}")
+  end
 end
 
 def is_path_passable?(x, y, d)
@@ -946,16 +983,88 @@ class Game_Character
   end
 end
 
-#  Automatic Event List Refresh on Map Transfer
 class Scene_Map
-  # Create a copy of the original transfer_player method to modify
-  alias_method :access_mod_original_transfer_player, :transfer_player
+  # A flag to ensure we only load the names once per game session
+  @@pra_names_loaded = false
 
-  def transfer_player(cancelVehicles = true)
-    # First, call the original method to perform the map transfer
-    access_mod_original_transfer_player(cancelVehicles)
+  alias_method :access_mod_original_main, :main
+  def main
+    # Load custom event names if they haven't been loaded yet
+    if !@@pra_names_loaded
+      load_custom_names
+      @@pra_names_loaded = true
+    end
     
-    # After the transfer is complete, call our refresh method
-    $game_player.populate_event_list
+    # Force an initial population of the event list to prevent TTS freeze
+    $game_player.populate_event_list if $game_player
+    
+    # Call the original main method to start the game loop as normal
+    access_mod_original_main
   end
+end
+
+#===============================================================================
+# Data System for Custom Event Names
+#===============================================================================
+# Define the global hash to store names while the game is running
+$custom_event_names = {}
+# Define the path for our save file
+CUSTOM_NAMES_FILE = "pra-custom-names.txt"
+
+# Method to load the custom names from the file
+def load_custom_names
+  # Ensure the hash is empty before loading
+  $custom_event_names = {}
+  
+  return unless File.exist?(CUSTOM_NAMES_FILE)
+
+  File.open(CUSTOM_NAMES_FILE, "r") do |file|
+    file.each_line do |line|
+      # Skip comments and empty lines
+      next if line.start_with?("#") || line.strip.empty?
+      
+      parts = line.strip.split(";")
+      # Ensure the line has at least the minimum required columns
+      next if parts.length < 5 
+      
+      map_id, map_name, x, y, event_name, description = parts
+      
+      # Create a unique key from the map ID and coordinates
+      key = "#{map_id};#{x};#{y}"
+      
+      # Store the data in our global hash
+      $custom_event_names[key] = {
+        map_name: map_name,
+        event_name: event_name,
+        description: description || ""
+      }
+    end
+  end
+  tts ("Custom event names loaded from #{CUSTOM_NAMES_FILE}.")
+end
+
+# Method to save the custom names to the file
+def save_custom_names
+  File.open(CUSTOM_NAMES_FILE, "w") do |file|
+    # Write a header for user-friendliness
+    file.puts("# map_id;map_name;coord_x;coord_y;event_name;description")
+    
+    # Iterate through the in-memory hash and write each entry to the file
+    $custom_event_names.each do |key, value|
+      map_id, x, y = key.split(";")
+      
+      # Format the line according to our spec
+      line = [
+        map_id,
+        value[:map_name],
+        x,
+        y,
+        value[:event_name],
+        value[:description]
+      ].join(";")
+      
+      file.puts(line)
+    end
+  end
+  tts ("Custom event names saved to #{CUSTOM_NAMES_FILE}.")
 end
