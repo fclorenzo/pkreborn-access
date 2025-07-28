@@ -387,25 +387,36 @@ end
 def announce_selected_coordinates
   return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
   event = @mapevents[@selected_event_index]
-  tts("Coordinates: X #{event.x}, Y #{event.y}")
+  
+  # Start with the base coordinate announcement
+  announcement = "Coordinates: X #{event.x}, Y #{event.y}"
+  
+  # Create a unique key for the current event
+  key = "#{$game_map.map_id};#{event.x};#{event.y}"
+  custom_name_data = $custom_event_names[key]
+  
+  # Check if custom data exists and has a non-empty description
+  if custom_name_data && custom_name_data[:description] && !custom_name_data[:description].strip.empty?
+    announcement += ". #{custom_name_data[:description]}"
+  end
+  
+  tts(announcement)
 end
 
 def announce_selected_event
   return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
-  
   event = @mapevents[@selected_event_index]
   dist = distance(@x, @y, event.x, event.y).round
-  
-  facing_direction = ""
-  case @direction
-  when 2; facing_direction = "facing down"
-  when 4; facing_direction = "facing left"
-  when 6; facing_direction = "facing right"
-  when 8; facing_direction = "facing up"
-  end
 
+  # Create a unique key for the current event
+  key = "#{$game_map.map_id};#{event.x};#{event.y}"
+  custom_name_data = $custom_event_names[key]
   announcement_text = ""
   
+  # Check if custom name data exists and has a non-empty name
+  if custom_name_data && custom_name_data[:event_name] && !custom_name_data[:event_name].strip.empty?
+    announcement_text = custom_name_data[:event_name]
+    else
   # First, check if the event is a connection.
   if is_teleport_event?(event)
     # If it is, always start the announcement with "Connection to..."
@@ -427,6 +438,16 @@ def announce_selected_event
   # If all else fails, it's an unnamed interactable object.
   else
     announcement_text = "Interactable object"
+  end  
+end
+
+  dist = distance(@x, @y, event.x, event.y).round
+  facing_direction = ""
+  case @direction
+  when 2; facing_direction = "facing down"
+  when 4; facing_direction = "facing left"
+  when 6; facing_direction = "facing right"
+  when 8; facing_direction = "facing up"
   end
   
   tts("#{announcement_text}, #{dist} steps away, #{facing_direction}.")
