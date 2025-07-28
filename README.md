@@ -98,40 +98,35 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 586;Azurine Lake;36;29;Pokemon Trainer;Battle, mandatory.
 ```
 
-### Contributing to the Community File
+### Naming Events & Contributing to the Community File
 
-The master version of this file is hosted on a collaborative Google Docs document, allowing the community to update and improve it over time.
+This feature allows you to replace generic event names like "ev12" with meaningful ones. You can create your own personal names for events, and we highly encourage you to contribute these names to the community file so everyone can benefit.
 
-- **Link to the Google Doc:** **[LINK TO THE GOOGLE DOCS SPREADSHEET HERE]**
-- **Guide for Screen Reader Users:** For those new to using Google Docs with a screen reader, this community-made guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
+#### How to Create Your Own Custom Names
 
-### Guidelines for Contributing
+This is the primary method for both personal use and for contributing.
 
-Your contributions are essential to making this feature useful for everyone. Here is a step-by-step guide to adding a new event to the community file:
-
-1. **Find an Unnamed Event:** While playing the game, use the scanner (J and L keys). If you find an event that is announced with a generic name like "ev42" or "Interactable object," you've found a great candidate to add to the file.
-2. **Gather the Information:** Use the mod's built-in tools to get the precise data for the event:
-      - With the event selected in the scanner, press **Shift + P** to get its X and Y coordinates.
-      - Press and hold the **D** key to get the Map ID and Map Name.
-3. **Add a New Row:** Open the community Google Doc and add a new row for the event.
-4. **Fill in the Columns:**
-      - **`map_id`**: Enter the Map ID number you just found.
-      - **`optional_map_name`**: Enter the Map Name. This is not used by the mod but is very helpful for other people editing the file.
-      - **`coord_x` / `coord_y`**: Enter the X and Y coordinates.
-      - **`event_name`**: This is the most important part. Enter a clear, descriptive name (e.g., "Nurse Joy," "Hidden Potion," "Rival Battle 2").
-      - **`optional_description`**: If you wish, add a more detailed description. This will be announced when a user presses `Shift+P`.
-5. **Important Rule:** Please **do not use semicolons (`;`)** in any of the fields, as this is the character used to separate the columns.
-
-### Creating Your Own Personal Renames
-
-You can also rename events for your own personal use directly in-game.
-
-1. Select an event with the scanner using the **J** and **L** keys.
+1. While in-game, find an event you want to name and select it with the scanner using the **J** and **L** keys.
 2. Press **Shift + K**.
 3. A text box will appear, prompting you for a new name.
-4. A second text box will then appear, prompting for an optional description.
+4. A second text box will then appear, prompting for an optional but highly recommended description.
 
-This will automatically add or update the entry for that event in your local `pra-custom-names.txt` file.
+After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your main Pokémon Reborn folder.
+
+#### How to Contribute to the Community File
+
+The easiest and best way to contribute is to use the in-game renaming feature first. This prevents any typos in the map or coordinate data.
+
+1. **Rename an Event In-Game:** Follow the steps above to give a meaningful name to a generic event.
+2. **Find Your Local File:** Open the `pra-custom-names.txt` file located in your main Pokémon Reborn game folder.
+3. **Copy the New Line:** Find the new line that was just added for the event you renamed. It will look something like this:
+    `586;Azurine Lake;36;29;Rival Fern;First battle, mandatory.`
+4. **Paste into the Community Doc:** Copy that entire line and paste it into a new line in the community Google Doc.
+    - **Link to the Community Google Doc:** **[LINK TO THE GOOGLE DOCS DOCUMENT HERE]**
+
+**Important Rule:** Please do not use semicolons (`;`) in the names or descriptions you create, as this character is used to separate the data fields.
+
+For those new to using Google Docs with a screen reader, this guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
 
 ## Report a Bug or Suggest a Feature
 
