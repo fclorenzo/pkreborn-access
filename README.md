@@ -70,12 +70,11 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 
 ### How to Find Event Information
 
-If you want to find an event in the file or add a new one, you first need to get its unique identifiers. Our mod makes this easy:
+If you want to find an event in the file or add a new one, you first need to get its unique identifiers. The mod makes this easy:
 
-1. Stand next to the event in-game.
-2. Use the **J** and **L** keys to select the event with the scanner.
-3. Press **Shift + P** to hear the event's coordinates (e.g., "Coordinates: X 36, Y 29").
-4. Press and hold the **D** key to hear the map information (e.g., "Azurine Lake, Map ID 586").
+1. Use the **J** and **L** keys to select the event with the scanner.
+2. Press **Shift + P** to hear the event's coordinates (e.g., "Coordinates: X 36, Y 29").
+3. Press the **D** key to hear the map information (e.g., "Map 586, Azurine Island").
 
 You now have all the information (`map_id`, `coord_x`, and `coord_y`) you need to find or add that specific event in the `pra-custom-names.txt` file.
 
@@ -101,7 +100,7 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 
 ### Contributing to the Community File
 
-The master version of this file is hosted on a collaborative Google Docs spreadsheet, allowing the community to update and improve it over time.
+The master version of this file is hosted on a collaborative Google Docs document, allowing the community to update and improve it over time.
 
 - **Link to the Google Doc:** **[LINK TO THE GOOGLE DOCS SPREADSHEET HERE]**
 - **Guide for Screen Reader Users:** For those new to using Google Docs with a screen reader, this community-made guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
