@@ -140,9 +140,9 @@ For those new to using Google Docs with a screen reader, this guide is a fantast
 
 Also, do note that, while the document can be publicly viewed, only allowed people have editing permissions. If you are a new contributor and would like to be able to edit the document, just request editing access via the Docs menu and message me on Discord so I can know you are not a random person who requested that.
 
-## Report a Bug or Suggest a Feature
+## Report a Problem or Suggest a Feature
 
-If you find a bug or want to suggest a feature, your contribution is appreciated! Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates,
+If you find a bug or documentation issue, or just want to suggest a feature, your contribution is appreciated! Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates,
 
 Or post in [the mod's forum thread](https://www.rebornevo.com/forums/topic/79433-pokemon-reborn-access-pra-mods-to-enhance-accessibility-in-pokemon-reborn/).
 
