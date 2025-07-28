@@ -142,7 +142,7 @@ Also, do note that, while the document can be publicly viewed, only allowed peop
 
 ## Report a Bug or Suggest a Feature
 
-If you find a bug or want to suggest a feature, your contribution is appreciated! Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates.
+If you find a bug or want to suggest a feature, your contribution is appreciated! Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates,
 
 Or post in [the mod's forum thread](https://www.rebornevo.com/forums/topic/79433-pokemon-reborn-access-pra-mods-to-enhance-accessibility-in-pokemon-reborn/).
 
