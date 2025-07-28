@@ -65,12 +65,21 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 
 ### How to Use the Community Names File
 
-1. **Download the File:** Get the latest version of the community-curated names file here: **[LINK TO THE COMMUNITY FILE HERE]**
-2. **Place the File:** Place the downloaded `pra-custom-names.txt` file into your main Pokémon Reborn game folder (the same folder that contains `Game.exe`). The mod will automatically detect and load it the next time you start the game.
+1. **Download the File:**
+    - **a.** Open the link to the community file: **[Custom community file](https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing)**
+    - **b.** In the menu bar at the top of the page, select **File**.
+    - **c.** From the File menu, move your cursor down to **Download**.
+    - **d.** A new sub-menu will appear. From this list, select **Plain Text (.txt)**.
+    - **e.** Your browser will now download the file.
+
+2. **Place and Rename the File:**
+    - Find the file you just downloaded.
+    - Make sure the file is named exactly **`pra-custom-names.txt`**.
+    - Place this renamed file into your main Pokémon Reborn game folder (the same folder that contains `Game.exe`). The mod will automatically detect and load it the next time you start the game.
 
 ### How to Find Event Information
 
-If you want to find an event in the file or add a new one, you first need to get its unique identifiers. The mod makes this easy:
+If you want to find an event in the file or manually add a new one, you first need to get its unique identifiers. The mod makes this easy:
 
 1. Use the **J** and **L** keys to select the event with the scanner.
 2. Press **Shift + P** to hear the event's coordinates (e.g., "Coordinates: X 36, Y 29").
@@ -95,7 +104,7 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 
 ``` plaintext
 # map_id;optional_map_name;coord_x;coord_y;event_name;optional_description
-586;Azurine Lake;36;29;Pokemon Trainer;Battle, mandatory.
+586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
 ```
 
 ### Naming Events & Contributing to the Community File
@@ -120,13 +129,15 @@ The easiest and best way to contribute is to use the in-game renaming feature fi
 1. **Rename an Event In-Game:** Follow the steps above to give a meaningful name to a generic event.
 2. **Find Your Local File:** Open the `pra-custom-names.txt` file located in your main Pokémon Reborn game folder.
 3. **Copy the New Line:** Find the new line that was just added for the event you renamed. It will look something like this:
-    `586;Azurine Lake;36;29;Rival Fern;First battle, mandatory.`
+    `586;Azurine Island;36;29;Pokemon trainer;Battle, mandatory.`
 4. **Paste into the Community Doc:** Copy that entire line and paste it into a new line in the community Google Doc.
-    - **Link to the Community Google Doc:** **[LINK TO THE GOOGLE DOCS DOCUMENT HERE]**
+    - **Link to the Community Google Doc:** **[Custom community file](https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing)**
 
 **Important Rule:** Please do not use semicolons (`;`) in the names or descriptions you create, as this character is used to separate the data fields.
 
 For those new to using Google Docs with a screen reader, this guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
+
+Also, do note that, while the document can be publicly viewed, only allowed people have editing permissions. If you are a new contributor and would like to be able to edit the document, just request editing access via the Docs menu and message me on Discord so I can know you are not a random person who requested that.
 
 ## Report a Bug or Suggest a Feature
 
@@ -143,6 +154,8 @@ You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/
 - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats.
 - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
+- [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
+- The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
 ---
 
