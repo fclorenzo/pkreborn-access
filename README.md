@@ -150,6 +150,17 @@ You can also join the [Reborn Discord server](https://www.rebornevo.com/discord/
 
 - Pathfinding may fail on complex routes that require multiple land/water transitions or other complex situations (e.g., island hopping, or platform jumping).
 
+## Contributing
+
+Contributions from other developers are welcome and greatly appreciated\! If you have an idea for a new feature or a bug fix, here's how you can help.
+
+1. **Fork the Repository**: Start by creating your own copy (a "fork") of the project on GitHub.
+2. **Create a New Branch**: Make all your changes on a dedicated branch in your fork, not on the `main` branch. This makes it easier to review and merge your changes.
+3. **Make Your Changes**: Implement your new feature or bug fix in the code.
+4. **Submit a Pull Request**: When your changes are ready, submit a "Pull Request" from your branch to the main project. Please provide a clear description of the changes you've made.
+
+For simple bug reports and feature suggestions, please continue to use the [issues page](https://www.google.com/search?q=%23report-a-bug-or-suggest-a-feature).
+
 ## Credits
 
 - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats.
