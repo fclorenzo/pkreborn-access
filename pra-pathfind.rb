@@ -15,8 +15,13 @@ class Game_Player < Game_Character
         cycle_event_filter(-1)
       end
 
+        # Toggle sort by distance (Shift+H)
+        if Input.pressex?(0x10) && Input.triggerex?(0x48)
+          @sort_by_distance = !@sort_by_distance
+          tts("Sort by distance: #{@sort_by_distance ? 'On' : 'Off'}")
+      
         # Cycle HM pathfinding toggle (H)
-        if Input.triggerex?(0x48)
+    elsif Input.triggerex?(0x48)
           cycle_hm_toggle
         end
 
@@ -79,6 +84,7 @@ alias_method :access_mod_original_initialize, :initialize
     @event_filter_index = 0
     @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
     @hm_toggle_index = 0 # Default to :off
+    @sort_by_distance = true # Default to sorting by distance
   end
   
   # --- Helper class and method for finding interactable tiles next to an event ---
@@ -530,8 +536,11 @@ def populate_event_list
 
   # Combine the lists and sort
   @mapevents = other_events + connections
-  @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
-  @selected_event_index = @mapevents.empty? ? -1 : 0
+# Sort the final list by distance only if the toggle is on
+    if @sort_by_distance
+      @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
+    end
+    @selected_event_index = @mapevents.empty? ? -1 : 0
 end
 
   def convertRouteToInstructions(route)
