@@ -27,6 +27,7 @@ The project is modular. You can choose to install the features you want.
 - **Shift + P**: Announce the X and Y coordinates of the selected event, as well as a description, if any exists.
 - **P**: Announce the path for the selected event.
 - **H**: Cycle through HM pathfinding modes. The available modes are: `Off`, `Surf Only`, and `Surf & Waterfall`.
+- **Shift + H**: Toggle distance sorting of events on or off.
 - **Shift + K**: Rename the selected event.
 
 ### Pokémon Party Menu Controls
