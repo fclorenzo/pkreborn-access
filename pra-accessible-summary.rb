@@ -775,3 +775,89 @@ cmdStoreWithdraw = -1; cmdItem = -1; cmdMark = -1; cmdRelease = -1
     end
   end
 end
+
+#===============================================================================
+# Add "Accessible Summary" to the In-Battle Party Menu
+#===============================================================================
+class PokeBattle_Scene
+  # This is a full replacement of the pbSwitch method from Battle_Scene.rb
+  # It is a copy of the original, with our new option safely injected.
+  def pbSwitch(index, lax, cancancel)
+    party = @battle.pbParty(index)
+    partypos = @battle.partyorder
+    ret = -1
+    pbShowWindow(BLANK)
+    pbSetMessageMode(true)
+    modparty = []
+    posmod = @battle.pbOwnedByAIPartner?(index) ? 6 : 0
+    for i in posmod...(posmod + 6)
+      modparty.push(party[partypos[i]])
+    end
+    visiblesprites = pbFadeOutAndHide(@sprites)
+    scene = PokemonScreen_Scene.new
+    @switchscreen = PokemonScreen.new(scene, modparty)
+    @switchscreen.pbStartScene(_INTL("Choose a Pokémon."), @battle.doublebattle && !@battle.fullparty1)
+    tts("Choose a Pokémon.")
+    loop do
+      scene.pbSetHelpText(_INTL("Choose a Pokémon."))
+      activecmd = @switchscreen.pbChoosePokemon(shortcut_keys: true)
+      if cancancel && activecmd == -1
+        ret = -1
+        break
+      end
+      if activecmd.is_a?(Array) && activecmd[0] == 3 # Summary from shortcut
+        scene.pbSummary(activecmd[1])
+        next
+      end
+      if activecmd >= 0 && !party[partypos[activecmd + posmod]].nil?
+        # --- MODIFICATION START ---
+        commands = []
+        cmdShift = -1
+        cmdSummary = -1
+        cmdAccessibleSummary = -1 # Our new command variable
+        pkmnindex = partypos[activecmd + posmod]
+        
+        commands[cmdShift = commands.length] = _INTL("Switch In") if !party[pkmnindex].isEgg?
+        commands[cmdSummary = commands.length] = _INTL("Summary")
+        # Inject our command
+        commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary") if !party[pkmnindex].isEgg?
+        commands[commands.length] = _INTL("Cancel")
+        
+        command = scene.pbShowCommands(_INTL("Do what with {1}?", party[pkmnindex].name), commands)
+        
+        if cmdShift >= 0 && command == cmdShift
+          canswitch = lax ? @battle.pbCanSwitchLax?(index, pkmnindex, true) : @battle.pbCanSwitch?(index, pkmnindex, true)
+          if canswitch
+            ret = pkmnindex
+            break
+          end
+        elsif cmdSummary >= 0 && command == cmdSummary
+          scene.pbSummary(activecmd)
+elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
+        # Handle our command
+        loop do
+          sub_command = scene.pbShowCommands(_INTL("Accessible Summary"), [
+            _INTL("Display BST"),
+            _INTL("Pokemon Details"),
+            _INTL("Cancel")
+          ])
+          case sub_command
+          when 0; pbDisplayBSTData(party[pkmnindex])
+          when 1; torDisplayPokemonDetails(party[pkmnindex])
+          when -1, 2; break
+          end
+        end
+      end
+        # --- MODIFICATION END ---
+      end
+    end
+    @switchscreen.pbEndScene
+    @switchscreen = nil
+    pbShowWindow(BLANK)
+    pbSetMessageMode(false)
+    # back to main battle screen
+    pbFadeInAndShow(@sprites, visiblesprites)
+    @battle.logSwitch(index, ret) if ret >= 0
+    return ret
+  end
+end
