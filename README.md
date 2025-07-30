@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.10.0
+V2.11.0
 
 ## Description
 
@@ -16,6 +16,7 @@ The project is modular. You can choose to install the features you want.
 
 - **Pathfinding Mod (`pra-pathfind.rb`)**: Provides a scanner to find and get pathfinding directions to events on the map. Includes a category filtering system and the ability to find paths across water (Surf and Waterfall).
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
+- **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
 
 ## Controls
 
@@ -166,6 +167,7 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 
 ## Credits
 
+- [Aironfaar's Mod Box](https://www.rebornevo.com/forums/topic/40480-aironfaars-mod-box-e19updated-2022-05-22/) — for the original Gone Fishing mod.
 - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
 - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
