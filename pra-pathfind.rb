@@ -1128,3 +1128,20 @@ def save_custom_names
   end
   tts ("Custom event names saved to #{CUSTOM_NAMES_FILE}.")
 end
+
+#===============================================================================
+# ** Bug Fix for addMovedEvent Crash **
+# This patches a base game method to prevent a crash with certain events.
+#===============================================================================
+class PokemonMapMetadata
+  # Re-open the class to overwrite the method
+  def addMovedEvent(eventID)
+    key = [$game_map.map_id, eventID]
+    event = $game_map.events[eventID]
+    # --- SAFETY CHECK START ---
+    # If the event doesn't exist on the current map, do nothing instead of crashing.
+    return if event.nil?
+    # --- SAFETY CHECK END ---
+    @movedEvents[key] = [event.x, event.y, event.direction, event.through, event.opacity]
+  end
+end
