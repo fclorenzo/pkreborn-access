@@ -153,6 +153,8 @@ You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/r
 ## Known Bugs
 
 - Pathfinding may fail on complex routes that require multiple land/water transitions or other complex situations (e.g., island hopping, or platform jumping).
+- Pathfinder is not able to find routes inside Nightclub.
+- Event cycling in wasteland makes the game music break.
 
 ## Contributing
 
