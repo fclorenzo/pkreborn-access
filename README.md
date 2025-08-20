@@ -17,6 +17,7 @@ The project is modular. You can choose to install the features you want.
 - **Pathfinding Mod (`pra-pathfind.rb`)**: Provides a scanner to find and get pathfinding directions to events on the map. Includes a category filtering system and the ability to find paths across water (Surf and Waterfall).
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
 - **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
+- **Terra Readability Mod ('Terra Translation Files > blindstep.dat & Settings.rb'): Replaces all instances of Terra's leet speech with English for improved readability and text-to-speech compatibility
 
 ## Controls
 
@@ -59,6 +60,12 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 2. Locate the "assets" section.
 3. Under that section, you will find the mod files: "pra-pathfind.rb" and "pra-accessible-summary.rb". Download the files for the features you wish to use. You can install one or both.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
+5. For Terra Readability mod, you will need to place the blindstep.dat file in your 'Data' folder. Specifically the root folder, this will not work in a 'patch > Data' folder. The Settings.rb file needs to replace the Settings.rb file in your 'Scripts' root folder. If you are using other mods that influence or replace the Settings.rb file, you can also manually make the change needed by copying:
+'LANGUAGES = [
+  ["Default", "default.dat"],
+  ["Blindstep", "blindstep.dat"]
+]'
+and replacing the existing language Array found on line 327 then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language. 
 
 ## Custom Event Naming (Community Project)
 
@@ -174,6 +181,7 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
 - [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
+- [KilehKa] — for translating Terra's dialogue.
 - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
 ---
