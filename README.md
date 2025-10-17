@@ -75,8 +75,8 @@ and replacing the existing language Array found on line 327 then saving the file
 
 Notes for mods & terra translation installation:
 
-1. Do not change the names of any file, as it will likely break something.
-2. The auto walk mod requires the pathfind mod to be installed to work.
+1. **Do not change the names of any files, as it will likely break something due to the fact that the game loads the modfiles in alphabetical order and looks for specific files for the Terra translation**.
+2. **The auto walk mod requires the pathfind mod to be installed to work**.
 
 ## Custom Event Naming (Community Project)
 
