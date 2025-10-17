@@ -18,7 +18,7 @@ The project is modular. You can choose to install the features you want.
 - **Auto walk mod (`pra-autowalk.rb`)**: Provides the player with a functionality to automatically walk to given coordinates in a map.
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
 - **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
-- **Terra Readability Mod ('Terra Translation Files > blindstep.dat & Settings.rb')**: Replaces all instances of Terra's leet speech with English for improved readability and text-to-speech compatibility.
+- **Terra Readability Mod (`blindstep.dat` & `Settings.rb`)**: Replaces all instances of Terra's leet speech with English for improved readability for screenreader users.
 
 ## Controls
 
