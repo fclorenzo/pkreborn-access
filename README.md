@@ -195,8 +195,8 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
 - [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
-- [KilehKa] — for translating Terra's dialogue.
-- [Maulpaul] — for implementing the auto walk mod.
+- KilehKa — for translating Terra's dialogue.
+- Maulpaul — for implementing the auto walk mod.
 - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
 ---
