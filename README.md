@@ -18,7 +18,7 @@ The project is modular. You can choose to install the features you want.
 - **Auto walk mod (`pra-walk.rb`)**: Provides the player with a functionality to automatically walk to desired coordinates on the map.
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
 - **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
-- **Terra Readability Mod (`blindstep.dat` & `Settings.rb`)**: Replaces all instances of Terra's leet speech with English for improved readability for screenreader users.
+- **Terra Readability Mod (`blindstep.dat` & `Settings.rb`)**: Replaces all instances of Terra's leet speech with English for improved readability for text-to-speech users.
 
 ## Controls
 
@@ -195,7 +195,7 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
 - [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
-- KilehKa — for translating Terra's dialogue.
+- KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
 - Maulpaul — for implementing the auto walk mod.
 - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
