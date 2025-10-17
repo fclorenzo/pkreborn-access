@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.11.1
+V2.12.0
 
 ## Description
 
@@ -15,9 +15,10 @@ I will always try to keep the mods updated to work with the latest game version,
 The project is modular. You can choose to install the features you want.
 
 - **Pathfinding Mod (`pra-pathfind.rb`)**: Provides a scanner to find and get pathfinding directions to events on the map. Includes a category filtering system and the ability to find paths across water (Surf and Waterfall).
+- **Auto walk mod (`pra-autowalk.rb`)**: Provides the player with a functionality to automatically walk to given coordinates in a map.
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
 - **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
-- **Terra Readability Mod ('Terra Translation Files > blindstep.dat & Settings.rb'): Replaces all instances of Terra's leet speech with English for improved readability and text-to-speech compatibility
+- **Terra Readability Mod ('Terra Translation Files > blindstep.dat & Settings.rb')**: Replaces all instances of Terra's leet speech with English for improved readability and text-to-speech compatibility.
 
 ## Controls
 
@@ -27,10 +28,13 @@ The project is modular. You can choose to install the features you want.
 - **O and I**: Cycle forward and backward through event filters. The available filters are: All, Connections, NPCs, Items, Merchants, Signs, and Hidden Items.
 - **J, K and L**: Announce previous, current, and next event in the events list.
 - **Shift + P**: Announce the X and Y coordinates of the selected event, as well as a description, if any exists.
-- **P**: Announce the path for the selected event.
+- **P**: Announce the path for the selected event, or auto walk to it if the auto walk toggle is on.
 - **H**: Cycle through HM pathfinding modes. The available modes are: `Off`, `Surf Only`, and `Surf & Waterfall`.
 - **Shift + H**: Toggle distance sorting of events on or off.
 - **Shift + K**: Rename the selected event.
+- **T**: Place the marker to a given x and y coordinates.
+- **Q**: Get directions to the placed coordinates, or auto walk to them if the auto walk toggle is on.
+- **R**: Toggle auto walk on or off.
 
 ### Pokémon Party Menu Controls
 
@@ -61,11 +65,15 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 3. Under that section, you will find the mod files: "pra-pathfind.rb" and "pra-accessible-summary.rb". Download the files for the features you wish to use. You can install one or both.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
 5. For Terra Readability mod, you will need to place the blindstep.dat file in your 'Data' folder. Specifically the root folder, this will not work in a 'patch > Data' folder. The Settings.rb file needs to replace the Settings.rb file in your 'Scripts' root folder. If you are using other mods that influence or replace the Settings.rb file, you can also manually make the change needed by copying:
-'LANGUAGES = [
+
+```Settings.rb
+LANGUAGES = [
   ["Default", "default.dat"],
   ["Blindstep", "blindstep.dat"]
-]'
-and replacing the existing language Array found on line 327 then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language. 
+]```
+and replacing the existing language Array found on line 327 then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
+
+Note for mods & terra translation installation: Do not change the names of any file, as it will likely break something.
 
 ## Custom Event Naming (Community Project)
 
@@ -182,6 +190,7 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
 - [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
 - [KilehKa] — for translating Terra's dialogue.
+- [Maulpaul] — for implementing the auto walk mod.
 - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
 ---
