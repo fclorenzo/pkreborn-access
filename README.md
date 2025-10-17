@@ -66,12 +66,12 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
 5. For Terra Readability mod, you will need to place the blindstep.dat file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a "patch>Data" folder. The modified `Settings.rb` file needs to replace the original `Settings.rb` file in your "Scripts" root folder ("Reborn-xxx-windows>Scripts"). If you are using other mods that influence or replace the `Settings.rb` file, you can also manually make the change needed by copying:
 
-  ```Settings.rb
-  LANGUAGES = [
-    ["Default", "default.dat"],
-    ["Blindstep", "blindstep.dat"]
-  ]
-  ```
+    ```Settings.rb
+    LANGUAGES = [
+      ["Default", "default.dat"],
+      ["Blindstep", "blindstep.dat"]
+    ]
+    ```
 
 and replacing the existing language Array found on line 327, then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
 
