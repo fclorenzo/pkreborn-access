@@ -68,6 +68,40 @@ class Game_Player < Game_Character
       elsif Input.triggerex?(0x50)
           pathfind_to_selected_event
         end
+# --- Coordinate Marker (T to set, Alt+P to pathfind) ---
+# Press T to enter X/Y marker
+if Input.triggerex?(0x54)   # T key
+  x_text = Kernel.pbMessageFreeText("Enter target X:", "", false, 4)
+  y_text = Kernel.pbMessageFreeText("Enter target Y:", "", false, 4)
+  if x_text && y_text && !x_text.strip.empty? && !y_text.strip.empty?
+    @coord_marker = [x_text.to_i, y_text.to_i]
+    tts("Coordinate marker set to X #{@coord_marker[0]}, Y #{@coord_marker[1]}")
+  else
+    tts("Invalid coordinates, marker not set.")
+  end
+end
+
+#pres q to pathfind to marker
+if Input.triggerex?(0x51)   # Q key
+  if @coord_marker
+    target_x, target_y = @coord_marker
+    route = aStern(Node.new(@x, @y), Node.new(target_x, target_y))
+    if route.empty?
+      tts("No path found to X #{target_x}, Y #{target_y}.")
+    else
+      # announce steps like normal
+      instr = convertRouteToInstructions(route)
+      printInstruction(instr)
+
+      # if you have auto-walk toggle, this will also move you tile by tile
+      if defined?($auto_walk) && $auto_walk
+        @current_autowalk_route = route
+      end
+    end
+  else
+    tts("No coordinate marker set. Press T to set one.")
+  end
+end
       end
     end
   end
