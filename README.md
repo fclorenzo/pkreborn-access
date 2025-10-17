@@ -160,7 +160,7 @@ The easiest and best way to contribute is to use the in-game renaming feature fi
 
 For those new to using Google Docs with a screen reader, this guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
 
-Also, do note that, while the document can be publicly viewed, only allowed people have editing permissions. If you are a new contributor and would like to be able to edit the document, just request editing access via the Docs menu and [message me on Discord](discordapp.com/users/427201804061638681) so I can know you are not a random person who requested that.
+Also, do note that, while the document can be publicly viewed, only allowed people have editing permissions. If you are a new contributor and would like to be able to edit the document, just request editing access via the Docs menu and [message me on Discord](https://www.discordapp.com/users/427201804061638681) so I can know you are not a random person who requested that.
 
 ## Report a Problem or Suggest a Feature
 
