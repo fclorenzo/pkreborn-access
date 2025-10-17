@@ -64,7 +64,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 2. Locate the "assets" section.
 3. Under that section, you will find the mod and the Terra translation files. Download the files for the features you wish to use.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
-5. For Terra Readability mod, you will need to place the blindstep.dat file in your 'Data' folder. Specifically the root folder, this will not work in a 'patch > Data' folder. The Settings.rb file needs to replace the Settings.rb file in your 'Scripts' root folder. If you are using other mods that influence or replace the Settings.rb file, you can also manually make the change needed by copying:
+5. For Terra Readability mod, you will need to place the blindstep.dat file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a 'patch > Data' folder. The Settings.rb file needs to replace the Settings.rb file in your 'Scripts' root folder. If you are using other mods that influence or replace the Settings.rb file, you can also manually make the change needed by copying:
 
 ```Settings.rb
 LANGUAGES = [
@@ -173,6 +173,7 @@ You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/r
 - Pathfinding may fail on complex routes that require multiple land/water transitions or other complex situations (e.g., island hopping, or platform jumping).
 - Pathfinder is not able to find routes inside Nightclub.
 - Event cycling in wasteland makes the game music break.
+- Pathfind fails to find directions when there are ledges on the way to the destination.
 
 ## Contributing
 
