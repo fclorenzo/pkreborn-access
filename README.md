@@ -73,7 +73,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
     ]
     ```
 
-and replacing the existing language Array found on line 327, then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
+    and replacing the existing language Array found on line 327, then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
 
 Notes for mods & terra readability installation:
 
