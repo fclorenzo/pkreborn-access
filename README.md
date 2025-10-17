@@ -62,7 +62,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 
 1. Download the mod files by going to [the latest release page](https://github.com/fclorenzo/pkreborn-access/releases/latest).
 2. Locate the "assets" section.
-3. Under that section, you will find the mod and the Terra translation files. Download the files for the features you wish to use.
+3. Under that section, you will find the mods and the Terra readability files. Download the files for the features you wish to use.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
 5. For Terra Readability mod, you will need to place the blindstep.dat file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a 'patch > Data' folder. The Settings.rb file needs to replace the Settings.rb file in your 'Scripts' root folder. If you are using other mods that influence or replace the Settings.rb file, you can also manually make the change needed by copying:
 
@@ -73,9 +73,9 @@ LANGUAGES = [
 ]```
 and replacing the existing language Array found on line 327 then saving the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
 
-Notes for mods & terra translation installation:
+Notes for mods & terra readability installation:
 
-1. **Do not change the names of any files, as it will likely break something due to the fact that the game loads the modfiles in alphabetical order and looks for specific files for the Terra translation**.
+1. **Do not change the names of any files, as it will likely break something due to the fact that the game loads the modfiles in alphabetical order and looks for specific files for the Terra Readability to work**.
 2. **The auto walk mod requires the pathfind mod to be installed to work**.
 
 ## Custom Event Naming (Community Project)
