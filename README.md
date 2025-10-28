@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V2.12.0
+V2.12.1
 
 ## Description
 
@@ -129,6 +129,17 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 # map_id;optional_map_name;coord_x;coord_y;event_name;optional_description
 586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
 ```
+
+### How to Ignore Specific Events
+
+If there is an event you never want to interact with (e.g., a "junk" event or a repetitive object), you can hide it from the scanner list.
+
+1. Select the event with the scanner using the J and L keys.
+2. Press Shift + K to rename the event.
+3. When prompted for a name, type Ignore. (This is not case-sensitive, so ignore or IGNORE also work).
+4. You can skip the description field.
+5. Press F5 to refresh the event list.
+The event will no longer be loaded into the scanner list for that map.
 
 ### Naming Events & Contributing to the Community File
 
