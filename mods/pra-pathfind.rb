@@ -81,7 +81,7 @@ if Input.triggerex?(0x54)   # T key
   end
 end
 
-#pres q to pathfind to marker
+#press q to pathfind to marker
 if Input.triggerex?(0x51)   # Q key
   if @coord_marker
     target_x, target_y = @coord_marker
@@ -128,6 +128,66 @@ alias_method :access_mod_original_initialize, :initialize
       @direction = paraDirection
       @node = paraNode
     end
+  end
+
+# Checks if an event is a "Jump Event" (invisible event that forces a move route)
+  def is_jump_event?(event, direction)
+    return false if !event || !event.list
+    return false if event.trigger != 1 # Must be Player Touch
+    
+    # Calculate offsets based on direction
+    offsetx, offsety =  0,  1 if direction == 2
+    offsetx, offsety = -1,  0 if direction == 4
+    offsetx, offsety =  1,  0 if direction == 6
+    offsetx, offsety =  0, -1 if direction == 8
+
+    in_leap = false
+    for command in event.list
+      if in_leap
+        # Code 209 is "Set Move Route"
+        if command.code == 209 && command.parameters[0] == -1 # -1 is Player
+          for mvcmd in command.parameters[1].list
+            # Code 14 is "Jump". Parameters are x and y offsets.
+            # We check if the jump distance matches the direction we are facing (x2 for 2 tiles)
+            if mvcmd.code == 14 && mvcmd.parameters[0] == offsetx * 2 && mvcmd.parameters[1] == offsety * 2
+              return true
+            end
+          end
+        elsif command.code == 0
+          in_leap = false
+        end
+      else
+        # Code 111 is Conditional Branch. 
+        # Param 0=6 (Character), Param 1=-1 (Player), Param 2=Direction
+        if command.code == 111 && command.parameters[0] == 6 && command.parameters[1] == -1 && command.parameters[2] == direction
+          in_leap = true
+        end
+      end
+    end
+    return false
+  end
+
+  # Checks if we can perform a 2-tile jump over a ledge or event
+  def is_path_ledge_passable?(x, y, d)
+    # Get the coordinates of the tile immediately in front (the gap/ledge)
+    new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
+    new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+    return false unless self.map.valid?(new_x, new_y)
+
+    # 1. Check for Jump Events (The "Route 4" Fix)
+    for event in $game_map.events.values
+      if event.x == new_x && event.y == new_y && is_jump_event?(event, d)
+        return true
+      end
+    end
+    
+    # 2. Check for Standard Ledges
+    terrain_tag = self.map.terrain_tag(new_x, new_y)
+    if terrain_tag == PBTerrain::Ledge
+      return passable?(new_x, new_y, d)
+    end
+    
+    return false
   end
 
   def getEventTiles(event, map = $game_map)
@@ -215,12 +275,12 @@ def rename_selected_event
     x = event.x
     y = event.y
 
-# Create the unique key and the value hash
+    # Create the unique key and the value hash
     key = "#{map_id};#{x};#{y}"
     value = {
       map_name: map_name,
-      event_name: new_name.strip, # Save the stripped name
-      description: (new_desc || "").strip # Save the stripped description
+      event_name: new_name,
+      description: new_desc || ""
     }
 
     # Update the in-memory hash
@@ -238,38 +298,46 @@ def rename_selected_event
 end
 
 def is_path_passable?(x, y, d)
-  # --- Safeguard for old save files ---
-  if @hm_toggle_modes.nil?
-    @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
-    @hm_toggle_index = 0
+    # --- Safeguard for old save files ---
+    if @hm_toggle_modes.nil?
+      @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
+      @hm_toggle_index = 0
+    end
+
+    # Handle holes (prevent walking into teleport events that aren't connections)
+    for event in $game_map.events.values
+      if event.x == x && event.y == y && is_teleport_event?(event)
+        return false
+      end
+    end
+
+    # First, check if the tile is normally passable
+    return true if passable?(x, y, d)
+    
+    # If not, check if it's an HM obstacle the player can pass with the toggle
+    current_mode = @hm_toggle_modes[@hm_toggle_index]
+    return false if current_mode == :off
+
+    # Get the coordinates of the tile we are trying to move to
+    new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
+    new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
+    return false unless self.map.valid?(new_x, new_y)
+    
+    # Get the terrain tag of the destination tile
+    terrain_tag = self.map.terrain_tag(new_x, new_y)
+
+    # Check for Surf (Water or Lava)
+    # Note: Added pbIsPassableLavaTag for Reborn compatibility
+    if pbIsPassableWaterTag?(terrain_tag) || (defined?(pbIsPassableLavaTag?) && pbIsPassableLavaTag?(terrain_tag))
+      return true if current_mode == :surf_only || current_mode == :surf_and_waterfall
+    end
+    
+    # Check for Waterfall
+    if terrain_tag == PBTerrain::Waterfall || terrain_tag == PBTerrain::WaterfallCrest
+      return true if current_mode == :surf_and_waterfall
+    end 
+    return false
   end
-
-  # First, check if the tile is normally passable
-  return true if passable?(x, y, d)
-  
-  # If not, check if it's an HM obstacle the player can pass with the toggle
-  current_mode = @hm_toggle_modes[@hm_toggle_index]
-  return false if current_mode == :off
-
-  # Get the coordinates of the tile we are trying to move to
-  new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
-  new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
-  return false unless self.map.valid?(new_x, new_y)
-  
-  # Get the terrain tag of the destination tile
-  terrain_tag = self.map.terrain_tag(new_x, new_y)
-
-  # Check for Surf
-  if pbIsPassableWaterTag?(terrain_tag)
-    return true if current_mode == :surf_only || current_mode == :surf_and_waterfall
-  end
-  
-  # Check for Waterfall
-  if terrain_tag == PBTerrain::Waterfall || terrain_tag == PBTerrain::WaterfallCrest
-    return true if current_mode == :surf_and_waterfall
-  end 
-  return false
-end
 
 def is_sign_event?(event)
   return false if !event || !event.list || !event.character_name.empty?
@@ -542,16 +610,6 @@ def populate_event_list
   for event in $game_map.events.values
     next if !event.list || event.list.size <= 1
     next if event.trigger == 3 || event.trigger == 4 # Ignore Autorun and Parallel
-
-    # Create a unique key to check for a custom name
-    key = "#{$game_map.map_id};#{event.x};#{event.y}"
-    custom_name_data = $custom_event_names[key]
-
-    # If a custom name exists, check if it's "ignore" (case-insensitive)
-    if custom_name_data && custom_name_data[:event_name] &&
-       custom_name_data[:event_name].strip.downcase == "ignore"
-      next # Skip this event and move to the next one
-    end
 
     # Apply the selected filter
     case current_filter
@@ -851,37 +909,38 @@ end
     return false
   end
 
-def getNeighbours(node, target, isTargetPassable, targetDirection, map)
-    neighbours = []
-    if isTargetPassable || targetDirection != -1
-      if is_path_passable?(node.x, node.y, 2)
-        neighbours.push(Node.new(node.x, node.y + 1))
-      end
-      if is_path_passable?(node.x, node.y, 4)
-        neighbours.push(Node.new(node.x - 1, node.y))
-      end
-      if is_path_passable?(node.x, node.y, 6)
-        neighbours.push(Node.new(node.x + 1, node.y))
-      end
-      if is_path_passable?(node.x, node.y, 8)
-        neighbours.push(Node.new(node.x, node.y - 1))
-      end
-    else
-      if is_path_passable?(node.x, node.y, 2) || target.equals(Node.new(node.x, node.y + 1))
-        neighbours.push(Node.new(node.x, node.y + 1))
-      end
-      if is_path_passable?(node.x, node.y, 4) || target.equals(Node.new(node.x - 1, node.y))
-        neighbours.push(Node.new(node.x - 1, node.y))
-      end
-      if is_path_passable?(node.x, node.y, 6) || target.equals(Node.new(node.x + 1, node.y))
-        neighbours.push(Node.new(node.x + 1, node.y))
-      end
-      if is_path_passable?(node.x, node.y, 8) || target.equals(Node.new(node.x, node.y - 1))
-        neighbours.push(Node.new(node.x, node.y - 1))
-      end
+# Helper to add valid neighbors to the A* list
+  def push_neighbour(neighbours, node, dir, target = nil)
+    # Calculate offsets
+    offsetx, offsety =  0,  1 if dir == 2
+    offsetx, offsety = -1,  0 if dir == 4
+    offsetx, offsety =  1,  0 if dir == 6
+    offsetx, offsety =  0, -1 if dir == 8
+
+    # 1. Normal Movement (1 tile away)
+    if is_path_passable?(node.x, node.y, dir) || (target && target.equals(Node.new(node.x + offsetx, node.y + offsety)))
+      neighbours.push(Node.new(node.x + offsetx, node.y + offsety))
+    
+    # 2. Ledge/Jump Movement (2 tiles away)
+    # If the immediate path is blocked/special, check if we can jump over it
+    elsif is_path_ledge_passable?(node.x, node.y, dir)
+      neighbours.push(Node.new(node.x + offsetx * 2, node.y + offsety * 2))
     end
-    return neighbours
   end
+
+  # Updated getNeighbours using the new push logic
+  def getNeighbours(node, target, isTargetPassable, targetDirection, map)
+    neighbours = []
+    # If the target is strictly passable, we don't need to pass the target node to push_neighbour
+    chooseTarget = (isTargetPassable || targetDirection != -1) ? nil : target
+    
+    push_neighbour(neighbours, node, 2, chooseTarget)
+    push_neighbour(neighbours, node, 4, chooseTarget)
+    push_neighbour(neighbours, node, 6, chooseTarget)
+    push_neighbour(neighbours, node, 8, chooseTarget)
+    
+    return neighbours
+  end  
   
   def getTargetDirection(target, map)
     for event in map.events.values
@@ -1038,13 +1097,50 @@ class Game_Character
     new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
     return false unless map.valid?(new_x, new_y)
     return true if @through
+
+    # --- NEW LEDGE LOGIC START ---
+    current_tile_tag = map.terrain_tag(x, y)
+    is_ledge = (current_tile_tag == PBTerrain::Ledge || current_tile_tag == PBTerrain::DownConveyor || current_tile_tag == PBTerrain::UpConveyor ||
+                 current_tile_tag == PBTerrain::LeftConveyor || current_tile_tag == PBTerrain::RightConveyor || current_tile_tag == PBTerrain::Grime ||
+                 current_tile_tag == PBTerrain::Grass || current_tile_tag == PBTerrain::TallGrass || current_tile_tag == PBTerrain::Sand || current_tile_tag == PBTerrain::Rock ||
+                 current_tile_tag == PBTerrain::Ice || current_tile_tag == PBTerrain::Water || current_tile_tag == PBTerrain::WaterfallCrest || current_tile_tag == PBTerrain::Waterfall || current_tile_tag == PBTerrain::DeepWater ||
+                 current_tile_tag == PBTerrain::StillWater || current_tile_tag == PBTerrain::Puddle || current_tile_tag == PBTerrain::SootGrass || current_tile_tag == PBTerrain::Waterfall || current_tile_tag == PBTerrain::Lava ||
+                 current_tile_tag == PBTerrain::UnderwaterGrass || current_tile_tag == PBTerrain::Neutral || current_tile_tag == PBTerrain::Bridge || current_tile_tag == PBTerrain::PokePuddle || current_tile_tag == PBTerrain::Dummy || current_tile_tag == PBTerrain::SandDune || current_tile_tag == PBTerrain::PokeSand)
+    
+    # --- DEBUGGING LINE ---
+    #tts("Found ledge") if is_ledge && d == 2
+    # --- END DEBUGGING ---
+    
+    # --- NEW LEDGE LOGIC END ---
+
     if strict
+      # 1. Check if we can move FROM (x,y) TO (new_x, new_y)
       return false unless map.passableStrict?(x, y, d, self)
-      return false unless map.passableStrict?(new_x, new_y, 10 - d, self)
+      
+      # 2. Check for the reverse path, UNLESS we are jumping down a ledge
+      unless is_ledge && d == 2
+        return false unless map.passableStrict?(new_x, new_y, 10 - d, self)
+      end
+      
+      # --- DEBUGGING LINE ---
+      tts("Ledge bypass successful") if is_ledge && d == 2
+      # --- END DEBUGGING ---
+      
     else
+      # 1. Check if we can move FROM (x,y) TO (new_x, new_y)
       return false unless map.passable?(x, y, d, self)
-      return false unless map.passable?(new_x, new_y, 10 - d, self)
+      
+      # 2. Check for the reverse path, UNLESS we are jumping down a ledge
+      unless is_ledge && d == 2
+        return false unless map.passable?(new_x, new_y, 10 - d, self)
+      end
+      
+      # --- DEBUGGING LINE ---
+      #tts("Ledge bypass successful") if is_ledge && d == 2
+      # --- END DEBUGGING ---
+      
     end
+    
     for event in map.events.values
       if event.x == new_x and event.y == new_y
         unless event.through
