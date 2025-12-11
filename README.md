@@ -78,7 +78,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
       ["Blindstep", "blindstep.dat"]
     ```
 
-The array now should look like this:
+    The array now should look like this:
 
     ```Settings.rb
     LANGUAGES = [
@@ -87,7 +87,7 @@ The array now should look like this:
     ]
     ```
 
-Then, save the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
+    Then, save the file. On start-up the game will prompt you to pick either Default or Blindstep as a language.
 
 ### Notes for Mods & Terra Readability Installation
 
