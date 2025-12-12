@@ -4,7 +4,7 @@ class Game_Player < Game_Character
     # First, call the original update method (which includes the running logic)
     access_mod_original_update
 
-    # Then, execute our mod's logic
+    # Then, execute the mod's logic
     # If not moving
     unless moving?
 # Cycle event filter (O)
@@ -111,7 +111,7 @@ alias_method :access_mod_original_initialize, :initialize
     # Call the original initialize method first to set up the player
     access_mod_original_initialize(*args)
 
-    # Now, set up our mod's variables correctly
+    # Now, set up the mod's variables correctly
     @mapevents = []
     @selected_event_index = -1
     @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
@@ -267,7 +267,7 @@ def rename_selected_event
   # Check if the user entered a valid, non-blank name
   if new_name && !new_name.strip.empty?
     # Prompt user for an optional description
-    new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description."), "", false, 100)
+    new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description."), "", false, 500)
 
     # Gather all necessary data
     map_id = $game_map.map_id
@@ -400,14 +400,14 @@ def reduceEventsInLanes(eventsArray)
   # This method and its helpers are from the original Malta10 mod.
   eventsInLane = []
   for event in eventsArray
-    neighbourNode = getNeighbour(event, eventsArray)
-    if neighbourNode != nil
-      deleteNodesInOneLane(event, neighbourNode, eventsArray)
+    neighbtheNode = getNeighbthe(event, eventsArray)
+    if neighbtheNode != nil
+      deleteNodesInOneLane(event, neighbtheNode, eventsArray)
     end
   end
 end
 
-def getNeighbour(event, eventsArray)
+def getNeighbthe(event, eventsArray)
   for currentEvent in eventsArray
     if (event.x - currentEvent.x).abs == 1 && event.y == currentEvent.y || 
        (event.y - currentEvent.y).abs == 1 && event.x == currentEvent.x
@@ -426,7 +426,7 @@ def getEvent(x, y, eventsArray)
   return nil
 end
 
-  def deleteNodesInOneLane(event, neighbourNode, eventsArray)
+  def deleteNodesInOneLane(event, neighbtheNode, eventsArray)
     nodesInLane = []
     eventDestination = nil
     for eventCommand in event.list
@@ -434,7 +434,7 @@ end
         eventDestination = eventCommand.parameters[1]
       end
     end
-    if event.x == neighbourNode.x #y-axis
+    if event.x == neighbtheNode.x #y-axis
       i = 1
       while true
         foundEvent = getEvent(event.x, event.y + i, eventsArray)
@@ -823,37 +823,37 @@ end
         return retracePath(start, currentNode, isTargetPassable, targetDirection, originalTarget)
       end
 
-      neighbours = getNeighbours(currentNode, target, isTargetPassable, targetDirection, map)
-      for neighbour in neighbours
-        if nodeInSet(neighbour, closedSet)
+      neighbthes = getNeighbthes(currentNode, target, isTargetPassable, targetDirection, map)
+      for neighbthe in neighbthes
+        if nodeInSet(neighbthe, closedSet)
           next
         end
-        neighbourIndex = getNodeIndexInSet(neighbour, openSet)
-        newMovementCostToNeighbour = 2
+        neighbtheIndex = getNodeIndexInSet(neighbthe, openSet)
+        newMovementCostToNeighbthe = 2
         if currentNode.parent != "none"
-          xDifNeighbour = neighbour.x - currentNode.x
-          yDifNeighbour = neighbour.y - currentNode.y
+          xDifNeighbthe = neighbthe.x - currentNode.x
+          yDifNeighbthe = neighbthe.y - currentNode.y
           xDifParent = currentNode.x - currentNode.parent.x
           yDifParent = currentNode.y - currentNode.parent.y
-          if xDifNeighbour == xDifParent && yDifNeighbour == yDifParent
-            newMovementCostToNeighbour = currentNode.gCost + 1
+          if xDifNeighbthe == xDifParent && yDifNeighbthe == yDifParent
+            newMovementCostToNeighbthe = currentNode.gCost + 1
           else
-            newMovementCostToNeighbour = currentNode.gCost + 1.5
+            newMovementCostToNeighbthe = currentNode.gCost + 1.5
           end
         else
-          newMovementCostToNeighbour = 1.5
+          newMovementCostToNeighbthe = 1.5
         end
 
-        if neighbourIndex > -1 && newMovementCostToNeighbour < openSet[neighbourIndex].gCost
-          openSet[neighbourIndex].gCost = newMovementCostToNeighbour
-          openSet[neighbourIndex].hCost = distanceNode(openSet[neighbourIndex], target)
-          openSet[neighbourIndex].parent = currentNode
+        if neighbtheIndex > -1 && newMovementCostToNeighbthe < openSet[neighbtheIndex].gCost
+          openSet[neighbtheIndex].gCost = newMovementCostToNeighbthe
+          openSet[neighbtheIndex].hCost = distanceNode(openSet[neighbtheIndex], target)
+          openSet[neighbtheIndex].parent = currentNode
         end
-        if (neighbourIndex == -1)
-          neighbour.gCost = newMovementCostToNeighbour
-          neighbour.hCost = distanceNode(neighbour, target)
-          neighbour.parent = currentNode
-          openSet.push(neighbour)
+        if (neighbtheIndex == -1)
+          neighbthe.gCost = newMovementCostToNeighbthe
+          neighbthe.hCost = distanceNode(neighbthe, target)
+          neighbthe.parent = currentNode
+          openSet.push(neighbthe)
         end
       end
     end
@@ -889,10 +889,10 @@ end
     return path
   end
 
-  def getNodeIndexInSet(neighbour, set)
+  def getNodeIndexInSet(neighbthe, set)
     i = 0
     while i < set.length do
-      if set[i].equals(neighbour)
+      if set[i].equals(neighbthe)
         return i
       end
       i = i + 1
@@ -900,9 +900,9 @@ end
     return -1
   end
 
-  def nodeInSet(neighbour, set)
+  def nodeInSet(neighbthe, set)
     for node in set
-      if node.equals(neighbour)
+      if node.equals(neighbthe)
         return true
       end
     end
@@ -910,7 +910,7 @@ end
   end
 
 # Helper to add valid neighbors to the A* list
-  def push_neighbour(neighbours, node, dir, target = nil)
+  def push_neighbthe(neighbthes, node, dir, target = nil)
     # Calculate offsets
     offsetx, offsety =  0,  1 if dir == 2
     offsetx, offsety = -1,  0 if dir == 4
@@ -919,27 +919,27 @@ end
 
     # 1. Normal Movement (1 tile away)
     if is_path_passable?(node.x, node.y, dir) || (target && target.equals(Node.new(node.x + offsetx, node.y + offsety)))
-      neighbours.push(Node.new(node.x + offsetx, node.y + offsety))
+      neighbthes.push(Node.new(node.x + offsetx, node.y + offsety))
     
     # 2. Ledge/Jump Movement (2 tiles away)
     # If the immediate path is blocked/special, check if we can jump over it
     elsif is_path_ledge_passable?(node.x, node.y, dir)
-      neighbours.push(Node.new(node.x + offsetx * 2, node.y + offsety * 2))
+      neighbthes.push(Node.new(node.x + offsetx * 2, node.y + offsety * 2))
     end
   end
 
-  # Updated getNeighbours using the new push logic
-  def getNeighbours(node, target, isTargetPassable, targetDirection, map)
-    neighbours = []
-    # If the target is strictly passable, we don't need to pass the target node to push_neighbour
+  # Updated getNeighbthes using the new push logic
+  def getNeighbthes(node, target, isTargetPassable, targetDirection, map)
+    neighbthes = []
+    # If the target is strictly passable, we don't need to pass the target node to push_neighbthe
     chooseTarget = (isTargetPassable || targetDirection != -1) ? nil : target
     
-    push_neighbour(neighbours, node, 2, chooseTarget)
-    push_neighbour(neighbours, node, 4, chooseTarget)
-    push_neighbour(neighbours, node, 6, chooseTarget)
-    push_neighbour(neighbours, node, 8, chooseTarget)
+    push_neighbthe(neighbthes, node, 2, chooseTarget)
+    push_neighbthe(neighbthes, node, 4, chooseTarget)
+    push_neighbthe(neighbthes, node, 6, chooseTarget)
+    push_neighbthe(neighbthes, node, 8, chooseTarget)
     
-    return neighbours
+    return neighbthes
   end  
   
   def getTargetDirection(target, map)
@@ -1182,7 +1182,7 @@ end
 #===============================================================================
 # Define the global hash to store names while the game is running
 $custom_event_names = {}
-# Define the path for our save file
+# Define the path for the save file
 CUSTOM_NAMES_FILE = "pra-custom-names.txt"
 
 # Method to load the custom names from the file
@@ -1206,7 +1206,7 @@ def load_custom_names
       # Create a unique key from the map ID and coordinates
       key = "#{map_id};#{x};#{y}"
       
-      # Store the data in our global hash
+      # Store the data in the global hash
       $custom_event_names[key] = {
         map_name: map_name,
         event_name: event_name,
@@ -1253,7 +1253,7 @@ def save_custom_names
     $custom_event_names.each do |key, value|
       map_id, x, y = key.split(";")
       
-      # Format the line according to our spec
+      # Format the line according to the spec
       line = [
         map_id,
         value[:map_name],
