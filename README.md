@@ -140,11 +140,11 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 
 | Column | Name | Required? | Explanation |
 | :--- | :--- | :--- | :--- |
-| 1 | `map_id` | **Yes** | The unique ID number of the map the event is on. |
+| 1 | `map_id` | Yes | The unique ID number of the map the event is on. |
 | 2 | `optional_map_name` | No | The name of the map (for human readability). The mod doesn't use this. |
-| 3 | `coord_x` | **Yes** | The event's X coordinate on the map. |
-| 4 | `coord_y` | **Yes** | The event's Y coordinate on the map. |
-| 5 | `event_name` | **Yes** | The new, meaningful name you want the mod to announce. |
+| 3 | `coord_x` | Yes | The event's X coordinate on the map. |
+| 4 | `coord_y` | Yes | The event's Y coordinate on the map. |
+| 5 | `event_name` | Yes | The new, meaningful name you want the mod to announce. |
 | 6 | `optional_description`| No | An optional description. This is announced when you press `Shift+P`. |
 
 **Example:**
