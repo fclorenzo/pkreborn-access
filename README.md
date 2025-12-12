@@ -25,11 +25,21 @@ The project is modular. You can choose to install the features you want.
 ### Map Controls
 
 - **F5**: Refresh the scanner's list of events on the current map.
-- **O and I**: Cycle forward and backward through event filters. The available filters are: All, Connections, NPCs, Items, Merchants, Signs, and Hidden Items.
+- **O and I**: Cycle forward and backward through event filters. The available filters are:
+  - `All`,
+  - `Connections`,
+  - `NPCs`,
+  - `Items`,
+  - `Merchants`,
+  - `Signs`,
+  - `Hidden Items`.
 - **J, K and L**: Announce previous, current, and next event in the events list.
 - **Shift + P**: Announce the X and Y coordinates of the selected event, as well as a description, if any exists.
 - **P**: Announce the path for the selected event, or auto walk to it if the auto walk toggle is on.
-- **H**: Cycle through HM pathfinding modes. The available modes are: `Off`, `Surf Only`, and `Surf & Waterfall`.
+- **H**: Cycle through HM pathfinding modes. The available modes are:
+  - `Off`,
+  - `Surf Only`,
+  - `Surf & Waterfall`.
 - **Shift + H**: Toggle distance sorting of events on or off.
 - **Shift + K**: Rename the selected event.
 - **T**: Place the marker to a given x and y coordinates.
