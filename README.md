@@ -122,7 +122,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 2. **Place and Rename the File:**
     - Find the file you just downloaded.
     - Make sure the file is named exactly **`pra-custom-names.txt`**.
-    - Place this renamed file into your main Pokémon Reborn game folder (the same folder that contains `Game.exe`). The mod will automatically detect and load it the next time you start the game.
+    - Place this renamed file into your root Pokémon Reborn game folder (the same folder that contains `Game.exe`). The mod will automatically detect and load it the next time you start the game.
 
 ### How to Find Event Information
 
@@ -178,14 +178,14 @@ This is the primary method for both personal use and for contributing.
 3. A text box will appear, prompting you for a new name.
 4. A second text box will then appear, prompting for an optional but highly recommended description.
 
-After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your main Pokémon Reborn folder.
+After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your root Pokémon Reborn folder.
 
 #### How to Contribute to the Community File
 
 The easiest and best way to contribute is to use the in-game renaming feature first. This prevents any typos in the map or coordinate data.
 
 1. **Rename an Event In-Game:** Follow the steps above to give a meaningful name to a generic event.
-2. **Find Your Local File:** Open the `pra-custom-names.txt` file located in your main Pokémon Reborn game folder.
+2. **Find Your Local File:** Open the `pra-custom-names.txt` file located in your root Pokémon Reborn game folder.
 3. **Copy the New Line:** Find the new line that was just added for the event you renamed. It will look something like this:
     `586;Azurine Island;36;29;Pokemon trainer;Battle, mandatory.`
 4. **Paste into the Community Doc:** Copy that entire line and paste it into a new line in the community Google Doc.
