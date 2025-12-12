@@ -167,7 +167,7 @@ The event will no longer be loaded into the scanner list for that map.
 
 ### Naming Events & Contributing to the Community File
 
-This feature allows you to replace generic event names like "ev12" with meaningful ones. You can create your own personal names for events, and we highly encourage you to contribute these names to the community file so everyone can benefit.
+This feature allows you to replace generic event names like "ev12" with meaningful ones. You can create your own personal names for events, and we highly encourage you to contribute these names to the community so everyone can benefit.
 
 #### How to Create Your Own Custom Names
 
