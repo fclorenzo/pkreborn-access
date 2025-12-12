@@ -138,7 +138,7 @@ You now have all the information (`map_id`, `coord_x`, and `coord_y`) you need t
 
 The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`) to separate its columns. Each line represents a single event.
 
-| Column | Name | Required? | Description |
+| Column | Name | Required? | Explanation |
 | :--- | :--- | :--- | :--- |
 | 1 | `map_id` | **Yes** | The unique ID number of the map the event is on. |
 | 2 | `optional_map_name` | No | The name of the map (for human readability). The mod doesn't use this. |
@@ -212,7 +212,7 @@ You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/r
 
 ## Contributing
 
-Contributions from other developers are welcome and greatly appreciated\! If you have an idea for a new feature or a bug fix, here's how you can help.
+Contributions from other developers are welcome and greatly appreciated! If you have an idea for a new feature or a bug fix, here's how you can help.
 
 1. **Fork the Repository**: Start by creating your own copy (a "fork") of the project on GitHub.
 2. **Create a New Branch**: Make all your changes on a dedicated branch in your fork, not on the `main` branch. This makes it easier to review and merge your changes.
