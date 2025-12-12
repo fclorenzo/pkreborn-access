@@ -85,7 +85,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
     Add this line inside the array:
 
     ```Settings.rb
-      ["Blindstep", "blindstep.dat"]
+      ["Blindstep", "blindstep.dat"],
     ```
 
     The array now should look like this:
@@ -93,7 +93,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
     ```Settings.rb
     LANGUAGES = [
       ["Default", "default.dat"],
-      ["Blindstep", "blindstep.dat"]
+      ["Blindstep", "blindstep.dat"],
     ]
     ```
 
