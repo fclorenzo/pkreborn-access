@@ -267,7 +267,7 @@ def rename_selected_event
   # Check if the user entered a valid, non-blank name
   if new_name && !new_name.strip.empty?
     # Prompt user for an optional description
-    new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description."), "", false, 500)
+    new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description (max 500 characters)."), "", false, 500)
 
     # Gather all necessary data
     map_id = $game_map.map_id
