@@ -18,7 +18,9 @@ The project is modular. You can choose to install the features you want.
 - **Auto walk mod (`pra-walk.rb`)**: Provides the player with a functionality to automatically walk to desired coordinates on the map.
 - **Accessible Summary Mod (`pra-accessible-summary.rb`)**: Adds an accessible, text-based summary screen to the Pokémon party and PC storage menus.
 - **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
-- **Terra Readability Mod (`blindstep.dat` & `Settings.rb`)**: Replaces all instances of Terra's leet speak with English for improved readability for text-to-speech users.
+- **Terra Readability Mod (`blindstep.dat` & `Settings.rb`) [Legacy]**: Replaces all instances of Terra's leet speak with English.
+  - **Note:** As of game version **19.5.38**, this feature has been integrated into the base game and these files are no longer included in the latest mod releases.
+  - **For older game versions:** If you are playing a version older than 19.5.38, please download **Release v2.12.4** to get these files.
 
 ## Controls
 
@@ -72,9 +74,11 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 
 1. Download the mod files by going to [the latest release page](https://github.com/fclorenzo/pkreborn-access/releases/latest).
 2. Locate the `assets` section.
-3. Under that section, you will find the mods and the Terra readability files. Download the files for the features you wish to use.
+3. Under that section, you will find the mod files. Download the files for the features you wish to use.
+    - **Note:** If you need the **Terra Readability Mod** (for game versions older than 19.5.38), you must download them from **[Release v2.12.4](https://github.com/fclorenzo/pkreborn-access/releases/tag/v2.12.4)**, as they are no longer included in the latest version.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
-5. For Terra Readability mod, you will need to place the blindstep.dat file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a "patch>Data" folder. You also need to add the "blindstep" language in the languages array in the `settings.rb` file, in the "Scripts>Reborn" folder ("Reborn-xxx-windows>Scripts>Reborn"). Manually make the change needed by finding the languages array in the settings file, that should look like this:
+5. **[Legacy Instructions: Game Version < 19.5.38]**
+   For the Terra Readability mod, you will need to place the `blindstep.dat` file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a "patch>Data" folder. You also need to add the "blindstep" language in the languages array in the `settings.rb` file, in the "Scripts>Reborn" folder ("Reborn-xxx-windows>Scripts>Reborn"). Manually make the change needed by finding the languages array in the settings file, that should look like this:
 
     ```Settings.rb
     LANGUAGES = [
@@ -101,7 +105,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 
 ### Notes for Mods & Terra Readability Installation
 
-- **Do not change the names of any files, as it will likely break something due to the fact that the game loads the modfiles in alphabetical order and looks for specific files for the Terra Readability to work**.
+- **Do not change the names of any files**, as it will likely break something due to the fact that the game loads the modfiles in alphabetical order. **If using the legacy Terra Readability mod**, the game specifically looks for those file names to work.
 - **The auto walk mod requires the pathfind mod to be installed to work**.
 
 ## Custom Event Naming (Community Project)
@@ -152,87 +156,3 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 ``` plaintext
 # map_id;optional_map_name;coord_x;coord_y;event_name;optional_description
 586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
-```
-
-### How to Ignore Specific Events
-
-If there is an event you never want to interact with (e.g., a "junk" event or a repetitive object), you can hide it from the scanner list.
-
-1. Select the event with the scanner using the J and L keys.
-2. Press Shift + K to rename the event.
-3. When prompted for a name, type Ignore. (This is not case-sensitive, so ignore or IGNORE also work).
-4. You can skip the description field.
-5. Press F5 to refresh the event list.
-The event will no longer be loaded into the scanner list for that map.
-
-### Naming Events & Contributing to the Community File
-
-This feature allows you to replace generic event names like "ev12" with meaningful ones. You can create your own personal names for events, and we highly encourage you to contribute these names to the community so everyone can benefit.
-
-#### How to Create Your Own Custom Names
-
-This is the primary method for both personal use and for contributing.
-
-1. While in-game, find an event you want to name and select it with the scanner using the **J** and **L** keys.
-2. Press **Shift + K**.
-3. A text box will appear, prompting you for a new name.
-4. A second text box will then appear, prompting for an optional but highly recommended description.
-
-After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your root Pokémon Reborn folder.
-
-#### How to Contribute to the Community File
-
-The easiest and best way to contribute is to use the in-game renaming feature first. This prevents any typos in the map or coordinate data.
-
-1. **Rename an Event In-Game:** Follow the steps above to give a meaningful name to a generic event.
-2. **Find Your Local File:** Open the `pra-custom-names.txt` file located in your root Pokémon Reborn game folder.
-3. **Copy the New Line:** Find the new line that was just added for the event you renamed. It will look something like this:
-    `586;Azurine Island;36;29;Pokemon trainer;Battle, mandatory.`
-4. **Paste into the Community Doc:** Copy that entire line and paste it into a new line in the community Google Doc.
-    - **Link to the Community Google Doc:** **[Custom community file](https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing)**
-
-**Important Rule:** Please do not use semicolons (`;`) in the names or descriptions you create, as this character is used to separate the data fields.
-
-For those new to using Google Docs with a screen reader, this guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
-
-Also, do note that, while the document can be publicly viewed, only allowed people have editing permissions. If you are a new contributor and would like to be able to edit the document, just request editing access via the Docs menu and [message me on Discord](https://www.discordapp.com/users/427201804061638681) so I can know you are not a random person who requested that.
-
-## Report a Problem or Suggest a Feature
-
-If you find a bug or documentation issue, or just want to suggest a feature, your contribution is appreciated! Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates,
-
-Or post in [the mod's forum thread](https://www.rebornevo.com/forums/topic/79433-pokemon-reborn-access-pra-mods-to-enhance-accessibility-in-pokemon-reborn/).
-
-You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/rebornevo/) on Discord, and post in the `#zero-vision-reborn-blindstep` channel, or even dm me there.
-
-## Known Bugs
-
-- Pathfinder is not able to find routes inside Nightclub.
-- Event cycling in wasteland makes the game music break.
-
-## Contributing
-
-Contributions from other developers are welcome and greatly appreciated! If you have an idea for a new feature or a bug fix, here's how you can help.
-
-1. **Fork the Repository**: Start by creating your own copy (a "fork") of the project on GitHub.
-2. **Create a New Branch**: Make all your changes on a dedicated branch in your fork, not on the `main` branch. This makes it easier to review and merge your changes.
-3. **Make Your Changes**: Implement your new feature or bug fix in the code.
-4. **Submit a Pull Request**: When your changes are ready, submit a "Pull Request" from your branch to the main project. Please provide a clear description of the changes you've made.
-
-For simple bug reports and feature suggestions, please continue to use the [issues page](https://www.google.com/search?q=%23report-a-bug-or-suggest-a-feature).
-
-## Credits
-
-- [Aironfaar's Mod Box](https://www.rebornevo.com/forums/topic/40480-aironfaars-mod-box-e19updated-2022-05-22/) — for the original Gone Fishing mod.
-- [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
-- [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
-- [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
-- [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
-- [Wire](https://github.com/yrsegal/crawli-support-pack) — for fixing jumping ledges issues.
-- KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
-- Maulpaul — for implementing the auto walk mod.
-- The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
-
----
-
-Happy gaming!
