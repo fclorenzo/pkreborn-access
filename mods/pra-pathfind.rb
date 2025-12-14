@@ -1093,58 +1093,22 @@ end
 
 class Game_Character
   def passableEx?(x, y, d, strict = false, map = self.map)
+    bit = (1 << (d / 2 - 1)) & 0x0f
     new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
     new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
     return false unless map.valid?(new_x, new_y)
     return true if @through
-
-    # --- NEW LEDGE LOGIC START ---
-    current_tile_tag = map.terrain_tag(x, y)
-    is_ledge = (current_tile_tag == PBTerrain::Ledge || current_tile_tag == PBTerrain::DownConveyor || current_tile_tag == PBTerrain::UpConveyor ||
-                 current_tile_tag == PBTerrain::LeftConveyor || current_tile_tag == PBTerrain::RightConveyor || current_tile_tag == PBTerrain::Grime ||
-                 current_tile_tag == PBTerrain::Grass || current_tile_tag == PBTerrain::TallGrass || current_tile_tag == PBTerrain::Sand || current_tile_tag == PBTerrain::Rock ||
-                 current_tile_tag == PBTerrain::Ice || current_tile_tag == PBTerrain::Water || current_tile_tag == PBTerrain::WaterfallCrest || current_tile_tag == PBTerrain::Waterfall || current_tile_tag == PBTerrain::DeepWater ||
-                 current_tile_tag == PBTerrain::StillWater || current_tile_tag == PBTerrain::Puddle || current_tile_tag == PBTerrain::SootGrass || current_tile_tag == PBTerrain::Waterfall || current_tile_tag == PBTerrain::Lava ||
-                 current_tile_tag == PBTerrain::UnderwaterGrass || current_tile_tag == PBTerrain::Neutral || current_tile_tag == PBTerrain::Bridge || current_tile_tag == PBTerrain::PokePuddle || current_tile_tag == PBTerrain::Dummy || current_tile_tag == PBTerrain::SandDune || current_tile_tag == PBTerrain::PokeSand)
-    
-    # --- DEBUGGING LINE ---
-    #tts("Found ledge") if is_ledge && d == 2
-    # --- END DEBUGGING ---
-    
-    # --- NEW LEDGE LOGIC END ---
-
     if strict
-      # 1. Check if we can move FROM (x,y) TO (new_x, new_y)
       return false unless map.passableStrict?(x, y, d, self)
-      
-      # 2. Check for the reverse path, UNLESS we are jumping down a ledge
-      unless is_ledge && d == 2
-        return false unless map.passableStrict?(new_x, new_y, 10 - d, self)
-      end
-      
-      # --- DEBUGGING LINE ---
-      tts("Ledge bypass successful") if is_ledge && d == 2
-      # --- END DEBUGGING ---
-      
+      return false unless map.passableStrict?(new_x, new_y, 10 - d, self)
     else
-      # 1. Check if we can move FROM (x,y) TO (new_x, new_y)
       return false unless map.passable?(x, y, d, self)
-      
-      # 2. Check for the reverse path, UNLESS we are jumping down a ledge
-      unless is_ledge && d == 2
-        return false unless map.passable?(new_x, new_y, 10 - d, self)
-      end
-      
-      # --- DEBUGGING LINE ---
-      #tts("Ledge bypass successful") if is_ledge && d == 2
-      # --- END DEBUGGING ---
-      
+      return false unless map.passable?(new_x, new_y, 10 - d, self)
     end
-    
     for event in map.events.values
       if event.x == new_x and event.y == new_y
         unless event.through
-          return false if self != $game_player || event.character_name != ""
+          return false if self != $game_player || event.character_name != "" || $game_map.passages[event.tile_id] & bit != 0
         end
       end
     end
