@@ -215,7 +215,7 @@ alias_method :access_mod_original_initialize, :initialize
 
 def cycle_hm_toggle
   # --- Safeguard for old save files ---
-  if @hm_toggle_modes.nil?
+  if @hm_toggle_modes.nil? || !@hm_toggle_modes.include?(:surf_and_waterfall)
     @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
     @hm_toggle_index = 0
   end
