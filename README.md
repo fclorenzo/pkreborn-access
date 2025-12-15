@@ -20,7 +20,7 @@ The project is modular. You can choose to install the features you want.
 - **Gone Fishing Mod (`pra-gone-fishing.rb`)**: Automates the fishing mini-game by removing the need to press a button when a Pokémon bites.
 - **Terra Readability Mod (`blindstep.dat` & `Settings.rb`) [Legacy]**: Replaces all instances of Terra's leet speak with English.
   - **Note:** As of game version **19.5.38**, this feature has been integrated into the base game and these files are no longer included in the latest mod releases.
-  - **For older game versions:** If you are playing a version older than 19.5.38, please download **Release v2.12.4** to get these files.
+  - **For older game versions:** If you are playing a version older than 19.5.38, you must download the `blindstep.dat` and `settings.rb` files from **[Release v2.12.4](https://github.com/fclorenzo/pkreborn-access/releases/tag/v2.12.4)**.
 
 ## Controls
 
@@ -34,16 +34,18 @@ The project is modular. You can choose to install the features you want.
   - `Items`,
   - `Merchants`,
   - `Signs`,
-  - `Hidden Items`.
+  - `Hidden Items`,
+  - `Notes` (Events with custom notes attached).
 - **J, K and L**: Announce previous, current, and next event in the events list.
-- **Shift + P**: Announce the X and Y coordinates of the selected event, as well as a description, if any exists.
+- **N**: Announce the custom notes for the selected event (if any exist).
+- **Shift + P**: Announce the X and Y coordinates of the selected event, and indicate if the event has notes attached.
 - **P**: Announce the path for the selected event, or auto walk to it if the auto walk toggle is on.
 - **H**: Cycle through HM pathfinding modes. The available modes are:
   - `Off`,
   - `Surf Only`,
   - `Surf & Waterfall`.
 - **Shift + H**: Toggle distance sorting of events on or off.
-- **Shift + K**: Rename the selected event.
+- **Shift + K**: Rename the selected event and add optional notes.
 - **T**: Place the marker to a given x and y coordinates.
 - **Q**: Get directions to the placed coordinates, or auto walk to them if the auto walk toggle is on.
 - **R**: Toggle auto walk on or off.
@@ -75,7 +77,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 1. Download the mod files by going to [the latest release page](https://github.com/fclorenzo/pkreborn-access/releases/latest).
 2. Locate the `assets` section.
 3. Under that section, you will find the mod files. Download the files for the features you wish to use.
-    - **Note:** If you need the **Terra Readability Mod** (for game versions older than 19.5.38), you must download them from **[Release v2.12.4](https://github.com/fclorenzo/pkreborn-access/releases/tag/v2.12.4)**, as they are no longer included in the latest version.
+    - **Note:** If you need the **Terra Readability Mod** (for game versions older than 19.5.38), you must download the `blindstep.dat` and `settings.rb` files from **[Release v2.12.4](https://github.com/fclorenzo/pkreborn-access/releases/tag/v2.12.4)**, as they are no longer included in the latest version.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-windows>patch" (where "xxx" corresponds to your game version), and paste the file(s) you just downloaded there.
 5. **[Legacy Instructions: Game Version < 19.5.38]**
    For the Terra Readability mod, you will need to place the `blindstep.dat` file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a "patch>Data" folder. You also need to add the "blindstep" language in the languages array in the `settings.rb` file, in the "Scripts>Reborn" folder ("Reborn-xxx-windows>Scripts>Reborn"). Manually make the change needed by finding the languages array in the settings file, that should look like this:
@@ -149,12 +151,12 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 | 3 | `coord_x` | Yes | The event's X coordinate on the map. |
 | 4 | `coord_y` | Yes | The event's Y coordinate on the map. |
 | 5 | `event_name` | Yes | The new, meaningful name you want the mod to announce. |
-| 6 | `optional_description`| No | An optional description. This is announced when you press `Shift+P`. |
+| 6 | `notes` | No | Optional notes (e.g., instructions). These are announced when you press **N**. |
 
 **Example:**
 
 ``` plaintext
-# map_id;optional_map_name;coord_x;coord_y;event_name;optional_description
+# map_id;optional_map_name;coord_x;coord_y;event_name;notes
 586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
 ````
 
@@ -162,11 +164,11 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 
 If there is an event you never want to interact with (e.g., a "junk" event or a repetitive object), you can hide it from the scanner list.
 
-1. Select the event with the scanner using the J and L keys.
-2. Press Shift + K to rename the event.
-3. When prompted for a name, type Ignore. (This is not case-sensitive, so ignore or IGNORE also work).
-4. You can skip the description field.
-5. Press F5 to refresh the event list.
+1. Select the event with the scanner using the **J** and **L** keys.
+2. Press **Shift + K** to rename the event.
+3. When prompted for a name, type **Ignore**. (This is not case-sensitive, so `ignore` or `IGNORE` also work).
+4. You can skip the notes field.
+5. Press **F5** to refresh the event list.
     The event will no longer be loaded into the scanner list for that map.
 
 ### Naming Events & Contributing to the Community File
@@ -180,7 +182,7 @@ This is the primary method for both personal use and for contributing.
 1. While in-game, find an event you want to name and select it with the scanner using the **J** and **L** keys.
 2. Press **Shift + K**.
 3. A text box will appear, prompting you for a new name.
-4. A second text box will then appear, prompting for an optional but highly recommended description.
+4. A second text box will then appear, prompting for optional but highly recommended notes.
 
 After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your root Pokémon Reborn folder.
 
@@ -195,7 +197,7 @@ The easiest and best way to contribute is to use the in-game renaming feature fi
 4. **Paste into the Community Doc:** Copy that entire line and paste it into a new line in the community Google Doc.
       - **Link to the Community Google Doc:** **[Custom community file](https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing)**
 
-**Important Rule:** Please do not use semicolons (`;`) in the names or descriptions you create, as this character is used to separate the data fields.
+**Important Rule:** Please do not use semicolons (`;`) in the names or notes you create, as this character is used to separate the data fields.
 
 For those new to using Google Docs with a screen reader, this guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
 
@@ -203,7 +205,7 @@ Also, do note that, while the document can be publicly viewed, only allowed peop
 
 ## Report a Problem or Suggest a Feature
 
-If you find a bug or documentation issue, or just want to suggest a feature, your contribution is appreciated Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates,
+If you find a bug or documentation issue, or just want to suggest a feature, your contribution is appreciated! Please use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues) after checking for duplicates,
 
 Or post in [the mod's forum thread](https://www.rebornevo.com/forums/topic/79433-pokemon-reborn-access-pra-mods-to-enhance-accessibility-in-pokemon-reborn/).
 
@@ -212,7 +214,7 @@ You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/r
 ## Known Bugs
 
 - Pathfinder is not able to find routes inside Nightclub.
-- Event cycling in wasteland makes the game music break.
+  - Event cycling in wasteland makes the game music break.
 
 ## Contributing
 
@@ -228,14 +230,14 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 ## Credits
 
 - [Aironfaar's Mod Box](https://www.rebornevo.com/forums/topic/40480-aironfaars-mod-box-e19updated-2022-05-22/) — for the original Gone Fishing mod.
-- [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
-- [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
-- [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
-- [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
-- [Wire](https://github.com/yrsegal/crawli-support-pack) — for fixing jumping ledges issues.
-- KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
-- Maulpaul — for implementing the auto walk mod.
-- The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
+  - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
+  - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
+  - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
+  - [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
+  - [Wire](https://github.com/yrsegal/crawli-support-pack) — for fixing jumping ledges issues.
+  - KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
+  - Maulpaul — for implementing the auto walk mod.
+  - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
 -----
 
