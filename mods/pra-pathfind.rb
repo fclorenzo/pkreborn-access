@@ -237,10 +237,11 @@ def cycle_hm_toggle
 end
 
 def cycle_event_filter(direction = 1)
-  # --- Safeguard to initialize variables if they don't exist ---
-  if @event_filter_modes.nil?
-    # This will run once when loading an old save file
+  # --- Safeguard/Update for old save files ---
+  # Check if nil OR if the list is missing the new :notes filter
+  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes)
     @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
+    # Reset index to be safe if we changed the array
     @event_filter_index = 0
   end
   
@@ -613,8 +614,8 @@ def pathfind_to_selected_event
 end
 
 def populate_event_list
-  # --- Safeguard to initialize variables if they don't exist ---
-  if @event_filter_modes.nil?
+  # --- Safeguard/Update to initialize variables if they don't exist or are outdated ---
+  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes)
     @mapevents = []
     @selected_event_index = -1
     @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
