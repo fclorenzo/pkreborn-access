@@ -214,7 +214,7 @@ You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/r
 ## Known Bugs
 
 - Pathfinder is not able to find routes inside Nightclub.
-  - Event cycling in wasteland makes the game music break.
+- Event cycling in wasteland makes the game music break.
 
 ## Contributing
 
