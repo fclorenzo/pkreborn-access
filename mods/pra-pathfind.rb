@@ -4,6 +4,12 @@ class Game_Player < Game_Character
     # First, call the original update method (which includes the running logic)
     access_mod_original_update
 
+    # If the player enters a new map, refresh the list
+    if @last_map_id != $game_map.map_id
+      @last_map_id = $game_map.map_id
+      populate_event_list
+    end
+
     # Then, execute the mod's logic
     # If not moving
     unless moving?
