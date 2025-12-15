@@ -230,14 +230,14 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 ## Credits
 
 - [Aironfaar's Mod Box](https://www.rebornevo.com/forums/topic/40480-aironfaars-mod-box-e19updated-2022-05-22/) — for the original Gone Fishing mod.
-  - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
-  - [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
-  - [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
-  - [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
-  - [Wire](https://github.com/yrsegal/crawli-support-pack) — for fixing jumping ledges issues.
-  - KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
-  - Maulpaul — for implementing the auto walk mod.
-  - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
+- [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
+- [Malta10's pathfinding mod](https://www.rebornevo.com/forums/topic/55210-accessibility-mod-pack-reborn/) — for the original pathfinding mod implementation.
+- [The Pokémon Access Project](https://github.com/nuive/pokemon-access) — for inspiring the idea to build something similar for Reborn.
+- [Enu](https://www.rebornevo.com/forums/profile/55272-enu/) — for helping me to understand Reborn's codebase.
+- [Wire](https://github.com/yrsegal/crawli-support-pack) — for fixing jumping ledges issues.
+- KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
+- Maulpaul — for implementing the auto walk mod.
+- The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
 -----
 
