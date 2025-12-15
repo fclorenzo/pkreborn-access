@@ -67,7 +67,13 @@ class Game_Player < Game_Character
         # PATHFIND to the current event (P)
       elsif Input.triggerex?(0x50)
           pathfind_to_selected_event
-        end
+      end
+
+      # Announce Notes (N)
+      if Input.triggerex?(0x4E)
+        announce_selected_notes
+      end
+
 # --- Coordinate Marker (T to set, Alt+P to pathfind) ---
 # Press T to enter X/Y marker
 if Input.triggerex?(0x54)   # T key
@@ -114,7 +120,7 @@ alias_method :access_mod_original_initialize, :initialize
     # Now, set up the mod's variables correctly
     @mapevents = []
     @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
     @event_filter_index = 0
     @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
     @hm_toggle_index = 0 # Default to :off
@@ -234,7 +240,7 @@ def cycle_event_filter(direction = 1)
   # --- Safeguard to initialize variables if they don't exist ---
   if @event_filter_modes.nil?
     # This will run once when loading an old save file
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
     @event_filter_index = 0
   end
   
@@ -266,8 +272,8 @@ def rename_selected_event
   
   # Check if the user entered a valid, non-blank name
   if new_name && !new_name.strip.empty?
-    # Prompt user for an optional description
-    new_desc = Kernel.pbMessageFreeText(_INTL("Enter an optional description (max 500 characters)."), "", false, 500)
+    # Prompt user for an optional description/note
+    new_note = Kernel.pbMessageFreeText(_INTL("Enter optional notes (max 500 characters)."), "", false, 500)
 
     # Gather all necessary data
     map_id = $game_map.map_id
@@ -280,7 +286,7 @@ def rename_selected_event
     value = {
       map_name: map_name,
       event_name: new_name,
-      description: new_desc || ""
+      notes: new_note || ""
     }
 
     # Update the in-memory hash
@@ -507,12 +513,26 @@ def announce_selected_coordinates
   key = "#{$game_map.map_id};#{event.x};#{event.y}"
   custom_name_data = $custom_event_names[key]
   
-  # Check if custom data exists and has a non-empty description
-  if custom_name_data && custom_name_data[:description] && !custom_name_data[:description].strip.empty?
-    announcement += ". #{custom_name_data[:description]}"
+  # Check if custom data exists and has a non-empty notes field
+  if custom_name_data && custom_name_data[:notes] && !custom_name_data[:notes].strip.empty?
+    announcement += ". Has notes."
   end
   
   tts(announcement)
+end
+
+def announce_selected_notes
+  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
+  event = @mapevents[@selected_event_index]
+  
+  key = "#{$game_map.map_id};#{event.x};#{event.y}"
+  custom_name_data = $custom_event_names[key]
+  
+  if custom_name_data && custom_name_data[:notes] && !custom_name_data[:notes].strip.empty?
+    tts("Notes: #{custom_name_data[:notes]}")
+  else
+    tts("No notes available for this event.")
+  end
 end
 
 def announce_selected_event
@@ -597,7 +617,7 @@ def populate_event_list
   if @event_filter_modes.nil?
     @mapevents = []
     @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items]
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
     @event_filter_index = 0
   end
 
@@ -610,6 +630,17 @@ def populate_event_list
   for event in $game_map.events.values
     next if !event.list || event.list.size <= 1
     next if event.trigger == 3 || event.trigger == 4 # Ignore Autorun and Parallel
+
+    # --- Ignore Logic Fix ---
+    # Create a unique key to check for a custom name
+    key = "#{$game_map.map_id};#{event.x};#{event.y}"
+    custom_name_data = $custom_event_names[key]
+
+    # If a custom name exists, check if it's "ignore" (case-insensitive)
+    if custom_name_data && custom_name_data[:event_name] &&
+       custom_name_data[:event_name].strip.downcase == "ignore"
+      next # Skip this event and move to the next one
+    end
 
     # Apply the selected filter
     case current_filter
@@ -629,8 +660,18 @@ def populate_event_list
       other_events.push(event) if is_merchant_event?(event)
     when :signs
       other_events.push(event) if is_sign_event?(event)
-      when :hidden_items  # --- ADD THIS NEW CASE ---
+    when :hidden_items
       other_events.push(event) if is_hidden_item_event?(event)
+    when :notes
+      # Check if the event has a note attached
+      has_note = custom_name_data && custom_name_data[:notes] && !custom_name_data[:notes].strip.empty?
+      if has_note
+        if is_teleport_event?(event)
+          connections.push(event)
+        else
+          other_events.push(event)
+        end
+      end
     end
   end
   # Run de-duplication on connections, regardless of filter
@@ -1165,7 +1206,7 @@ def load_custom_names
       # Ensure the line has at least the minimum required columns
       next if parts.length < 5 
       
-      map_id, map_name, x, y, event_name, description = parts
+      map_id, map_name, x, y, event_name, notes = parts
       
       # Create a unique key from the map ID and coordinates
       key = "#{map_id};#{x};#{y}"
@@ -1174,7 +1215,7 @@ def load_custom_names
       $custom_event_names[key] = {
         map_name: map_name,
         event_name: event_name,
-        description: description || ""
+        notes: notes || ""
       }
     end
   end
@@ -1191,7 +1232,7 @@ def save_custom_names
     #
     # --- FORMAT ---
     # Each line must have 6 fields, separated by a semicolon (;).
-    # map_id;map_name;coord_x;coord_y;event_name;description
+    # map_id;map_name;coord_x;coord_y;event_name;notes
     #
     # --- HOW TO GET DATA ---
     # Use the in-game scanner to select an event.
@@ -1199,7 +1240,7 @@ def save_custom_names
     # - Press 'Shift+P' to get the X and Y coordinates.
     #
     # --- IMPORTANT ---
-    # - Do NOT use semicolons (;) in any of the names or descriptions.
+    # - Do NOT use semicolons (;) in any of the names or notes.
     # - You can also create entries in-game by pressing Shift+K on a selected event.
     #
     # For the full, detailed guide, please visit the project's README on GitHub:
@@ -1224,7 +1265,7 @@ def save_custom_names
         x,
         y,
         value[:event_name],
-        value[:description]
+        value[:notes]
       ].join(";")
       
       file.puts(line)
