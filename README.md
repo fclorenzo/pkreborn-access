@@ -26,7 +26,8 @@ The project is modular. You can choose to install the features you want.
 
 ### Map Controls
 
-- **F5**: Refresh the scanner's list of events on the current map.
+- **F5**: Manually refresh the scanner's list of events on the current map.
+- **Shift + F5**: Toggle auto-refresh of the event list when entering a new map (On/Off).
 - **O and I**: Cycle forward and backward through event filters. The available filters are:
   - `All`,
   - `Connections`,
@@ -38,6 +39,7 @@ The project is modular. You can choose to install the features you want.
   - `Notes` (Events with custom notes attached).
 - **J, K and L**: Announce previous, current, and next event in the events list.
 - **N**: Announce the custom notes for the selected event (if any exist).
+- **Shift + N**: Add a note to the selected event without changing its name.
 - **Shift + P**: Announce the X and Y coordinates of the selected event, and indicate if the event has notes attached.
 - **P**: Announce the path for the selected event, or auto walk to it if the auto walk toggle is on.
 - **H**: Cycle through HM pathfinding modes. The available modes are:
@@ -180,9 +182,9 @@ This feature allows you to replace generic event names like "ev12" with meaningf
 This is the primary method for both personal use and for contributing.
 
 1. While in-game, find an event you want to name and select it with the scanner using the **J** and **L** keys.
-2. Press **Shift + K**.
-3. A text box will appear, prompting you for a new name.
-4. A second text box will then appear, prompting for optional but highly recommended notes.
+2. Press **Shift + K** to rename an event, or **Shift + N** to just add a note.
+3. A text box will appear, prompting you for input.
+4. If using Shift + K, a second text box will appear for optional notes.
 
 After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your root Pokémon Reborn folder.
 
