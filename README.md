@@ -36,7 +36,7 @@ The project is modular. You can choose to install the features you want.
   - `Merchants`,
   - `Signs`,
   - `Hidden Items`,
-  - `Notes` (Events with custom notes attached).
+  - `Notes` (Events with custom notes attached),
   - `Points of Interest` (Custom user-created markers).
 - **J, K and L**: Announce previous, current, and next event in the events list.
 - **Shift + J**: Toggle **Auto-Walk** On/Off.
@@ -71,7 +71,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 
 1. [Download the game here](https://www.rebornevo.com/pr/index.html/).
 2. Extract the ZIP folder and run the game.
-3. If prompted, apply updates. If updates break the mod, please [submit an issue](https://github.com/fclorenzo/pkreborn-access/issues).
+3. If prompted, apply updates. If updates break the mod, please [submit an issue](https://github.com/fclorenzo/pkreborn-access/issues/new/choose).
 4. When asked for special instructions, choose “Yes” and enter the password "blindstep" to enable in-game accessibility features.
 
 ### Install the Mods
@@ -140,7 +140,7 @@ If there is an event you never want to interact with (e.g., a "junk" event), you
 
 1. Select the event with the scanner.
 2. Press **Shift + K** to rename the event.
-3. Type **Ignore** as the name.
+3. Type **ignore** as the name (This is not case-sensitive, so **Ignore** or **IGNORE** also work).
 4. Press **F5** to refresh the list. The event will vanish.
 
 ### File Format Explained
@@ -163,7 +163,6 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
 # Virtual PoI
 586;Azurine Island;40;30;Good Fishing Spot;Use Good Rod here.
-
 ```
 
 **Important Rule:** Please do not use semicolons (`;`) in the names or notes you create, as this character is used to separate the data fields.
