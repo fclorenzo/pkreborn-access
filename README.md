@@ -37,20 +37,20 @@ The project is modular. You can choose to install the features you want.
   - `Signs`,
   - `Hidden Items`,
   - `Notes` (Events with custom notes attached).
+  - `Points of Interest` (Custom user-created markers).
 - **J, K and L**: Announce previous, current, and next event in the events list.
+- **Shift + J**: Toggle **Auto-Walk** On/Off.
+- **Shift + K**: Rename the selected event and add optional notes.
+- **Shift + L**: Create a **Point of Interest (PoI)** at custom coordinates.
 - **N**: Announce the custom notes for the selected event (if any exist).
 - **Shift + N**: Add a note to the selected event without changing its name.
 - **Shift + P**: Announce the X and Y coordinates of the selected event, and indicate if the event has notes attached.
-- **P**: Announce the path for the selected event, or auto walk to it if the auto walk toggle is on.
+- **P**: Announce the path to the selected event. **If Auto-Walk is ON**, this will automatically walk the player to the target.
 - **H**: Cycle through HM pathfinding modes. The available modes are:
   - `Off`,
   - `Surf Only`,
   - `Surf & Waterfall`.
 - **Shift + H**: Toggle distance sorting of events on or off.
-- **Shift + K**: Rename the selected event and add optional notes.
-- **T**: Place the marker to a given x and y coordinates.
-- **Q**: Get directions to the placed coordinates, or auto walk to them if the auto walk toggle is on.
-- **R**: Toggle auto walk on or off.
 
 ### Pokémon Party Menu Controls
 
@@ -112,35 +112,36 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
 - **Do not change the names of any files**, as it will likely break something due to the fact that the game loads the modfiles in alphabetical order. **If using the legacy Terra Readability mod**, the game specifically looks for those file names to work.
 - **The auto walk mod requires the pathfind mod to be installed to work**.
 
-## Custom Event Naming (Community Project)
+## Custom Event Naming & Points of Interest
 
-**The Problem:** As many players know, the scanner often announces generic event names like "ev12" or "Interactable object." This makes it difficult to know what you are navigating to.
+This mod allows you to customize the names of events and create your own virtual markers (Points of Interest) to make navigation easier.
 
-**The Solution:** This feature allows the mod to read from a simple text file, `pra-custom-names.txt`, to replace those generic names with meaningful, human-readable ones (e.g., "Rival Battle 1" or "Hidden Moon Stone"). This file is a collaborative community effort, and your contributions are what will make it great.
+### Naming Existing Events
 
-### How to Use the Community Names File
+1. Select an event with the scanner (**J** / **L** keys).
+2. Press **Shift + K**.
+3. Enter a new name (e.g., "Healing Machine") and an optional note.
+4. The event will now appear with this name in your list.
+5. You can filter for these by pressing **O** until you hear "Filter set to Notes".
 
-1. **Download the File:**
-    - **a.** Open the link to the community file: **[Custom community file](https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing)**
-    - **b.** In the menu bar at the top of the page, select **File**.
-    - **c.** From the File menu, move your cursor down to **Download**.
-    - **d.** A new sub-menu will appear. From this list, select **Plain Text (.txt)**.
-    - **e.** Your browser will now download the file.
+### Creating Points of Interest (PoIs)
 
-2. **Place and Rename the File:**
-    - Find the file you just downloaded.
-    - Make sure the file is named exactly **`pra-custom-names.txt`**.
-    - Place this renamed file into your root Pokémon Reborn game folder (the same folder that contains `Game.exe`). The mod will automatically detect and load it the next time you start the game.
+Points of Interest are virtual events you create yourself at specific coordinates. They behave just like real events in the scanner.
 
-### How to Find Event Information
+1. Press **Shift + L**.
+2. Enter the X and Y coordinates (defaults to your current position).
+3. Give the PoI a name and an optional note.
+4. The PoI will be created and added to your list immediately.
+5. You can filter for these by pressing **O** until you hear "Filter set to Points of Interest".
 
-If you want to find an event in the file or manually add a new one, you first need to get its unique identifiers. The mod makes this easy:
+### How to Ignore Specific Events
 
-1. Use the **J** and **L** keys to select the event with the scanner.
-2. Press **Shift + P** to hear the event's coordinates (e.g., "Coordinates: X 36, Y 29").
-3. Press the **D** key to hear the map information (e.g., "Map 586, Azurine Island").
+If there is an event you never want to interact with (e.g., a "junk" event), you can hide it from the scanner list.
 
-You now have all the information (`map_id`, `coord_x`, and `coord_y`) you need to find or add that specific event in the `pra-custom-names.txt` file.
+1. Select the event with the scanner.
+2. Press **Shift + K** to rename the event.
+3. Type **Ignore** as the name.
+4. Press **F5** to refresh the list. The event will vanish.
 
 ### File Format Explained
 
@@ -158,52 +159,14 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 **Example:**
 
 ``` plaintext
-# map_id;optional_map_name;coord_x;coord_y;event_name;notes
+# Real Event
 586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
-````
+# Virtual PoI
+586;Azurine Island;40;30;Good Fishing Spot;Use Good Rod here.
 
-### How to Ignore Specific Events
-
-If there is an event you never want to interact with (e.g., a "junk" event or a repetitive object), you can hide it from the scanner list.
-
-1. Select the event with the scanner using the **J** and **L** keys.
-2. Press **Shift + K** to rename the event.
-3. When prompted for a name, type **Ignore**. (This is not case-sensitive, so `ignore` or `IGNORE` also work).
-4. You can skip the notes field.
-5. Press **F5** to refresh the event list.
-    The event will no longer be loaded into the scanner list for that map.
-
-### Naming Events & Contributing to the Community File
-
-This feature allows you to replace generic event names like "ev12" with meaningful ones. You can create your own personal names for events, and we highly encourage you to contribute these names to the community so everyone can benefit.
-
-#### How to Create Your Own Custom Names
-
-This is the primary method for both personal use and for contributing.
-
-1. While in-game, find an event you want to name and select it with the scanner using the **J** and **L** keys.
-2. Press **Shift + K** to rename an event, or **Shift + N** to just add a note.
-3. A text box will appear, prompting you for input.
-4. If using Shift + K, a second text box will appear for optional notes.
-
-After you're done, the mod automatically gathers the Map ID, Map Name, and coordinates, and saves a perfectly formatted entry to your local `pra-custom-names.txt` file, located in your root Pokémon Reborn folder.
-
-#### How to Contribute to the Community File
-
-The easiest and best way to contribute is to use the in-game renaming feature first. This prevents any typos in the map or coordinate data.
-
-1. **Rename an Event In-Game:** Follow the steps above to give a meaningful name to a generic event.
-2. **Find Your Local File:** Open the `pra-custom-names.txt` file located in your root Pokémon Reborn game folder.
-3. **Copy the New Line:** Find the new line that was just added for the event you renamed. It will look something like this:
-    `586;Azurine Island;36;29;Pokemon trainer;Battle, mandatory.`
-4. **Paste into the Community Doc:** Copy that entire line and paste it into a new line in the community Google Doc.
-      - **Link to the Community Google Doc:** **[Custom community file](https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing)**
+```
 
 **Important Rule:** Please do not use semicolons (`;`) in the names or notes you create, as this character is used to separate the data fields.
-
-For those new to using Google Docs with a screen reader, this guide is a fantastic resource: [Google Docs and NVDA Guide](https://docs.google.com/document/d/1J1oXAtwC7h8FpEY52TQWBwthTeAvdSv93RacuxkM0Rs/pub)
-
-Also, do note that, while the document can be publicly viewed, only allowed people have editing permissions. If you are a new contributor and would like to be able to edit the document, just request editing access via the Docs menu and [message me on Discord](https://www.discordapp.com/users/427201804061638681) so I can know you are not a random person who requested that.
 
 ## Report a Problem or Suggest a Feature
 
@@ -227,7 +190,7 @@ Contributions from other developers are welcome and greatly appreciated! If you 
 3. **Make Your Changes**: Implement your new feature or bug fix in the code.
 4. **Submit a Pull Request**: When your changes are ready, submit a "Pull Request" from your branch to the main project. Please provide a clear description of the changes you've made.
 
-For simple bug reports and feature suggestions, please continue to use the [issues page](https://www.google.com/search?q=%23report-a-bug-or-suggest-a-feature).
+For simple bug reports and feature suggestions, please continue to use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues).
 
 ## Credits
 
@@ -241,6 +204,6 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 - Maulpaul — for implementing the auto walk mod.
 - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
 
------
+---
 
 Happy gaming!

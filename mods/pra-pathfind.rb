@@ -1420,17 +1420,12 @@ def save_custom_names
   # --- Documentation Header ---
   header = <<~TEXT
     # Pokémon Reborn Access - Custom Event Names
-    # This file allows you to provide custom, meaningful names for in-game events.
+    # This file allows you to provide custom, meaningful names for in-game events, as well as ignoring events and creating your own Points of Interest.
     # The mod will automatically read this file when the game starts.
     #
     # --- FORMAT ---
     # Each line must have 6 fields, separated by a semicolon (;).
     # map_id;map_name;coord_x;coord_y;event_name;notes
-    #
-    # --- HOW TO GET DATA ---
-    # Use the in-game scanner to select an event.
-    # - Press 'D' to get the Map ID and Map Name.
-    # - Press 'Shift+P' to get the X and Y coordinates.
     #
     # --- IMPORTANT ---
     # - Do NOT use semicolons (;) in any of the names or notes.
@@ -1439,8 +1434,6 @@ def save_custom_names
     # For the full, detailed guide, please visit the project's README on GitHub:
     # [https://github.com/fclorenzo/pkreborn-access]
     #
-    # Link to the community-managed Google Doc:
-    # [https://docs.google.com/document/d/1OCNpQe4GQEQAycn-1AK4IINBfW09BkNd49YbTn7hiv0/edit?usp=sharing]
   TEXT
 
   File.open(CUSTOM_NAMES_FILE, "w") do |file|
