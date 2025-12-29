@@ -1193,7 +1193,6 @@ end
 
 class Game_Character
   def passableEx?(x, y, d, strict = false, map = self.map)
-    bit = (1 << (d / 2 - 1)) & 0x0f
     new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
     new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
     return false unless map.valid?(new_x, new_y)
@@ -1208,7 +1207,7 @@ class Game_Character
     for event in map.events.values
       if event.x == new_x and event.y == new_y
         unless event.through
-          return false if self != $game_player || event.character_name != "" || $game_map.passages[event.tile_id] & bit != 0
+          return false if self != $game_player || event.character_name != ""
         end
       end
     end
