@@ -45,22 +45,47 @@ class Game_Player < Game_Character
 
       # Make sure we have events to cycle through
       if !@mapevents.nil? && !@mapevents.empty?
-        # Cycle to the PREVIOUS event (J)
+        
+        # --- J Key Logic (Previous Event OR Toggle Auto-Walk) ---
         if Input.triggerex?(0x4A)
-          @selected_event_index -= 1
-          if @selected_event_index < 0
-            @selected_event_index = @mapevents.size - 1 # Wrap around
+          # If Shift is held: Toggle Auto-Walk (Shift+J)
+          if Input.pressex?(0x10)
+            if defined?($auto_walk)
+              $auto_walk = !$auto_walk
+              tts("Auto-Walk #{$auto_walk ? 'Enabled' : 'Disabled'}")
+            else
+              tts("Auto-Walk mod not installed.")
+            end
+          # If Shift is NOT held: Cycle Previous Event (J)
+          else
+            @selected_event_index -= 1
+            if @selected_event_index < 0
+              @selected_event_index = @mapevents.size - 1 # Wrap around
+            end
+            announce_selected_event
           end
-          announce_selected_event
         end
 
-        # Cycle to the NEXT event (L)
+        # --- L Key Logic (Next Event OR Place Marker) ---
         if Input.triggerex?(0x4C)
-          @selected_event_index += 1
-          if @selected_event_index >= @mapevents.size
-            @selected_event_index = 0 # Wrap around
+          # If Shift is held: Place Coordinate Marker (Shift+L)
+          if Input.pressex?(0x10)
+            x_text = Kernel.pbMessageFreeText("Enter target X:", "", false, 4)
+            y_text = Kernel.pbMessageFreeText("Enter target Y:", "", false, 4)
+            if x_text && y_text && !x_text.strip.empty? && !y_text.strip.empty?
+              @coord_marker = [x_text.to_i, y_text.to_i]
+              tts("Coordinate marker set to X #{@coord_marker[0]}, Y #{@coord_marker[1]}")
+            else
+              tts("Invalid coordinates, marker not set.")
+            end
+          # If Shift is NOT held: Cycle Next Event (L)
+          else
+            @selected_event_index += 1
+            if @selected_event_index >= @mapevents.size
+              @selected_event_index = 0 # Wrap around
+            end
+            announce_selected_event
           end
-          announce_selected_event
         end
 
         # Rename selected event (Shift+K)
@@ -667,9 +692,14 @@ def pathfind_to_selected_event
     end
   end
   
-  # Announce the final route, whether it was direct or an alternative
-  printInstruction(convertRouteToInstructions(route))
-end
+    # If Auto-Walk is ON and the method exists, start walking
+    if defined?($auto_walk) && $auto_walk && defined?(start_autowalk)
+      start_autowalk(route)
+    else
+      # Otherwise, just announce the instructions
+      printInstruction(convertRouteToInstructions(route))
+    end
+  end
 
 def populate_event_list
   # --- Safeguard/Update to initialize variables if they don't exist or are outdated ---
