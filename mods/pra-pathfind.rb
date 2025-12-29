@@ -340,8 +340,8 @@ end
 def cycle_event_filter(direction = 1)
   # --- Safeguard/Update for old save files ---
   # Check if nil OR if the list is missing the new :notes filter
-  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes)
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
+  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes) || !@event_filter_modes.include?(:pois)
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes, :pois]
     # Reset index to be safe if we changed the array
     @event_filter_index = 0
   end
@@ -358,7 +358,12 @@ def cycle_event_filter(direction = 1)
   
   # Announce the new filter mode
   current_filter = @event_filter_modes[@event_filter_index]
-  tts("Filter set to #{current_filter.to_s}")
+  
+  # Make the TTS announcement slightly friendlier
+  filter_name = current_filter.to_s.gsub('_', ' ').capitalize
+  filter_name = "Points of Interest" if current_filter == :pois
+  
+  tts("Filter set to #{filter_name}")
   
   # Automatically refresh the event list with the new filter
   populate_event_list
@@ -761,10 +766,10 @@ def pathfind_to_selected_event
 
 def populate_event_list
   # --- Safeguard/Update to initialize variables ---
-  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes)
+  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes) || !@event_filter_modes.include?(:pois)
     @mapevents = []
     @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes, :pois]
     @event_filter_index = 0
   end
 
@@ -817,6 +822,10 @@ def populate_event_list
           other_events.push(event)
         end
       end
+    when :pois
+      # Real events are not Virtual PoIs, so we skip them here.
+      # If you wanted to include real events that you manually renamed, you could add logic here,
+      # but for now, let's keep "PoIs" strictly for the virtual markers you created.
     end
   end
 
@@ -832,10 +841,8 @@ def populate_event_list
     if value[:event_name] && value[:event_name].strip.downcase == "ignore"
       next
     end
-    # -------------------------------------------------
 
     # Check if a REAL event already exists at this location
-    # If so, we handled it in the loop above (it's just a renamed event)
     already_exists = false
     for ev in $game_map.events.values
        if ev.x == ex && ev.y == ey
@@ -849,12 +856,11 @@ def populate_event_list
     ve = VirtualEvent.new(mid, ex, ey)
     
     # Apply Filter to Virtual Event
-    # PoIs fall under "All" and "Notes"
     case current_filter
     when :all
       other_events.push(ve)
-    when :notes
-      other_events.push(ve)
+    when :pois
+      other_events.push(ve) # This is the specific filter for them
     end
   end
 
