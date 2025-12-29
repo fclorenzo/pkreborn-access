@@ -70,14 +70,7 @@ class Game_Player < Game_Character
         if Input.triggerex?(0x4C)
           # If Shift is held: Place Coordinate Marker (Shift+L)
           if Input.pressex?(0x10)
-            x_text = Kernel.pbMessageFreeText("Enter target X:", "", false, 4)
-            y_text = Kernel.pbMessageFreeText("Enter target Y:", "", false, 4)
-            if x_text && y_text && !x_text.strip.empty? && !y_text.strip.empty?
-              @coord_marker = [x_text.to_i, y_text.to_i]
-              tts("Coordinate marker set to X #{@coord_marker[0]}, Y #{@coord_marker[1]}")
-            else
-              tts("Invalid coordinates, marker not set.")
-            end
+            create_poi
           # If Shift is NOT held: Cycle Next Event (L)
           else
             @selected_event_index += 1
@@ -179,6 +172,23 @@ alias_method :access_mod_original_initialize, :initialize
     end
   end
 
+# --- Helper class for Points of Interest (Virtual Events) ---
+  class VirtualEvent
+    attr_accessor :x, :y, :map_id
+    def initialize(map_id, x, y)
+      @map_id = map_id
+      @x = x
+      @y = y
+    end
+    
+    # Duck-typing: pretend to be a Game_Event for the scanner
+    def name; "Point of Interest"; end
+    def list; nil; end
+    def trigger; 0; end
+    def character_name; ""; end
+    def through; true; end # PoIs don't block movement
+  end
+
 # Checks if an event is a "Jump Event" (invisible event that forces a move route)
   def is_jump_event?(event, direction)
     return false if !event || !event.list
@@ -255,6 +265,54 @@ alias_method :access_mod_original_initialize, :initialize
     end
     return possibleTiles
   end
+
+def create_poi
+  # 1. Get Coordinates (Default to current player position)
+  default_x = $game_player.x
+  default_y = $game_player.y
+  
+  x_text = Kernel.pbMessageFreeText(_INTL("Enter X coordinate (default: #{default_x}):"), "", false, 4)
+  y_text = Kernel.pbMessageFreeText(_INTL("Enter Y coordinate (default: #{default_y}):"), "", false, 4)
+  
+  # Use defaults if input is empty
+  final_x = (x_text && !x_text.strip.empty?) ? x_text.to_i : default_x
+  final_y = (y_text && !y_text.strip.empty?) ? y_text.to_i : default_y
+  
+  # Validate bounds
+  unless $game_map.valid?(final_x, final_y)
+    tts("Invalid coordinates.")
+    return
+  end
+
+  # 2. Get Name
+  name = Kernel.pbMessageFreeText(_INTL("Enter name for this point of interest (max 100 chars):"), "", false, 100)
+  if name.nil? || name.strip.empty?
+    tts("Creation cancelled.")
+    return 
+  end
+  
+  # 3. Get Note
+  note = Kernel.pbMessageFreeText(_INTL("Enter optional note (max 500 chars):"), "", false, 500)
+  
+  # 4. Save to Custom Names
+  map_id = $game_map.map_id
+  map_name = $game_map.name
+  key = "#{map_id};#{final_x};#{final_y}"
+  
+  value = {
+    map_name: map_name,
+    event_name: name,
+    notes: note || ""
+  }
+  
+  $custom_event_names[key] = value
+  save_custom_names
+  
+  tts("PoI '#{name}' created at X #{final_x}, Y #{final_y}.")
+  
+  # Refresh list immediately so the player sees it
+  populate_event_list
+end
 
 def cycle_hm_toggle
   # --- Safeguard for old save files ---
@@ -702,7 +760,7 @@ def pathfind_to_selected_event
   end
 
 def populate_event_list
-  # --- Safeguard/Update to initialize variables if they don't exist or are outdated ---
+  # --- Safeguard/Update to initialize variables ---
   if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes)
     @mapevents = []
     @selected_event_index = -1
@@ -716,22 +774,21 @@ def populate_event_list
   connections = []
   other_events = []
 
+  # 1. Process Real Game Events
   for event in $game_map.events.values
     next if !event.list || event.list.size <= 1
     next if event.trigger == 3 || event.trigger == 4 # Ignore Autorun and Parallel
 
-    # --- Ignore Logic Fix ---
-    # Create a unique key to check for a custom name
+    # Check for custom name / ignore
     key = "#{$game_map.map_id};#{event.x};#{event.y}"
     custom_name_data = $custom_event_names[key]
 
-    # If a custom name exists, check if it's "ignore" (case-insensitive)
     if custom_name_data && custom_name_data[:event_name] &&
        custom_name_data[:event_name].strip.downcase == "ignore"
-      next # Skip this event and move to the next one
+      next 
     end
 
-    # Apply the selected filter
+    # Apply Filter
     case current_filter
     when :all
       if is_teleport_event?(event)
@@ -752,7 +809,6 @@ def populate_event_list
     when :hidden_items
       other_events.push(event) if is_hidden_item_event?(event)
     when :notes
-      # Check if the event has a note attached
       has_note = custom_name_data && custom_name_data[:notes] && !custom_name_data[:notes].strip.empty?
       if has_note
         if is_teleport_event?(event)
@@ -763,16 +819,54 @@ def populate_event_list
       end
     end
   end
-  # Run de-duplication on connections, regardless of filter
+
+  # 2. Process Virtual Events (PoIs from Custom Names)
+  current_map_id = $game_map.map_id
+  $custom_event_names.each do |key, value|
+    mid, ex, ey = key.split(';').map(&:to_i)
+    
+    # Only look at entries for the current map
+    next if mid != current_map_id
+    
+    # Check for "Ignore" in Virtual Events
+    if value[:event_name] && value[:event_name].strip.downcase == "ignore"
+      next
+    end
+    # -------------------------------------------------
+
+    # Check if a REAL event already exists at this location
+    # If so, we handled it in the loop above (it's just a renamed event)
+    already_exists = false
+    for ev in $game_map.events.values
+       if ev.x == ex && ev.y == ey
+         already_exists = true
+         break
+       end
+    end
+    next if already_exists
+    
+    # If no real event exists, this is a Virtual PoI
+    ve = VirtualEvent.new(mid, ex, ey)
+    
+    # Apply Filter to Virtual Event
+    # PoIs fall under "All" and "Notes"
+    case current_filter
+    when :all
+      other_events.push(ve)
+    when :notes
+      other_events.push(ve)
+    end
+  end
+
+  # Run de-duplication on connections
   reduceEventsInLanes(connections)
 
-  # Combine the lists and sort
+  # Combine and Sort
   @mapevents = other_events + connections
-# Sort the final list by distance only if the toggle is on
-    if @sort_by_distance
-      @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
-    end
-    @selected_event_index = @mapevents.empty? ? -1 : 0
+  if @sort_by_distance
+    @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
+  end
+  @selected_event_index = @mapevents.empty? ? -1 : 0
 end
 
   def convertRouteToInstructions(route)
@@ -1260,6 +1354,11 @@ class Scene_Map
     if !@@pra_names_loaded
       load_custom_names
       @@pra_names_loaded = true
+
+      # This prevents the character from walking immediately upon enabling the toggle
+      if $game_player && $game_player.respond_to?(:clear_autowalk_route)
+        $game_player.clear_autowalk_route
+      end
     end
     
     # Force an initial population of the event list to prevent TTS freeze
