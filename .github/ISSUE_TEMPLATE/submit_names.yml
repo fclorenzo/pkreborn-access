@@ -1,0 +1,72 @@
+name: 📦 Submit Custom Names Pack
+description: Submit a new or updated custom names file for the community.
+title: "[Submission]: "
+labels: ["custom-names", "automated-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Submission Guidelines
+        Thanks for contributing to the Custom Names Community Project!
+        
+        **Instructions:**
+        1. Ensure your file is named `pra-custom-names.txt`.
+        2. Fill out the fields below.
+        3. Drag and drop your text file into the "Upload File" box.
+
+  - type: input
+    id: pack_name
+    attributes:
+      label: Pack Name
+      description: A unique name for your pack (e.g., "Funny Names", "Serious Lore"). If updating an existing pack, **use the exact same name**.
+      placeholder: "Example: Reborn Lore Accurate Pack"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - English
+        - Arabic
+        - Chinese (Simplified)
+        - Chinese (Traditional)
+        - French
+        - German
+        - Italian
+        - Japanese
+        - Korean
+        - Portuguese
+        - Russian
+        - Spanish
+        - Turkish
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: progress
+    attributes:
+      label: Game Progress
+      description: How far into the game does this pack cover?
+      placeholder: "e.g., Up to 7th Gym, Full Game, Post-game..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Creator's Notes
+      description: Any specific comments, credits, or descriptions for the community?
+    validations:
+      required: false
+
+  - type: textarea
+    id: file_payload
+    attributes:
+      label: Upload File
+      description: Drag and drop your `pra-custom-names.txt` file here. It should appear as a link (e.g., `[url](...)`).
+      placeholder: "Drag and drop your text file here..."
+    validations:
+      required: true
