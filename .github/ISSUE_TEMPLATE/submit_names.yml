@@ -1,5 +1,5 @@
-name: 📦 Submit Custom Names Pack
-description: Submit a new or updated custom names file for the community.
+name: Submit Custom Label Set
+description: Submit a new or updated custom label set for the community.
 title: "[Submission]: "
 labels: ["custom-names", "automated-review"]
 body:
@@ -12,14 +12,14 @@ body:
         **Instructions:**
         1. Ensure your file is named `pra-custom-names.txt`.
         2. Fill out the fields below.
-        3. Drag and drop your text file into the "Upload File" box.
+        3. Upload your text file into the "Upload File" box at the bottom.
 
   - type: input
-    id: pack_name
+    id: set_name
     attributes:
-      label: Pack Name
-      description: A unique name for your pack (e.g., "Funny Names", "Serious Lore"). If updating an existing pack, **use the exact same name**.
-      placeholder: "Example: Reborn Lore Accurate Pack"
+      label: Label Set Name
+      description: A unique name for your set (e.g., "Funny Labels", "Serious Lore"). If updating an existing set, **use the exact same name**.
+      placeholder: "Example: Reborn Lore Accurate Label Set"
     validations:
       required: true
 
@@ -49,7 +49,7 @@ body:
     id: progress
     attributes:
       label: Game Progress
-      description: How far into the game does this pack cover?
+      description: How far into the game does this label set cover?
       placeholder: "e.g., Up to 7th Gym, Full Game, Post-game..."
     validations:
       required: true
@@ -66,7 +66,7 @@ body:
     id: file_payload
     attributes:
       label: Upload File
-      description: Drag and drop your `pra-custom-names.txt` file here. It should appear as a link (e.g., `[url](...)`).
-      placeholder: "Drag and drop your text file here..."
+      description: Upload your `pra-custom-names.txt` file here. It should appear as a link (e.g., `[url](...)`).
+      placeholder: "Upload your text file here..."
     validations:
       required: true

@@ -1,0 +1,151 @@
+name: Triage Label Submission
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  triage-submission:
+    if: contains(github.event.issue.labels.*.name, 'automated-review')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Parse Issue Form Data
+        id: parse
+        uses: zotos/issue-body-parser-action@v1
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          issueId: ${{ github.event.issue.number }}
+          separator: '###'
+          labelMarkerStart: '>>'
+          labelMarkerEnd: '<<'
+
+      - name: Validate File and Rename
+        id: validate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          # Pass the parsed JSON payload to the script
+          JSON_PAYLOAD: ${{ steps.parse.outputs.payload }}
+        run: |
+          # We use a Python script for robust parsing and validation
+          python3 -c "
+          import os
+          import json
+          import re
+          import sys
+          import urllib.request
+
+          # 1. Setup GitHub CLI Command Helper
+          def gh_comment_and_close(msg):
+              os.system(f'gh issue comment {os.environ[\"ISSUE_NUMBER\"]} --body \"{msg}\"')
+              os.system(f'gh issue close {os.environ[\"ISSUE_NUMBER\"]} --reason \"not planned\"')
+              sys.exit(1) # Fail the step
+
+          try:
+              # 2. Extract URL from the Issue Form Payload
+              payload = json.loads(os.environ['JSON_PAYLOAD'])
+              # The key matches the label in your YAML ('Upload File')
+              file_field = payload.get('Upload File', '')
+              
+              # Regex to find markdown link: [filename](url)
+              match = re.search(r'\[(.*?)\]\((.*?)\)', file_field)
+              
+              if not match:
+                  gh_comment_and_close('❌ **Submission Failed**\n\nI could not find a valid file attachment in the \"Upload File\" section. Please edit your issue and upload the file again.')
+
+              filename = match.group(1)
+              file_url = match.group(2)
+              
+              print(f'Found file: {filename}')
+              
+              # 3. Check Filename (Soft Check - We rename if wrong)
+              target_name = 'pra-custom-names.txt'
+              if filename != target_name:
+                  print(f'Filename mismatch. Will rename {filename} -> {target_name}')
+                  # We don't close here, we just note it for the approval step later.
+
+              # 4. Download Content for Validation
+              try:
+                  with urllib.request.urlopen(file_url) as response:
+                      content = response.read().decode('utf-8')
+              except Exception as e:
+                  gh_comment_and_close(f'❌ **Download Error**\n\nI could not download the file. Error: {str(e)}')
+
+              # 5. VALIDATE CONTENT (The ''Strict'' Check)
+              # Expected Format: map_id;map_name;x;y;name;desc
+              # We check if lines follow the structure: INT;TEXT;INT;INT;TEXT;TEXT
+              
+              lines = content.splitlines()
+              valid_entries = 0
+              errors = []
+
+              for i, line in enumerate(lines):
+                  line = line.strip()
+                  if not line or line.startswith('#'): continue # Skip empty/comments
+                  
+                  parts = line.split(';')
+                  
+                  # Check 1: Column Count (Must be 6)
+                  if len(parts) < 6:
+                      errors.append(f'Line {i+1}: Found {len(parts)} columns (Expected 6+). Content: `{line[:50]}...`')
+                      if len(errors) > 3: break
+                      continue
+
+                  # Check 2: Data Types (Map ID, X, and Y must be numbers)
+                  # Columns: 0=MapID, 2=X, 3=Y
+                  if not (parts[0].isdigit() and parts[2].isdigit() and parts[3].isdigit()):
+                      errors.append(f'Line {i+1}: Map ID, X, or Y are not numbers. Content: `{line[:50]}...`')
+                      if len(errors) > 3: break
+                      continue
+                  
+                  valid_entries += 1
+
+              # Decision Time
+              if errors:
+                  error_msg = '\n- '.join(errors)
+                  gh_comment_and_close(f'❌ **Validation Failed**\n\nYour file does not appear to be a valid `pra-custom-names.txt` file.\n\n**Errors Found:**\n- {error_msg}\n\nPlease check the file format and try again.')
+              
+              if valid_entries == 0:
+                  gh_comment_and_close('❌ **Validation Failed**\n\nFile appears empty or contains no valid data lines.')
+
+              # If we got here, the file is VALID!
+              print('Validation Passed.')
+              
+              # Export variables for the next step
+              with open(os.environ['GITHUB_ENV'], 'a') as f:
+                  f.write(f'FILE_URL={file_url}\n')
+                  f.write(f'ORIGINAL_NAME={filename}\n')
+                  f.write(f'VALID_ENTRIES={valid_entries}\n')
+          
+          except Exception as e:
+               gh_comment_and_close(f'❌ **System Error**\n\nSomething went wrong during validation: {str(e)}')
+          "
+
+      - name: Assign and Comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: ${{ env.FILE_URL }}
+          ENTRIES: ${{ env.VALID_ENTRIES }}
+          NAME: ${{ env.ORIGINAL_NAME }}
+        run: |
+          gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}
+          
+          # Prepare the success message
+          MSG="🤖 **Beep Boop!**
+          
+          I have successfully validated your submission.
+          - **File Status:** ✅ Valid Structure
+          - **Original Name:** \`$NAME\` (I will auto-rename this to \`pra-custom-names.txt\`)
+          - **Entries Found:** $ENTRIES
+          - **Download URL:** [Link]($URL)
+          
+          I have assigned this to @${{ github.repository_owner }} for final approval."
+
+          gh issue comment ${{ github.event.issue.number }} --body "$MSG"
