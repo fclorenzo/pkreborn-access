@@ -1,36 +1,93 @@
+#===============================================================================
+# PRE-REQUISITE CLASSES & STORAGE
+#===============================================================================
+
+# A temporary storage module to keep our custom events OUT of the save file.
+# This prevents save corruption if the mod is removed or downgraded.
+module PraSession
+  class << self
+    attr_accessor :mapevents
+    attr_accessor :selected_event_index
+    attr_accessor :event_filter_modes
+    attr_accessor :event_filter_index
+  end
+
+  # Initialize defaults
+  def self.reset!
+    @mapevents = []
+    @selected_event_index = -1
+    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes, :pois]
+    @event_filter_index = 0
+  end
+end
+
+# Helper class for finding interactable tiles next to an event
+class EventWithRelativeDirection
+  attr_accessor :direction, :node
+  def initialize(paraNode, paraDirection)
+    @direction = paraDirection
+    @node = paraNode
+  end
+end
+
+# Add candidates attribute to GLOBAL Game_Event (Open Class)
+# This allows real teleport events to also use the multi-tile pathfinding logic.
+class Game_Event
+  attr_accessor :candidates
+end
+
+# VirtualEvent class
+# Represents map connections and Points of Interest that don't exist as real events.
+class VirtualEvent
+  attr_accessor :x, :y, :map_id, :type, :custom_name, :candidates
+  
+  def initialize(map_id, x, y, type=:poi, name="Point of Interest", candidates=[])
+    @map_id = map_id
+    @x = x
+    @y = y
+    @type = type
+    @custom_name = name
+    @candidates = candidates # List of alternative [x,y] tiles for this destination
+  end
+  
+  # Duck-typing: pretend to be a Game_Event so existing methods accept it
+  def name; @custom_name; end
+  def list; nil; end
+  def trigger; 0; end
+  def character_name; ""; end
+  def through; true; end 
+end
+
 class Game_Player < Game_Character
-  alias_method :access_mod_original_update, :update # Make a copy of the original update
+  alias_method :access_mod_original_update, :update 
   def update
-    # First, call the original update method (which includes the running logic)
+    # First, call the original update method
     access_mod_original_update
 
     # --- Auto-refresh on map change ---
-    # Only run if the toggle is ON and the map ID has changed
     if @auto_refresh_map_list && @last_map_id != $game_map.map_id
       @last_map_id = $game_map.map_id
       populate_event_list
     end
 
     # Then, execute the mod's logic
-    # If not moving
     unless moving?
-# Cycle event filter (O)
+      # Cycle event filter (O / I)
       if Input.triggerex?(0x4F)
         cycle_event_filter(1)
-      # Cycle event filter backwards (I)
       elsif Input.triggerex?(0x49)
         cycle_event_filter(-1)
       end
 
-        # Toggle sort by distance (Shift+H)
-        if Input.pressex?(0x10) && Input.triggerex?(0x48)
-          @sort_by_distance = !@sort_by_distance
-          tts("Sort by distance: #{@sort_by_distance ? 'On' : 'Off'}")
-      
-        # Cycle HM pathfinding toggle (H)
-    elsif Input.triggerex?(0x48)
-          cycle_hm_toggle
-        end
+      # Toggle sort by distance (Shift+H)
+      if Input.pressex?(0x10) && Input.triggerex?(0x48)
+        @sort_by_distance = !@sort_by_distance
+        tts("Sort by distance: #{@sort_by_distance ? 'On' : 'Off'}")
+    
+      # Cycle HM pathfinding toggle (H)
+      elsif Input.triggerex?(0x48)
+        cycle_hm_toggle
+      end
 
       # Toggle Auto-Refresh Map List (Shift+F5)
       if Input.pressex?(0x10) && Input.triggerex?(0x74)
@@ -44,7 +101,8 @@ class Game_Player < Game_Character
       end
 
       # Make sure we have events to cycle through
-      if !@mapevents.nil? && !@mapevents.empty?
+      # UPDATED: Use PraSession
+      if !PraSession.mapevents.nil? && !PraSession.mapevents.empty?
         
         # --- J Key Logic (Previous Event OR Toggle Auto-Walk) ---
         if Input.triggerex?(0x4A)
@@ -58,9 +116,9 @@ class Game_Player < Game_Character
             end
           # If Shift is NOT held: Cycle Previous Event (J)
           else
-            @selected_event_index -= 1
-            if @selected_event_index < 0
-              @selected_event_index = @mapevents.size - 1 # Wrap around
+            PraSession.selected_event_index -= 1
+            if PraSession.selected_event_index < 0
+              PraSession.selected_event_index = PraSession.mapevents.size - 1 
             end
             announce_selected_event
           end
@@ -73,9 +131,9 @@ class Game_Player < Game_Character
             create_poi
           # If Shift is NOT held: Cycle Next Event (L)
           else
-            @selected_event_index += 1
-            if @selected_event_index >= @mapevents.size
-              @selected_event_index = 0 # Wrap around
+            PraSession.selected_event_index += 1
+            if PraSession.selected_event_index >= PraSession.mapevents.size
+              PraSession.selected_event_index = 0 
             end
             announce_selected_event
           end
@@ -90,14 +148,14 @@ class Game_Player < Game_Character
           announce_selected_event
         end
 
-      # Announce coordinates (Shift+P)
-      if Input.pressex?(0x10) && Input.triggerex?(0x50)
-        announce_selected_coordinates
+        # Announce coordinates (Shift+P)
+        if Input.pressex?(0x10) && Input.triggerex?(0x50)
+          announce_selected_coordinates
 
         # PATHFIND to the current event (P)
-      elsif Input.triggerex?(0x50)
-          pathfind_to_selected_event
-      end
+        elsif Input.triggerex?(0x50)
+            pathfind_to_selected_event
+        end
 
         # Add Note to Event (Shift+N)
         if Input.pressex?(0x10) && Input.triggerex?(0x4E)
@@ -107,94 +165,25 @@ class Game_Player < Game_Character
         elsif Input.triggerex?(0x4E)
           announce_selected_notes
         end
-
-# --- Coordinate Marker (T to set, Alt+P to pathfind) ---
-# Press T to enter X/Y marker
-if Input.triggerex?(0x54)   # T key
-  x_text = Kernel.pbMessageFreeText("Enter target X:", "", false, 4)
-  y_text = Kernel.pbMessageFreeText("Enter target Y:", "", false, 4)
-  if x_text && y_text && !x_text.strip.empty? && !y_text.strip.empty?
-    @coord_marker = [x_text.to_i, y_text.to_i]
-    tts("Coordinate marker set to X #{@coord_marker[0]}, Y #{@coord_marker[1]}")
-  else
-    tts("Invalid coordinates, marker not set.")
-  end
-end
-
-#press q to pathfind to marker
-if Input.triggerex?(0x51)   # Q key
-  if @coord_marker
-    target_x, target_y = @coord_marker
-    route = aStern(Node.new(@x, @y), Node.new(target_x, target_y))
-    if route.empty?
-      tts("No path found to X #{target_x}, Y #{target_y}.")
-    else
-      # announce steps like normal
-      instr = convertRouteToInstructions(route)
-      printInstruction(instr)
-
-      # if you have auto-walk toggle, this will also move you tile by tile
-      if defined?($auto_walk) && $auto_walk
-        @current_autowalk_route = route
-      end
-    end
-  else
-    tts("No coordinate marker set. Press T to set one.")
-  end
-end
       end
     end
   end
 
-alias_method :access_mod_original_initialize, :initialize
+  alias_method :access_mod_original_initialize, :initialize
   def initialize(*args)
-    # Call the original initialize method first to set up the player
     access_mod_original_initialize(*args)
 
-    # Now, set up the mod's variables correctly
-    @mapevents = []
-    @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes]
-    @event_filter_index = 0
+    # Initialize the temporary session (replacing instance variables)
+    PraSession.reset!
+
+    # Settings that are safe to save
     @hm_toggle_modes = [:off, :surf_only, :surf_and_waterfall]
-    @hm_toggle_index = 0 # Default to :off
-    @sort_by_distance = true # Default to sorting by distance
-    @auto_refresh_map_list = true # Default to Auto-Refresh ON
-    @last_map_id = -1             # Tracker for map changes
+    @hm_toggle_index = 0 
+    @sort_by_distance = true 
+    @auto_refresh_map_list = true
+    @last_map_id = -1             
   end
   
-  # --- Helper class and method for finding interactable tiles next to an event ---
-  class EventWithRelativeDirection
-    attr_accessor :direction, :node
-    def initialize(paraNode, paraDirection)
-      @direction = paraDirection
-      @node = paraNode
-    end
-  end
-
-# --- Helper class for Virtual Events (PoIs and Connections) ---
-  class VirtualEvent
-    attr_accessor :x, :y, :map_id, :type, :custom_name
-    
-    def initialize(map_id, x, y, type=:poi, name="Point of Interest")
-      @map_id = map_id
-      @x = x
-      @y = y
-      @type = type
-      @custom_name = name
-    end
-    
-    # Duck-typing: pretend to be a Game_Event
-    def name
-      return @custom_name
-    end
-    
-    def list; nil; end
-    def trigger; 0; end
-    def character_name; ""; end
-    def through; true; end 
-  end
-
 # Checks if an event is a "Jump Event" (invisible event that forces a move route)
   def is_jump_event?(event, direction)
     return false if !event || !event.list
@@ -343,235 +332,35 @@ def cycle_hm_toggle
   tts(announcement)
 end
 
-def populate_event_list
-  # --- Safeguard/Update to initialize variables ---
-  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes) || !@event_filter_modes.include?(:pois)
-    @mapevents = []
-    @selected_event_index = -1
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes, :pois]
-    @event_filter_index = 0
-  end
-
-  @mapevents = []
-  current_filter = @event_filter_modes[@event_filter_index]
-
-  # Gather candidates
-  all_connections = []
-  all_others = []
-
-  # ============================================================================
-  # 1. PROCESS REAL GAME EVENTS
-  # ============================================================================
-  for event in $game_map.events.values
-    next if !event.list || event.list.size <= 1
-    next if event.trigger == 3 || event.trigger == 4 
-
-    key = "#{$game_map.map_id};#{event.x};#{event.y}"
-    custom_name_data = $custom_event_names[key]
-
-    if custom_name_data && custom_name_data[:event_name] &&
-       custom_name_data[:event_name].strip.downcase == "ignore"
-      next 
-    end
-
-    if is_teleport_event?(event)
-      all_connections.push(event)
-    else
-      all_others.push(event)
-    end
-  end
-
-  # ============================================================================
-  # 2. PROCESS MAP CONNECTIONS (VIRTUAL EDGES)
-  # ============================================================================
-  if $game_map && $MapFactory
-    w = $game_map.width
-    h = $game_map.height
-    edges = [
-      { range: (0...w), axis: :y, val: 0,   cx: 0,  cy: -1, dir: 8 }, # North
-      { range: (0...w), axis: :y, val: h-1, cx: 0,  cy: 1,  dir: 2 }, # South
-      { range: (0...h), axis: :x, val: 0,   cx: -1, cy: 0,  dir: 4 }, # West
-      { range: (0...h), axis: :x, val: w-1, cx: 1,  cy: 0,  dir: 6 }  # East
-    ]
-
-    for edge in edges
-      current_group = nil
-      groups = []
-
-      for i in edge[:range]
-        x = (edge[:axis] == :x) ? edge[:val] : i
-        y = (edge[:axis] == :y) ? edge[:val] : i
-        
-        map_info = $MapFactory.getNewMap(x + edge[:cx], y + edge[:cy])
-        
-        # --- FIX: Handle Map Object vs Map ID ---
-        connected_id = nil
-        if map_info
-          # Check if the first element is a Game_Map object or an Integer
-          if map_info[0].is_a?(Game_Map)
-            connected_id = map_info[0].map_id
-          else
-            connected_id = map_info[0]
-          end
-        end
-        # ----------------------------------------
-
-        if connected_id
-          if current_group && current_group[:id] == connected_id
-            current_group[:tiles] << [x, y]
-          else
-            groups << current_group if current_group
-            current_group = { id: connected_id, tiles: [[x, y]] }
-          end
-        else
-          groups << current_group if current_group
-          current_group = nil
-        end
-      end
-      groups << current_group if current_group
-
-      for group in groups
-        # --- IMPROVED PASSABILITY CHECK ---
-        # We need to find at least one tile in this group that is valid for the player to step on.
-        passable_tiles = group[:tiles].select do |t| 
-           tx, ty = t[0], t[1]
-           tag = $game_map.terrain_tag(tx, ty)
-           
-           # 1. Is it strictly passable? (Standard floor)
-           is_passable = $game_map.passableStrict?(tx, ty, 0, $game_player)
-           
-           # 2. Is it a Ledge? (Can jump down)
-           is_ledge = defined?(PBTerrain::Ledge) && tag == PBTerrain::Ledge
-           
-           # 3. Is it Water/Waterfall? (Can Surf/Climb)
-           is_water = defined?(PBTerrain::Water) && (tag == PBTerrain::Water || tag == PBTerrain::DeepWater || tag == PBTerrain::Waterfall || tag == PBTerrain::WaterfallCrest)
-           
-           is_passable || is_ledge || is_water
-        end
-        
-        next if passable_tiles.empty?
-        
-        mid_tile = passable_tiles[passable_tiles.length / 2]
-        
-        # We place the event ON the valid edge tile so the Pathfinder can reach it.
-        virtual_x = mid_tile[0]
-        virtual_y = mid_tile[1]
-
-        # Deduplication against Real Events
-        next if all_connections.any? { |c| c.x == virtual_x && c.y == virtual_y }
-
-        # Check Ignore
-        key = "#{$game_map.map_id};#{virtual_x};#{virtual_y}"
-        custom_name_data = $custom_event_names[key]
-        if custom_name_data && custom_name_data[:event_name] &&
-           custom_name_data[:event_name].strip.downcase == "ignore"
-          next
-        end
-
-        map_name = get_map_name(group[:id])
-        ve = VirtualEvent.new($game_map.map_id, virtual_x, virtual_y, :connection, map_name)
-        all_connections.push(ve)
-      end
-    end
-  end
-
-  # ============================================================================
-  # 3. PROCESS USER POINTS OF INTEREST (POIS)
-  # ============================================================================
-  current_map_id = $game_map.map_id
-  $custom_event_names.each do |key, value|
-    mid, ex, ey = key.split(';').map(&:to_i)
-    
-    next if mid != current_map_id
-    next if value[:event_name] && value[:event_name].strip.downcase == "ignore"
-
-    is_duplicate = false
-    if all_connections.any? { |c| c.x == ex && c.y == ey }
-      is_duplicate = true
-    elsif all_others.any? { |o| o.x == ex && o.y == ey }
-      is_duplicate = true
-    end
-    
-    next if is_duplicate
-    
-    ve = VirtualEvent.new(mid, ex, ey, :poi, value[:event_name])
-    all_others.push(ve)
-  end
-
-  # ============================================================================
-  # 4. FINALIZE AND FILTER
-  # ============================================================================
-  reduceEventsInLanes(all_connections)
-
-  case current_filter
-  when :all
-    @mapevents = all_connections + all_others
-  when :connections
-    @mapevents = all_connections
-  when :npcs
-    @mapevents = all_others.select { |e| is_npc_event?(e) }
-  when :items
-    @mapevents = all_others.select { |e| is_item_event?(e) }
-  when :merchants
-    @mapevents = all_others.select { |e| is_merchant_event?(e) }
-  when :signs
-    @mapevents = all_others.select { |e| is_sign_event?(e) }
-  when :hidden_items
-    @mapevents = all_others.select { |e| is_hidden_item_event?(e) }
-  when :pois
-    @mapevents = all_others.select { |e| e.is_a?(VirtualEvent) && e.type == :poi }
-  when :notes
-    candidates = all_connections + all_others
-    @mapevents = candidates.select do |e|
-      key = "#{$game_map.map_id};#{e.x};#{e.y}"
-      dat = $custom_event_names[key]
-      dat && dat[:notes] && !dat[:notes].strip.empty?
-    end
-  end
-  
-  if @sort_by_distance
-    @mapevents.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
-  end
-  
-  @selected_event_index = @mapevents.empty? ? -1 : 0
-end
-
 def cycle_event_filter(direction = 1)
-  # --- Safeguard/Update for old save files ---
-  # Check if nil OR if the list is missing the new :notes filter
-  if @event_filter_modes.nil? || !@event_filter_modes.include?(:notes) || !@event_filter_modes.include?(:pois)
-    @event_filter_modes = [:all, :connections, :npcs, :items, :merchants, :signs, :hidden_items, :notes, :pois]
-    # Reset index to be safe if we changed the array
-    @event_filter_index = 0
+  if PraSession.event_filter_modes.nil?
+    PraSession.reset!
   end
   
-  # Move to the next/previous filter index
-  @event_filter_index += direction
+  PraSession.event_filter_index += direction
   
-  # Wrap around if necessary
-  if @event_filter_index >= @event_filter_modes.length
-    @event_filter_index = 0
-  elsif @event_filter_index < 0
-    @event_filter_index = @event_filter_modes.length - 1
+  if PraSession.event_filter_index >= PraSession.event_filter_modes.length
+    PraSession.event_filter_index = 0
+  elsif PraSession.event_filter_index < 0
+    PraSession.event_filter_index = PraSession.event_filter_modes.length - 1
   end
   
-  # Announce the new filter mode
-  current_filter = @event_filter_modes[@event_filter_index]
+  current_filter = PraSession.event_filter_modes[PraSession.event_filter_index]
   
-  # Make the TTS announcement slightly friendlier
   filter_name = current_filter.to_s.gsub('_', ' ').capitalize
   filter_name = "Points of Interest" if current_filter == :pois
   
   tts("Filter set to #{filter_name}")
-  
-  # Automatically refresh the event list with the new filter
   populate_event_list
 end
 
 def rename_selected_event
   # Ensure an event is selected
-  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
-  event = @mapevents[@selected_event_index]
+  return if PraSession.selected_event_index < 0 || PraSession.mapevents[PraSession.selected_event_index].nil?
+  
+  # --- FIX: Define 'event' before using it ---
+  event = PraSession.mapevents[PraSession.selected_event_index]
+  # -------------------------------------------
 
   # Prompt user for the new name
   new_name = Kernel.pbMessageFreeText(_INTL("Enter new name for the selected event (max 100 characters)."), "", false, 100)
@@ -610,8 +399,11 @@ def rename_selected_event
 end
 
 def add_note_to_selected_event
-  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
-  event = @mapevents[@selected_event_index]
+  return if PraSession.selected_event_index < 0 || PraSession.mapevents[PraSession.selected_event_index].nil?
+
+  # --- FIX: Define 'event' before using it ---
+  event = PraSession.mapevents[PraSession.selected_event_index]
+  # -------------------------------------------
 
   # Prompt user for the note only
   new_note = Kernel.pbMessageFreeText(_INTL("Enter notes for this event (max 500 characters)."), "", false, 500)
@@ -735,29 +527,11 @@ def is_teleport_event?(event)
   return false
 end
 
-# Helper to get a clean map name from an ID (safe for Virtual Events)
-  def get_map_name(map_id)
-    name = nil
-    
-    # 1. Try built-in function
-    if defined?(pbGetMapNameFromId)
-      name = pbGetMapNameFromId(map_id)
-      name.gsub!(/\\PN/,$Trainer.name) if $Trainer && name
-    # 2. Try raw data lookup
-    elsif $data_mapinfos && $data_mapinfos[map_id]
-      name = $data_mapinfos[map_id].name
-    end
-    
-    # 3. Check validity
-    if name && !name.strip.empty?
-      return name
-    # 4. Fallback: If the target is the current map, use the active map object's name
-    elsif map_id == $game_map.map_id
-      return $game_map.name
-    else
-      # 5. Final Fallback: Use the ID
-      return "Map #{map_id}"
-    end
+def get_map_name(map_id)
+    return "" if map_id.nil?
+    # Retrieve the map object from the factory using the ID
+    map = $MapFactory.getMap(map_id)
+    return map ? map.name : "Unknown Map"
   end
 
 def get_teleport_destination_name(event)
@@ -765,23 +539,12 @@ def get_teleport_destination_name(event)
   for command in event.list
     if command.code == 201 # Event command for "Transfer Player"
       map_id = command.parameters[1]
-      
-      # Use our new, safe helper method (handles \PN and crashes)
-      return get_map_name(map_id)
+      # Use the Map Factory to get the destination map object
+      destination_map = $MapFactory.getMap(map_id)
+      return destination_map.name if destination_map
     end
   end
   return nil # Return nil if it's not a teleport event
-end
-
-def reduceEventsInLanes(eventsArray)
-  # This method and its helpers are from the original Malta10 mod.
-  eventsInLane = []
-  for event in eventsArray
-    neighbtheNode = getNeighbthe(event, eventsArray)
-    if neighbtheNode != nil
-      deleteNodesInOneLane(event, neighbtheNode, eventsArray)
-    end
-  end
 end
 
 def getNeighbthe(event, eventsArray)
@@ -874,9 +637,12 @@ end
   end
 
 def announce_selected_coordinates
-  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
-  event = @mapevents[@selected_event_index]
+  return if PraSession.selected_event_index < 0 || PraSession.mapevents[PraSession.selected_event_index].nil?
   
+  # --- FIX: Define 'event' before using it ---
+  event = PraSession.mapevents[PraSession.selected_event_index]
+  # -------------------------------------------
+
   # Start with the base coordinate announcement
   announcement = "Coordinates: X #{event.x}, Y #{event.y}"
   
@@ -893,8 +659,8 @@ def announce_selected_coordinates
 end
 
 def announce_selected_notes
-  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
-  event = @mapevents[@selected_event_index]
+  return if PraSession.selected_event_index < 0 || PraSession.mapevents[PraSession.selected_event_index].nil?
+  event = PraSession.mapevents[PraSession.selected_event_index]
   
   key = "#{$game_map.map_id};#{event.x};#{event.y}"
   custom_name_data = $custom_event_names[key]
@@ -907,46 +673,42 @@ def announce_selected_notes
 end
 
 def announce_selected_event
-  return if @selected_event_index == -1 || @mapevents[@selected_event_index].nil?
-  event = @mapevents[@selected_event_index]
-  
-  # Create a unique key for custom names
+  return if PraSession.selected_event_index < 0 || PraSession.mapevents[PraSession.selected_event_index].nil?
+  event = PraSession.mapevents[PraSession.selected_event_index]
+  dist = distance(@x, @y, event.x, event.y).round
+
+  # Create a unique key for the current event
   key = "#{$game_map.map_id};#{event.x};#{event.y}"
   custom_name_data = $custom_event_names[key]
   announcement_text = ""
   
-  # 1. Custom Name (Always takes priority)
+  # Check if custom name data exists and has a non-empty name
   if custom_name_data && custom_name_data[:event_name] && !custom_name_data[:event_name].strip.empty?
     announcement_text = custom_name_data[:event_name]
-    
-  # 2. Virtual Connection
-  elsif event.is_a?(VirtualEvent) && event.type == :connection
-    # Safety Check: Does it have a name?
-    if event.name && !event.name.strip.empty?
-      announcement_text = "Connection to #{event.name}"
     else
-      announcement_text = "Connection"
-    end
-
-  # 3. Real Teleport Event (Standard Logic)
-  elsif is_teleport_event?(event)
+  # First, check if the event is a connection.
+  if is_teleport_event?(event)
+    # If it is, always start the announcement with "Connection to..."
     destination = get_teleport_destination_name(event)
+    
+    # Use the destination map's name if it's available.
     if destination && !destination.strip.empty?
       announcement_text = "Connection to #{destination}"
+    # Otherwise, fall back to the event's own name if it has one.
     elsif event.name && !event.name.strip.empty?
       announcement_text = "Connection to #{event.name}"
+    # If neither is available, use a generic announcement.
     else
       announcement_text = "Connection"
     end
-    
-  # 4. Standard Named Event
+  # If it's NOT a connection, check if it has a name.
   elsif event.name && !event.name.strip.empty?
     announcement_text = event.name
-    
-  # 5. Fallback
+  # If all else fails, it's an unnamed interactable object.
   else
     announcement_text = "Interactable object"
   end  
+end
 
   dist = distance(@x, @y, event.x, event.y).round
   facing_direction = ""
@@ -960,38 +722,255 @@ def announce_selected_event
   tts("#{announcement_text}, #{dist} steps away, #{facing_direction}.")
 end
 
-def pathfind_to_selected_event
-  return if @selected_event_index < 0 || @mapevents[@selected_event_index].nil?
-  
-  target_event = @mapevents[@selected_event_index]
-  
-  # First, try to find a direct path to the event's coordinates
-  route = aStern(Node.new(@x, @y), Node.new(target_event.x, target_event.y))
-  
-  # If the direct path fails (e.g., NPC behind a counter)
-  if route.empty?
-    # Get a list of possible adjacent tiles to interact from
-    possible_targets = getEventTiles(target_event)
+def populate_event_list
+    # Ensure session is initialized
+    if PraSession.event_filter_modes.nil?
+      PraSession.reset!
+    end
+
+    PraSession.mapevents = []
+    current_filter = PraSession.event_filter_modes[PraSession.event_filter_index]
+
+    # Gather candidates
+    all_connections = []
+    all_others = []
+
+    # 1. PROCESS REAL GAME EVENTS
+    for event in $game_map.events.values
+      next if !event.list || event.list.size <= 1
+      next if event.trigger == 3 || event.trigger == 4 
+
+      key = "#{$game_map.map_id};#{event.x};#{event.y}"
+      custom_name_data = $custom_event_names[key]
+
+      if custom_name_data && custom_name_data[:event_name] &&
+         custom_name_data[:event_name].strip.downcase == "ignore"
+        next 
+      end
+
+      if is_teleport_event?(event)
+        all_connections.push(event)
+      else
+        all_others.push(event)
+      end
+    end
+
+    # 2. PROCESS MAP CONNECTIONS (VIRTUAL EDGES)
+    if $game_map && $MapFactory
+      w = $game_map.width
+      h = $game_map.height
+      edges = [
+        { range: (0...w), axis: :y, val: 0,   cx: 0,  cy: -1, dir: 8 }, # North
+        { range: (0...w), axis: :y, val: h-1, cx: 0,  cy: 1,  dir: 2 }, # South
+        { range: (0...h), axis: :x, val: 0,   cx: -1, cy: 0,  dir: 4 }, # West
+        { range: (0...h), axis: :x, val: w-1, cx: 1,  cy: 0,  dir: 6 }  # East
+      ]
+
+      for edge in edges
+        for i in edge[:range]
+          x = (edge[:axis] == :x) ? edge[:val] : i
+          y = (edge[:axis] == :y) ? edge[:val] : i
+          
+          map_info = $MapFactory.getNewMap(x + edge[:cx], y + edge[:cy])
+          
+          # Fix: Handle both Map Object and Map ID return types
+          connected_id = nil
+          if map_info
+            if map_info[0].is_a?(Game_Map)
+              connected_id = map_info[0].map_id
+            else
+              connected_id = map_info[0]
+            end
+          end
+
+          if connected_id
+            # Check if this tile is passable
+            tag = $game_map.terrain_tag(x, y)
+            is_passable = $game_map.passableStrict?(x, y, 0, $game_player)
+            is_ledge = defined?(PBTerrain::Ledge) && tag == PBTerrain::Ledge
+            is_water = defined?(PBTerrain::Water) && (tag == PBTerrain::Water || tag == PBTerrain::DeepWater || tag == PBTerrain::Waterfall || tag == PBTerrain::WaterfallCrest)
+            
+            if is_passable || is_ledge || is_water
+              # Generate a Virtual Event for THIS specific tile
+              base_name = get_map_name(connected_id)
+              ve = VirtualEvent.new($game_map.map_id, x, y, :connection, base_name)
+              all_connections.push(ve)
+            end
+          end
+        end
+      end
+    end
+
+    # 3. PROCESS USER POINTS OF INTEREST (POIS)
+    current_map_id = $game_map.map_id
+    $custom_event_names.each do |key, value|
+      mid, ex, ey = key.split(';').map(&:to_i)
+      next if mid != current_map_id
+      next if value[:event_name] && value[:event_name].strip.downcase == "ignore"
+      
+      # Deduplicate
+      next if all_connections.any? { |c| c.x == ex && c.y == ey }
+      next if all_others.any? { |o| o.x == ex && o.y == ey }
+      
+      ve = VirtualEvent.new(mid, ex, ey, :poi, value[:event_name])
+      all_others.push(ve)
+    end
+
+    # 4. FINALIZE AND FILTER
+    reduceEventsInLanes(all_connections)
+
+    final_list = []
+    case current_filter
+    when :all
+      final_list = all_connections + all_others
+    when :connections
+      final_list = all_connections
+    when :npcs
+      final_list = all_others.select { |e| is_npc_event?(e) }
+    when :items
+      final_list = all_others.select { |e| is_item_event?(e) }
+    when :merchants
+      final_list = all_others.select { |e| is_merchant_event?(e) }
+    when :signs
+      final_list = all_others.select { |e| is_sign_event?(e) }
+    when :hidden_items
+      final_list = all_others.select { |e| is_hidden_item_event?(e) }
+    when :pois
+      final_list = all_others.select { |e| e.is_a?(VirtualEvent) && e.type == :poi }
+    when :notes
+      candidates = all_connections + all_others
+      final_list = candidates.select do |e|
+        key = "#{$game_map.map_id};#{e.x};#{e.y}"
+        dat = $custom_event_names[key]
+        dat && dat[:notes] && !dat[:notes].strip.empty?
+      end
+    end
     
-    # Loop through the alternatives and try to find a path to one of them
-    for target in possible_targets
-      alternative_route = aStern(Node.new(@x, @y), target.node)
-      if !alternative_route.empty?
-        route = alternative_route # Use the first successful alternative path
-        break
+    if @sort_by_distance
+      final_list.sort! { |a, b| distance(@x, @y, a.x, a.y) <=> distance(@x, @y, b.x, b.y) }
+    end
+    
+    # Save to Session
+    PraSession.mapevents = final_list
+    PraSession.selected_event_index = final_list.empty? ? -1 : 0
+  end
+
+  def reduceEventsInLanes(events_list)
+    buckets = {}
+    
+    get_dest = proc do |e|
+      if e.is_a?(VirtualEvent) && e.type == :connection
+        e.name 
+      elsif is_teleport_event?(e)
+        dest_id = nil
+        if e.list
+          e.list.each do |cmd|
+            if cmd.code == 201 
+              dest_id = cmd.parameters[1]
+              break
+            end
+          end
+        end
+        dest_id
+      else
+        nil 
+      end
+    end
+
+    events_list.each do |e|
+      key = get_dest.call(e)
+      next unless key
+      buckets[key] ||= []
+      buckets[key] << e
+    end
+
+    events_list.clear
+    
+    buckets.each do |dest, bucket|
+      while !bucket.empty?
+        current = bucket.shift
+        cluster = [current]
+        
+        loop do
+          found_new = false
+          bucket.dup.each do |candidate|
+            is_connected = cluster.any? do |c| 
+              (c.x - candidate.x).abs + (c.y - candidate.y).abs == 1
+            end
+            if is_connected
+              cluster << candidate
+              bucket.delete(candidate)
+              found_new = true
+            end
+          end
+          break unless found_new
+        end
+        
+        cluster.sort_by! { |e| [e.x, e.y] }
+        mid_event = cluster[cluster.size / 2]
+        
+        all_coords = []
+        cluster.each do |e|
+          all_coords << [e.x, e.y]
+          if e.respond_to?(:candidates) && e.candidates
+            all_coords.concat(e.candidates)
+          end
+        end
+        
+        mid_event.candidates = all_coords.uniq
+        events_list << mid_event
       end
     end
   end
-  
-    # If Auto-Walk is ON and the method exists, start walking
-    if defined?($auto_walk) && $auto_walk && defined?(start_autowalk)
-      start_autowalk(route)
+
+  def pathfind_to_selected_event
+    idx = PraSession.selected_event_index
+    list = PraSession.mapevents
+    return if idx < 0 || list.nil? || list[idx].nil?
+    
+    target_event = list[idx]
+    route = []
+
+    # STRATEGY 1: Check Candidates (Virtual Connections)
+    if target_event.respond_to?(:candidates) && target_event.candidates && !target_event.candidates.empty?
+      for tile in target_event.candidates
+        cand_route = aStern(Node.new(@x, @y), Node.new(tile[0], tile[1]))
+        if !cand_route.empty?
+          route = cand_route
+          break
+        end
+      end
+      
+      if route.empty?
+        tts("Could not find a path to any tile in this connection.")
+        return
+      end
+
+    # STRATEGY 2: Standard Event Pathfinding
     else
-      # Otherwise, just announce the instructions
-      printInstruction(convertRouteToInstructions(route))
+      route = aStern(Node.new(@x, @y), Node.new(target_event.x, target_event.y))
+      if route.empty?
+        possible_targets = getEventTiles(target_event)
+        for target in possible_targets
+          alternative_route = aStern(Node.new(@x, @y), target.node)
+          if !alternative_route.empty?
+            route = alternative_route
+            break
+          end
+        end
+      end
+    end
+    
+    if route.empty?
+      tts("No path found.")
+    else
+      if defined?($auto_walk) && $auto_walk && defined?(start_autowalk)
+        start_autowalk(route)
+      else
+        printInstruction(convertRouteToInstructions(route))
+      end
     end
   end
-
 
   def convertRouteToInstructions(route)
     if route.length == 0
@@ -1390,22 +1369,22 @@ def pathfind_to_selected_event
     end
 
         # Make sure we have events to cycle through
-    if !@mapevents.nil? && !@mapevents.empty?
+    if !PraSession.mapevents.nil? && !PraSession.mapevents.empty?
       
       # Cycle to the PREVIOUS event (J)
       if Input.triggerex?(0x4A)
-        @selected_event_index -= 1
-        if @selected_event_index < 0
-          @selected_event_index = @mapevents.size - 1 # Wrap around
+        @PraSession.selected_event_index -= 1
+        if PraSession.selected_event_index < 0
+          PraSession.selected_event_index = PraSession.mapevents.size - 1 # Wrap around
         end
         announce_selected_event
       end
 
       # Cycle to the NEXT event (L)
       if Input.triggerex?(0x4C)
-        @selected_event_index += 1
-        if @selected_event_index >= @mapevents.size
-          @selected_event_index = 0 # Wrap around
+        PraSession.selected_event_index += 1
+        if PraSession.selected_event_index >= PraSession.mapevents.size
+          PraSession.selected_event_index = 0 # Wrap around
         end
         announce_selected_event
       end
