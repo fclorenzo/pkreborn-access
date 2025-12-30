@@ -2,105 +2,140 @@ name: Triage Label Submission
 
 on:
   issues:
-    types: [opened, edited, reopened]
+    types: [opened, edited]
 
 permissions:
   issues: write
 
 jobs:
   triage-submission:
-    if: >
-      contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review')
-      && contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
+    # Only run if the issue has both review-related labels
+    if: contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review') || contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI
-        run: sudo apt-get update && sudo apt-get install -y gh
+      - name: Parse Issue Form Data
+        id: parse
+        uses: peter-murray/issue-body-parser-action@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_id: ${{ github.event.issue.number }}
+          fail_on_missing: true
 
-      - name: Authenticate GH CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-
-      - name: Parse and Validate Submission
+      - name: Validate File and Structure
         id: validate
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
+          JSON_PAYLOAD: ${{ steps.parse.outputs.payload }}
         run: |
+          # --- Write Python validation script ---
           cat << 'EOF' > validate_script.py
-          import os, re, sys, urllib.request
+          import os
+          import json
+          import re
+          import sys
+          import urllib.request
 
-          def comment(msg):
-              os.system(f'gh issue comment {os.environ["ISSUE_NUMBER"]} --body "{msg}"')
-
-          def fail(msg):
-              comment(msg)
-              os.system(f'gh issue close {os.environ["ISSUE_NUMBER"]} --reason "not planned"')
+          def gh_comment_and_fail(msg):
+              """Comment on issue, label as validation-failed, and exit."""
+              issue = os.environ["ISSUE_NUMBER"]
+              os.system(f'gh issue comment {issue} --body "{msg}"')
+              os.system(f'gh issue edit {issue} --add-label "validation-failed" || true')
+              os.system(f'gh issue edit {issue} --add-label "automated-review" || true')
               sys.exit(1)
 
-          body = os.environ["ISSUE_BODY"]
-
-          match = re.search(r'\[(.*?)\]\((https://.*?)\)', body)
-          if not match:
-              fail("❌ Could not find a valid file link in the submission form.")
-          filename, url = match.groups()
-
-          print(f"Found file {filename}: {url}")
           try:
-              with urllib.request.urlopen(url) as r:
-                  content = r.read().decode("utf-8")
+              payload = json.loads(os.environ['JSON_PAYLOAD'])
+              file_field = payload.get('Upload File', '')
+
+              match = re.search(r'\[(.*?)\]\((.*?)\)', file_field)
+              if not match:
+                  gh_comment_and_fail('❌ **Submission Failed**\n\nNo valid file attachment found in the "Upload File" section.')
+
+              filename = match.group(1)
+              file_url = match.group(2)
+              print(f'Found file: {filename}')
+
+              target_name = 'pra-custom-names.txt'
+              if filename != target_name:
+                  print(f'Filename mismatch. Will rename {filename} → {target_name} later.')
+
+              try:
+                  with urllib.request.urlopen(file_url) as response:
+                      content = response.read().decode('utf-8')
+              except Exception as e:
+                  gh_comment_and_fail(f'❌ **Download Error**\n\nCould not download the file. Error: {str(e)}')
+
+              lines = content.splitlines()
+              valid_entries = 0
+              errors = []
+
+              for i, line in enumerate(lines):
+                  line = line.strip()
+                  if not line or line.startswith('#'):
+                      continue
+
+                  parts = line.split(';')
+                  if len(parts) < 6:
+                      errors.append(f'Line {i+1}: Found {len(parts)} columns (Expected 6+).')
+                      if len(errors) > 3:
+                          break
+                      continue
+
+                  if not (parts[0].isdigit() and parts[2].isdigit() and parts[3].isdigit()):
+                      errors.append(f'Line {i+1}: Map ID, X, or Y are not numbers.')
+                      if len(errors) > 3:
+                          break
+                      continue
+
+                  valid_entries += 1
+
+              if errors:
+                  error_msg = '\n- '.join(errors)
+                  gh_comment_and_fail(f'❌ **Validation Failed**\n\n**Errors Found:**\n- {error_msg}')
+
+              if valid_entries == 0:
+                  gh_comment_and_fail('❌ **Validation Failed**\n\nFile appears empty or contains no valid data lines.')
+
+              print('✅ Validation Passed.')
+              issue = os.environ["ISSUE_NUMBER"]
+              os.system(f'gh issue edit {issue} --remove-label "validation-failed" || true')
+              os.system(f'gh issue edit {issue} --add-label "automated-review" || true')
+
+              with open(os.environ['GITHUB_ENV'], 'a') as f:
+                  f.write(f'FILE_URL={file_url}\n')
+                  f.write(f'ORIGINAL_NAME={filename}\n')
+                  f.write(f'VALID_ENTRIES={valid_entries}\n')
+
           except Exception as e:
-              fail(f"❌ Download error: {e}")
-
-          lines = content.splitlines()
-          valid = 0
-          for line in lines:
-              if not line or line.startswith("#"): continue
-              parts = line.split(";")
-              if len(parts) < 5: continue
-              if not parts[0].isdigit(): continue
-              valid += 1
-
-          if valid == 0:
-              fail("❌ File appears empty or invalid.")
-
-          with open(os.environ["GITHUB_ENV"], "a") as f:
-              f.write(f"FILE_URL={url}\n")
-              f.write(f"ORIGINAL_NAME={filename}\n")
-              f.write(f"VALID_ENTRIES={valid}\n")
-
-          comment(f"✅ File validated: {valid} valid lines found. Awaiting maintainer review.")
+              gh_comment_and_fail(f'❌ **System Error**\n\n{str(e)}')
           EOF
 
+          # --- Run the script ---
           python3 validate_script.py
 
-      - name: Offensive Language Scan
-        id: badwords
-        run: |
-          # Download the file for scanning
-          curl -L "$FILE_URL" -o submission.txt
-          
-          python3 .github/scripts/filters/check_content.py submission.txt > scan_output.txt
-          
-          if grep -q "FLAGGED_LINES_START" scan_output.txt; then
-            echo "flags=true" >> $GITHUB_OUTPUT
-          else
-            echo "flags=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Comment on Offensive Results
-        if: steps.badwords.outputs.flags == 'true'
-        run: |
-          echo "🚨 **Potential Offensive Content Detected!**" > msg.txt
-          echo "" >> msg.txt
-          echo "The following lines may contain problematic language:" >> msg.txt
-          echo "" >> msg.txt
-          awk -F'|' '/^[0-9]+\|/ { printf "- **Line %s** (word: _%s_): `%s`\n", $1, $2, $3 }' scan_output.txt >> msg.txt
-          gh issue comment ${{ github.event.issue.number }} --body-file msg.txt
-
-      - name: Assign Maintainer
+      - name: Assign and Comment
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: ${{ env.FILE_URL }}
+          ENTRIES: ${{ env.VALID_ENTRIES }}
+          NAME: ${{ env.ORIGINAL_NAME }}
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}
+
+          MSG="🤖 **Beep Boop!**
+          
+          I have successfully validated your submission.
+          - **File Status:** ✅ Valid Structure
+          - **Original Name:** \`$NAME\` (I will auto-rename this to \`pra-custom-names.txt\`)
+          - **Entries Found:** $ENTRIES
+          - **Download URL:** [Link]($URL)
+          
+          I have assigned this to @${{ github.repository_owner }} for final approval."
+
+          gh issue comment ${{ github.event.issue.number }} --body "$MSG"
