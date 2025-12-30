@@ -16,6 +16,7 @@ Example: "When pressing F6 in some maps, nothing happens and NVDA doesn’t anno
 
 **Steps to reproduce**  
 Please provide exact steps so we can replicate the issue:  
+
 1. Go to '...'
 2. Press '...'
 3. Observe '...'
@@ -27,6 +28,7 @@ What did you expect to happen instead?
 If applicable, add screenshots or paste any error logs here.
 
 **Platform information**  
+
 - OS: (e.g., Windows 10, macOS)
 - Screen reader (if any): (e.g., NVDA, JAWS)
 - Game version: (e.g., 19.5.26)

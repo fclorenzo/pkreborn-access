@@ -12,3 +12,9 @@ issue_templates:
     labels: [enhancement]
     assignees: [fclorenzo]
     file: feature_request.md
+
+  - name: Submit Custom Label Set
+    description: Submit a new or updated custom label set for the community.
+    labels: [custom-names, automated-review]
+    assignees: [fclorenzo]
+    file: submit_names.yml
