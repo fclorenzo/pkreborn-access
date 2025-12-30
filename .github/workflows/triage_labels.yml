@@ -9,7 +9,9 @@ permissions:
 
 jobs:
   triage-submission:
-    if: contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review')
+    if: >
+      contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review')
+      && contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
     runs-on: ubuntu-latest
 
     steps:

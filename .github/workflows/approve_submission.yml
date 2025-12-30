@@ -1,0 +1,100 @@
+name: Approve and Publish Custom Label Set
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: read
+  contents: write
+
+jobs:
+  approve:
+    if: >
+      contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review')
+      && contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
+      && github.event.issue.state_reason == 'completed'
+      && github.event.issue.closed_by.login == github.repository_owner
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Latest Comment
+        id: comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          direction: last
+
+      - name: Check for Approve Comment
+        id: approvecheck
+        run: |
+          body="${{ steps.comment.outputs.comment-body }}"
+          if [[ "$body" =~ ^[Aa]pprove ]]; then
+            echo "APPROVED=true" >> $GITHUB_ENV
+          else
+            echo "No approve keyword found. Exiting."
+            exit 0
+          fi
+
+      - name: Extract Submission Metadata
+        if: env.APPROVED == 'true'
+        id: metadata
+        run: |
+          body="${{ github.event.issue.body }}"
+
+          get_field() {
+            echo "$body" | awk -v RS="" -v FS="\\n\\n" "/\\*\\*$1\\*\\*/ { print \$2 }" | head -n1 | xargs
+          }
+
+          SET_NAME=$(get_field "Label Set Name")
+          LANGUAGE=$(get_field "Language")
+          PROGRESS=$(get_field "Game Progress")
+          NOTES=$(get_field "Creator's Notes")
+          FILE_URL=$(echo "$body" | grep -oP '\(https:\/\/[^\)]+\)' | sed 's/[()]//g' | head -n1)
+          CREATOR=${{ github.event.issue.user.login }}
+          DATE=$(date -u +'%Y-%m-%d')
+
+          SAFE_SET=$(echo "$SET_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '_' | tr -cd 'a-z0-9_-')
+
+          echo "SET_NAME=$SET_NAME" >> $GITHUB_ENV
+          echo "LANGUAGE=$LANGUAGE" >> $GITHUB_ENV
+          echo "PROGRESS=$PROGRESS" >> $GITHUB_ENV
+          echo "NOTES=$NOTES" >> $GITHUB_ENV
+          echo "FILE_URL=$FILE_URL" >> $GITHUB_ENV
+          echo "CREATOR=$CREATOR" >> $GITHUB_ENV
+          echo "DATE=$DATE" >> $GITHUB_ENV
+          echo "SAFE_SET=$SAFE_SET" >> $GITHUB_ENV
+
+      - name: Download and Save File
+        if: env.APPROVED == 'true'
+        run: |
+          mkdir -p "community_custom_names/${LANGUAGE}/${SAFE_SET}"
+          curl -L "$FILE_URL" -o "community_custom_names/${LANGUAGE}/${SAFE_SET}/pra-custom-names.txt"
+
+      - name: Update Community Index
+        if: env.APPROVED == 'true'
+        run: |
+          INDEX_FILE="community_custom_names_index.md"
+          ENTRY="| ${SET_NAME} | @${CREATOR} | ${LANGUAGE} | ${PROGRESS} | ${NOTES} | [pra-custom-names.txt](community_custom_names/${LANGUAGE}/${SAFE_SET}/pra-custom-names.txt) | ${DATE} |"
+
+          if ! grep -q "| ${SET_NAME} |" "$INDEX_FILE" 2>/dev/null; then
+            if ! grep -q '^| Set Name |' "$INDEX_FILE" 2>/dev/null; then
+              echo "| Set Name | Creator | Language | Game Progress | Notes | File | Date Approved |" > "$INDEX_FILE"
+              echo "|-----------|----------|-----------|---------------|-------|----------------|" >> "$INDEX_FILE"
+            fi
+            echo "$ENTRY" >> "$INDEX_FILE"
+          else
+            awk -v entry="$ENTRY" -v set="${SET_NAME}" 'BEGIN{OFS="\n"}{if($0 ~ "\\| " set " \\|"){$0=entry} print}' "$INDEX_FILE" > tmp && mv tmp "$INDEX_FILE"
+          fi
+
+      - name: Commit and Push
+        if: env.APPROVED == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add community_custom_names community_custom_names_index.md
+          git commit -m "Add community custom label set: ${SET_NAME} (${LANGUAGE})"
+          git push
