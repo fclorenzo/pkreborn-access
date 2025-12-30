@@ -77,6 +77,30 @@ jobs:
 
           python3 validate_script.py
 
+      - name: Offensive Language Scan
+        id: badwords
+        run: |
+          # Download the file for scanning
+          curl -L "$FILE_URL" -o submission.txt
+          
+          python3 .github/scripts/filters/check_content.py submission.txt > scan_output.txt
+          
+          if grep -q "FLAGGED_LINES_START" scan_output.txt; then
+            echo "flags=true" >> $GITHUB_OUTPUT
+          else
+            echo "flags=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on Offensive Results
+        if: steps.badwords.outputs.flags == 'true'
+        run: |
+          echo "🚨 **Potential Offensive Content Detected!**" > msg.txt
+          echo "" >> msg.txt
+          echo "The following lines may contain problematic language:" >> msg.txt
+          echo "" >> msg.txt
+          awk -F'|' '/^[0-9]+\|/ { printf "- **Line %s** (word: _%s_): `%s`\n", $1, $2, $3 }' scan_output.txt >> msg.txt
+          gh issue comment ${{ github.event.issue.number }} --body-file msg.txt
+
       - name: Assign Maintainer
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}
