@@ -18,13 +18,13 @@ jobs:
 
       - name: Parse Issue Form Data
         id: parse
-        uses: zotos/issue-body-parser-action@v1
+        uses: peter-murray/issue-body-parser-action@v3
         with:
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          issueId: ${{ github.event.issue.number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_id: ${{ github.event.issue.number }}
           separator: '###'
-          labelMarkerStart: '>>'
-          labelMarkerEnd: '<<'
+          label_marker_start: '>>'
+          label_marker_end: '<<'
 
       - name: Validate File and Rename
         id: validate
