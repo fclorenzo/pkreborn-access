@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   triage-submission:
-    # Only run if the issue has both review-related labels
+    # Only run if the issue has review-related labels
     if: contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review') || contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
     runs-on: ubuntu-latest
 
@@ -19,18 +19,14 @@ jobs:
 
       - name: Parse Issue Form Data
         id: parse
-        uses: peter-murray/issue-body-parser-action@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          issue_id: ${{ github.event.issue.number }}
-          fail_on_missing: true
+        uses: zentered/parse-issue-form-data@v1
 
       - name: Validate File and Structure
         id: validate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          JSON_PAYLOAD: ${{ steps.parse.outputs.payload }}
+          JSON_PAYLOAD: ${{ steps.parse.outputs.data }}
         run: |
           # --- Write Python validation script ---
           cat << 'EOF' > validate_script.py
@@ -54,7 +50,7 @@ jobs:
 
               match = re.search(r'\[(.*?)\]\((.*?)\)', file_field)
               if not match:
-                  gh_comment_and_fail('❌ **Submission Failed**\n\nNo valid file attachment found in the "Upload File" section.')
+                  gh_comment_and_fail('❌ **Submission Failed**\\n\\nNo valid file attachment found in the "Upload File" section.')
 
               filename = match.group(1)
               file_url = match.group(2)
@@ -68,7 +64,7 @@ jobs:
                   with urllib.request.urlopen(file_url) as response:
                       content = response.read().decode('utf-8')
               except Exception as e:
-                  gh_comment_and_fail(f'❌ **Download Error**\n\nCould not download the file. Error: {str(e)}')
+                  gh_comment_and_fail(f'❌ **Download Error**\\n\\nCould not download the file. Error: {str(e)}')
 
               lines = content.splitlines()
               valid_entries = 0
@@ -95,11 +91,11 @@ jobs:
                   valid_entries += 1
 
               if errors:
-                  error_msg = '\n- '.join(errors)
-                  gh_comment_and_fail(f'❌ **Validation Failed**\n\n**Errors Found:**\n- {error_msg}')
+                  error_msg = '\\n- '.join(errors)
+                  gh_comment_and_fail(f'❌ **Validation Failed**\\n\\n**Errors Found:**\\n- {error_msg}')
 
               if valid_entries == 0:
-                  gh_comment_and_fail('❌ **Validation Failed**\n\nFile appears empty or contains no valid data lines.')
+                  gh_comment_and_fail('❌ **Validation Failed**\\n\\nFile appears empty or contains no valid data lines.')
 
               print('✅ Validation Passed.')
               issue = os.environ["ISSUE_NUMBER"]
@@ -107,12 +103,12 @@ jobs:
               os.system(f'gh issue edit {issue} --add-label "automated-review" || true')
 
               with open(os.environ['GITHUB_ENV'], 'a') as f:
-                  f.write(f'FILE_URL={file_url}\n')
-                  f.write(f'ORIGINAL_NAME={filename}\n')
-                  f.write(f'VALID_ENTRIES={valid_entries}\n')
+                  f.write(f'FILE_URL={file_url}\\n')
+                  f.write(f'ORIGINAL_NAME={filename}\\n')
+                  f.write(f'VALID_ENTRIES={valid_entries}\\n')
 
           except Exception as e:
-              gh_comment_and_fail(f'❌ **System Error**\n\n{str(e)}')
+              gh_comment_and_fail(f'❌ **System Error**\\n\\n{str(e)}')
           EOF
 
           # --- Run the script ---
@@ -122,9 +118,6 @@ jobs:
         if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          URL: ${{ env.FILE_URL }}
-          ENTRIES: ${{ env.VALID_ENTRIES }}
-          NAME: ${{ env.ORIGINAL_NAME }}
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}
 
@@ -132,9 +125,9 @@ jobs:
           
           I have successfully validated your submission.
           - **File Status:** ✅ Valid Structure
-          - **Original Name:** \`$NAME\` (I will auto-rename this to \`pra-custom-names.txt\`)
-          - **Entries Found:** $ENTRIES
-          - **Download URL:** [Link]($URL)
+          - **Original Name:** \`${{ env.ORIGINAL_NAME }}\` (I will auto-rename this to \`pra-custom-names.txt\`)
+          - **Entries Found:** ${{ env.VALID_ENTRIES }}
+          - **Download URL:** [Link](${{ env.FILE_URL }})
           
           I have assigned this to @${{ github.repository_owner }} for final approval."
 
