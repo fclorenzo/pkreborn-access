@@ -1,100 +1,169 @@
-name: Approve and Publish Custom Label Set
+name: Approve & Publish Label Set
 
 on:
   issues:
     types: [closed]
 
 permissions:
-  issues: read
   contents: write
+  issues: read
 
 jobs:
-  approve:
+  approve-and-publish:
     if: >
-      contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'automated-review')
-      && contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
-      && github.event.issue.state_reason == 'completed'
-      && github.event.issue.closed_by.login == github.repository_owner
+      contains(join(fromJson(toJson(github.event.issue.labels)).*.name, ','), 'custom-names')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Get Latest Comment
-        id: comment
-        uses: peter-evans/find-comment@v3
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          direction: last
-
-      - name: Check for Approve Comment
-        id: approvecheck
+      - name: Get Latest Closing Comment
+        id: get_comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          body="${{ steps.comment.outputs.comment-body }}"
-          if [[ "$body" =~ ^[Aa]pprove ]]; then
+          COMMENT=$(gh issue view ${{ github.event.issue.number }} --json comments --jq '.comments | last(.[]).body')
+          echo "COMMENT<<EOF" >> $GITHUB_ENV
+          echo "$COMMENT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Check if Approved
+        id: approval_check
+        run: |
+          echo "Checking approval status..."
+          if echo "${COMMENT,,}" | grep -q '^approve'; then
             echo "APPROVED=true" >> $GITHUB_ENV
           else
-            echo "No approve keyword found. Exiting."
-            exit 0
+            echo "APPROVED=false" >> $GITHUB_ENV
           fi
 
-      - name: Extract Submission Metadata
-        if: env.APPROVED == 'true'
-        id: metadata
+      - name: Stop if Not Approved
+        if: env.APPROVED != 'true'
         run: |
-          body="${{ github.event.issue.body }}"
+          echo "❌ Issue was closed without approval keyword. Exiting."
+          exit 0
 
-          get_field() {
-            echo "$body" | awk -v RS="" -v FS="\\n\\n" "/\\*\\*$1\\*\\*/ { print \$2 }" | head -n1 | xargs
+      - name: Parse Issue Form
+        id: parse
+        uses: peter-murray/issue-body-parser-action@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_id: ${{ github.event.issue.number }}
+          separator: '###'
+          label_marker_start: '>>'
+          label_marker_end: '<<'
+
+      - name: Download and Process Submission
+        id: process
+        env:
+          PAYLOAD: ${{ steps.parse.outputs.payload }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          import os, json, re, urllib.request, pathlib, datetime
+
+          payload = json.loads(os.environ['PAYLOAD'])
+          set_name = payload.get('Label Set Name', 'Unnamed_Set').strip().replace(' ', '_')
+          language = payload.get('Language', 'English').strip().replace(' ', '_')
+          progress = payload.get('Game Progress', '')
+          notes = payload.get("Creator's Notes", '')
+          file_field = payload.get('Upload File', '')
+          actor = os.environ.get('GITHUB_ACTOR', 'unknown')
+
+          # Parse file URL
+          match = re.search(r'\[(.*?)\]\((.*?)\)', file_field)
+          if not match:
+              raise SystemExit("❌ Could not extract uploaded file link.")
+          file_url = match.group(2)
+
+          base_dir = pathlib.Path('community-label-sets') / language / set_name
+          meta_path = base_dir / 'metadata.json'
+          target_path = base_dir / 'pra-custom-names.txt'
+
+          is_update = False
+          # --- Detect if update or needs unique suffix
+          if meta_path.exists():
+              try:
+                  old_meta = json.load(open(meta_path))
+                  old_creator = old_meta.get('creator', '').lower()
+                  if old_creator == actor.lower():
+                      is_update = True
+                      print(f"Detected update by same creator: {actor}")
+                  else:
+                      print(f"Existing set with different creator ({old_creator}). Creating separate folder.")
+                      set_name = f"{set_name}_by_{actor}"
+                      base_dir = pathlib.Path('community-label-sets') / language / set_name
+                      base_dir.mkdir(parents=True, exist_ok=True)
+                      meta_path = base_dir / 'metadata.json'
+                      target_path = base_dir / 'pra-custom-names.txt'
+              except Exception as e:
+                  print(f"Error reading old metadata: {e}")
+
+          base_dir.mkdir(parents=True, exist_ok=True)
+
+          # --- Download and save file ---
+          print(f"Downloading file from: {file_url}")
+          with urllib.request.urlopen(file_url) as response:
+              content = response.read().decode('utf-8')
+          with open(target_path, 'w', encoding='utf-8') as f:
+              f.write(content)
+          print(f"File saved to: {target_path}")
+
+          # --- Update metadata ---
+          meta = {
+              "creator": actor,
+              "date": datetime.datetime.utcnow().strftime('%Y-%m-%d'),
+              "progress": progress,
+              "notes": notes,
+              "update": is_update
           }
+          with open(meta_path, 'w', encoding='utf-8') as mf:
+              json.dump(meta, mf, indent=2)
 
-          SET_NAME=$(get_field "Label Set Name")
-          LANGUAGE=$(get_field "Language")
-          PROGRESS=$(get_field "Game Progress")
-          NOTES=$(get_field "Creator's Notes")
-          FILE_URL=$(echo "$body" | grep -oP '\(https:\/\/[^\)]+\)' | sed 's/[()]//g' | head -n1)
-          CREATOR=${{ github.event.issue.user.login }}
-          DATE=$(date -u +'%Y-%m-%d')
-
-          SAFE_SET=$(echo "$SET_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '_' | tr -cd 'a-z0-9_-')
-
-          echo "SET_NAME=$SET_NAME" >> $GITHUB_ENV
-          echo "LANGUAGE=$LANGUAGE" >> $GITHUB_ENV
-          echo "PROGRESS=$PROGRESS" >> $GITHUB_ENV
-          echo "NOTES=$NOTES" >> $GITHUB_ENV
-          echo "FILE_URL=$FILE_URL" >> $GITHUB_ENV
-          echo "CREATOR=$CREATOR" >> $GITHUB_ENV
-          echo "DATE=$DATE" >> $GITHUB_ENV
-          echo "SAFE_SET=$SAFE_SET" >> $GITHUB_ENV
-
-      - name: Download and Save File
-        if: env.APPROVED == 'true'
-        run: |
-          mkdir -p "community_custom_names/${LANGUAGE}/${SAFE_SET}"
-          curl -L "$FILE_URL" -o "community_custom_names/${LANGUAGE}/${SAFE_SET}/pra-custom-names.txt"
+          # --- Export environment ---
+          with open(os.environ['GITHUB_ENV'], 'a') as envfile:
+              envfile.write(f"SET_NAME={set_name}\n")
+              envfile.write(f"LANGUAGE={language}\n")
+              envfile.write(f"IS_UPDATE={'true' if is_update else 'false'}\n")
 
       - name: Update Community Index
-        if: env.APPROVED == 'true'
         run: |
-          INDEX_FILE="community_custom_names_index.md"
-          ENTRY="| ${SET_NAME} | @${CREATOR} | ${LANGUAGE} | ${PROGRESS} | ${NOTES} | [pra-custom-names.txt](community_custom_names/${LANGUAGE}/${SAFE_SET}/pra-custom-names.txt) | ${DATE} |"
+          INDEX="COMMUNITY_SETS.md"
+          SET_PATH="community-label-sets/${LANGUAGE}/${SET_NAME}"
+          LINK="[$SET_NAME]($SET_PATH/pra-custom-names.txt)"
+          DATE=$(date -u +"%Y-%m-%d")
+          STATUS=$( [ "${IS_UPDATE}" = "true" ] && echo "Updated" || echo "New" )
 
-          if ! grep -q "| ${SET_NAME} |" "$INDEX_FILE" 2>/dev/null; then
-            if ! grep -q '^| Set Name |' "$INDEX_FILE" 2>/dev/null; then
-              echo "| Set Name | Creator | Language | Game Progress | Notes | File | Date Approved |" > "$INDEX_FILE"
-              echo "|-----------|----------|-----------|---------------|-------|----------------|" >> "$INDEX_FILE"
-            fi
-            echo "$ENTRY" >> "$INDEX_FILE"
-          else
-            awk -v entry="$ENTRY" -v set="${SET_NAME}" 'BEGIN{OFS="\n"}{if($0 ~ "\\| " set " \\|"){$0=entry} print}' "$INDEX_FILE" > tmp && mv tmp "$INDEX_FILE"
+          if [ ! -f "$INDEX" ]; then
+            echo "| Label Set | Language | Last Modified | Status |" > "$INDEX"
+            echo "|------------|-----------|---------------|---------|" >> "$INDEX"
           fi
 
+          grep -v "| $SET_NAME |" "$INDEX" > "$INDEX.tmp" || true
+          mv "$INDEX.tmp" "$INDEX"
+
+          echo "| $LINK | $LANGUAGE | $DATE | $STATUS |" >> "$INDEX"
+
       - name: Commit and Push
-        if: env.APPROVED == 'true'
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add community_custom_names community_custom_names_index.md
-          git commit -m "Add community custom label set: ${SET_NAME} (${LANGUAGE})"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add community-label-sets/ COMMUNITY_SETS.md
+          git commit -m "Publish ${IS_UPDATE:+updated }community label set: ${SET_NAME} (${LANGUAGE})" || echo "No changes to commit"
           git push
+
+      - name: Comment Summary on Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${IS_UPDATE}" = "true" ]; then
+            MSG="🔁 **Update Published!**
+            Your existing label set **${SET_NAME}** in **${LANGUAGE}** has been updated successfully.  
+            📂 [View it here](community-label-sets/${LANGUAGE}/${SET_NAME}/pra-custom-names.txt)"
+          else
+            MSG="✅ **New Label Set Published!**
+            Your label set **${SET_NAME}** in **${LANGUAGE}** has been added to the community collection.  
+            📂 [View it here](community-label-sets/${LANGUAGE}/${SET_NAME}/pra-custom-names.txt)"
+          fi
+
+          gh issue comment ${{ github.event.issue.number }} --body "$MSG"
