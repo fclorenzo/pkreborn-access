@@ -78,6 +78,5 @@ jobs:
           gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**
           - **Set:** ${{ env.SET_NAME }}
           - **Version:** v${{ env.FINAL_VERSION }}
-          - **Path:** \`${{ env.FINAL_FOLDER }}/pra-custom-names.txt\`"
           
           gh issue close ${{ github.event.issue.number }} --reason "completed"

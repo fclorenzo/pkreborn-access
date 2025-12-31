@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V4.0.1
+V4.0.2
 
 ## Description
 
@@ -166,6 +166,45 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 ```
 
 **Important Rule:** Please do not use semicolons (`;`) in the names or notes you create, as this character is used to separate the data fields.
+
+## Community Label Sets
+
+The **Community Label Sets** library allows players to share and download custom naming files (`pra-custom-names.txt`). This allows you to benefit from other players' map notes and Points of Interest.
+
+### Downloading a Label Set
+
+You can browse all available label sets in the **[Community Sets Library](community_sets/README.md)**.
+The library table lists the Creator, Set Name, Language, Game Progress, and includes a direct download link.
+
+**To use a downloaded set:**
+
+1. Download the file from the library.
+2. Make sure the file is named `pra-custom-names.txt`.
+3. Place it in your game's Root folder.
+
+### Submitting Your Own Set
+
+If you have created a `pra-custom-names.txt` file and want to share it with the community:
+
+1. **[Create a new issue](https://github.com/fclorenzo/pkreborn-access/issues/new/choose)**.
+2. Select **Submit Custom Label Set**.
+3. Fill out the required information:
+   - **Label Set Name:** A unique name for your theme (e.g., "Lore Accurate Names").
+   - **Version:** An integer number (e.g., 1, 2, 3, 10, 50000...). **Do not use decimals like 1.0.**
+   - **Language:** The language of your labels.
+   - **Game Progress:** How far into the game your labels cover (e.g., "Up to 7th gym").
+   - **Upload File:** Drag and drop your `pra-custom-names.txt` file into the upload box or click the `Paste, drop, or click to add files` button.
+4. Click **Create**.
+
+**What happens next?**
+
+- Our **Automated Triage Bot** will immediately check your file to ensure it has the correct structure (valid columns) and scan it for profanity.
+- If the validation passes, the issue will be marked for review.
+- Once approved by a moderator, your set will be automatically published to the **Community Sets Library**.
+
+### Disclaimer
+
+All Community Label Sets are user-submitted content. While we have automated filters and manual review processes in place to prevent offensive content, the repository owner is not responsible for the specific contents of these files. Use them at your own discretion.
 
 ## Report a Problem or Suggest a Feature
 
