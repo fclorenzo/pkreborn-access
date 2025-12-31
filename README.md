@@ -206,7 +206,7 @@ Once approved, your set will be added to the library table as a new entry.
 
 To release a new version of your label set (e.g., to add more map notes or fix errors):
 
-1. **[Create a new submission issue](https://github.com/fclorenzo/pkreborn-access/issues/new?template=submit_names.yml)** using the "Submit Custom Label Set" template (just like the first time).
+1. **[Create a new submission issue](https://github.com/fclorenzo/pkreborn-access/issues/new?template=submit_names.yml)** (just like the first time).
 2. Enter the **exact same** "Label Set Name" as your previous submission.
 3. Enter a **higher** "Version" number (e.g., if your last was 1, enter 2).
     - *Note: If you enter the same version number by mistake, our system will automatically detect it and bump it to the next available version (e.g., v1 -> v2).*
