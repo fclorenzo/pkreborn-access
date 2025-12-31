@@ -10,16 +10,24 @@ body:
         Thanks for contributing to the Custom Names Community Project!
         
         **Instructions:**
-        1. Ensure your file is named `pra-custom-names.txt`.
-        2. Fill out the fields below.
-        3. Upload your text file into the "Upload File" box at the bottom.
+        1. Fill out the fields below.
+        2. Upload your text file into the "Upload File" box at the bottom.
 
   - type: input
     id: set_name
     attributes:
       label: Label Set Name
-      description: A unique name for your set (e.g., "Funny Labels", "Serious Lore"). If updating an existing set, **use the exact same name**.
+      description: A unique name for your set (e.g., "Funny Labels", "Serious Lore").
       placeholder: "Example: Reborn Lore Accurate Label Set"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The version number (Integer only: 1, 2, 3, 10, 50000...). Do not use decimals (1.0).
+      placeholder: "1"
     validations:
       required: true
 
@@ -66,7 +74,7 @@ body:
     id: file_payload
     attributes:
       label: Upload File
-      description: Upload your `pra-custom-names.txt` file here. It should appear as a link (e.g., `[url](...)`).
+      description: Upload your custom labels file  here. It should appear as a link (e.g., `[url](...)`).
       placeholder: "Upload your text file here..."
     validations:
       required: true

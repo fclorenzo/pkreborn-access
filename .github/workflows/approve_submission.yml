@@ -13,12 +13,14 @@ jobs:
     if: >
       !github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/approve') &&
-      contains(github.event.issue.labels.*.name, 'automated-review') && contains(github.event.issue.labels.*.name, 'custom-names')
+      contains(github.event.issue.labels.*.name, 'automated-review') && contains (github.event.issue.labels.*.name, 'custom-names')
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history to check existing files/versions
 
       - name: Verify Permission
         env:
@@ -36,25 +38,17 @@ jobs:
         run: python3 .github/scripts/parse_issue.py
 
       - name: Download File
-        run: |
-          curl -L -o submission.txt "${{ env.FILE_URL }}"
+        run: curl -L -o submission.txt "${{ env.FILE_URL }}"
 
       - name: Run Profanity Check
         id: profanity
         run: |
-          # Run the user's custom script
-          # It prints "FLAGGED_LINES_START" if issues are found
           OUTPUT=$(python3 .github/scripts/filters/check_content.py submission.txt)
           
           if echo "$OUTPUT" | grep -q "FLAGGED_LINES_START"; then
-            echo "⚠️ Profanity found!"
-            echo "::error::Profanity check failed."
-            
-            # Save output to a file to use in the comment
             echo "$OUTPUT" > flags.txt
             echo "has_flags=true" >> $GITHUB_OUTPUT
           else
-            echo "✅ Content looks clean."
             echo "has_flags=false" >> $GITHUB_OUTPUT
           fi
 
@@ -63,10 +57,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Read the flags and format a comment
-          # We extract lines between START and END
           FLAGS=$(sed -n '/FLAGGED_LINES_START/,/FLAGGED_LINES_END/p' flags.txt | sed '1d;$d')
-          
           COMMENT="⚠️ **Publication Halted: Content Warning**
           
           The following lines were flagged:
@@ -76,34 +67,44 @@ jobs:
           $(echo "$FLAGS" | awk -F'|' '{print "| "$1" | "$2" | "$3" |"}')
           
           Please review the file manually."
-          
           gh issue comment ${{ github.event.issue.number }} --body "$COMMENT"
           exit 1
 
+      - name: Calculate Version and Path
+        id: calc_version
+        env:
+          USER: ${{ github.event.issue.user.login }}
+          SET_NAME: ${{ env.SET_NAME }}
+          REQ_VERSION: ${{ env.VERSION }}
+        run: python3 .github/scripts/calc_version.py
+
       - name: Publish to Repository
-        # Only runs if previous steps succeeded
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p community_sets
+          mkdir -p "${{ env.FINAL_FOLDER }}"
+          mv submission.txt "${{ env.FINAL_FOLDER }}/pra-custom-names.txt"
           
-          SAFE_NAME='pra-custom-names.txt'
-          TARGET="community_sets/${{ github.event.issue.user.login }}_${SAFE_NAME}.txt"
-          
-          mv submission.txt "$TARGET"
-          
-          # Update README
+          # Update Table
           TABLE="community_sets/README.md"
-          [ ! -f "$TABLE" ] && echo "| Creator | Set | Language | Progress | Notes | Date | Link |" > "$TABLE" && echo "|---|---|---|---|---|---|---|" >> "$TABLE"
+          [ ! -f "$TABLE" ] && echo "| Creator | Set | Version | Language | Progress | Notes | Date | Link |" > "$TABLE" && echo "|---|---|---|---|---|---|---|---|" >> "$TABLE"
           
           DATE=$(date +%Y-%m-%d)
-          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | ${{ env.NOTES }} | $DATE | [Download]($TARGET) |" >> "$TABLE"
+          LINK="[Download](${{ env.FINAL_FOLDER }}/pra-custom-names.txt)"
           
+          # Append row
+          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | v${{ env.FINAL_VERSION }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | ${{ env.NOTES }} | $DATE | $LINK |" >> "$TABLE"
+          
+          # Git Commit
           git config user.name "github-actions[bot]"
           git config user.email "bot@users.noreply.github.com"
           git add community_sets/
-          git commit -m "Add set: ${{ env.SET_NAME }}"
+          git commit -m "Add set: ${{ env.SET_NAME }} v${{ env.FINAL_VERSION }}"
           git push
 
-          gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**"
+          gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**
+          - **Set:** ${{ env.SET_NAME }}
+          - **Version:** v${{ env.FINAL_VERSION }}
+          - **Path:** \`${{ env.FINAL_FOLDER }}/pra-custom-names.txt\`"
+          
           gh issue close ${{ github.event.issue.number }} --reason "completed"
