@@ -1,20 +1,2 @@
 blank_issues_enabled: false
 contact_links: []
-issue_templates:
-  - name: Bug Report
-    description: Report a problem with the mod (e.g., crashes, broken behavior)
-    labels: [bug]
-    assignees: [fclorenzo]
-    file: bug_report.md
-
-  - name: Feature Request
-    description: Suggest a new feature or improvement to accessibility
-    labels: [enhancement]
-    assignees: [fclorenzo]
-    file: feature_request.md
-
-  - name: Submit Custom Label Set
-    description: Submit a new or updated custom label set for the community.
-    labels: [custom-names, automated-review]
-    assignees: [fclorenzo]
-    file: submit_names.yml
