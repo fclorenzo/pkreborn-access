@@ -95,6 +95,6 @@ jobs:
           gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**
           - **Set:** ${{ env.SET_NAME }}
           - **Version:** v${{ env.FINAL_VERSION }}
-          Check it out in the [community sets libbrary](https://github.com/fclorenzo/pkreborn-access/blob/community-sets/community_sets/README.md)."
+        Check it out in the [community sets libbrary](https://github.com/fclorenzo/pkreborn-access/blob/community-sets/community_sets/README.md)."
 
           gh issue close ${{ github.event.issue.number }} --reason "completed"
