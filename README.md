@@ -198,8 +198,20 @@ If you have created a `pra-custom-names.txt` file and want to share it with the 
 **What happens next?**
 
 - Our **Automated Triage Bot** will immediately check your file to ensure it has the correct structure (valid columns) and scan it for profanity.
-- If the validation passes, the issue will be marked for review.
-- Once approved by a moderator, your set will be automatically published to the **Community Sets Library**.
+If the validation passes, the issue will be marked for review.
+Once approved, your set will be added to the library table as a new entry.
+
+### Updating Your Set
+
+To release a new version of your label set (e.g., to add more map notes or fix errors):
+
+1. **[Create a new submission issue](https://github.com/fclorenzo/pkreborn-access/issues/new?template=submit_names.yml)** using the "Submit Custom Label Set" template (just like the first time).
+2. Enter the **exact same** "Label Set Name" as your previous submission.
+3. Enter a **higher** "Version" number (e.g., if your last was 1, enter 2).
+    - *Note: If you enter the same version number by mistake, our system will automatically detect it and bump it to the next available version (e.g., v1 -> v2).*
+4. Upload your updated `pra-custom-names.txt` file.
+
+Once approved, the new version will be added to the library table as a new entry.
 
 ### Disclaimer
 
