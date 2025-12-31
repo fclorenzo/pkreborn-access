@@ -1,7 +1,10 @@
+---
 name: Submit Custom Label Set
 description: Submit a new or updated custom label set for the community.
 title: "[Submission]: "
 labels: ["custom-names", "automated-review"]
+---
+
 body:
   - type: markdown
     attributes:
