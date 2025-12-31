@@ -178,9 +178,10 @@ The library table lists the Creator, Set Name, Language, Game Progress, and incl
 
 **To use a downloaded set:**
 
-1. Download the file by clicking its `Download` link in the library table, and then clicking the `Download raw file button` in the next page.
-2. Make sure the file is named `pra-custom-names.txt`.
-3. Place it in your game's Root folder.
+1. Select your language, you will be redirected to that language's library table.
+2. Find the entry you want in the table and click its `Download` link.
+3. Then, click the `Download raw file button` in the next page.
+4. Make sure the file is named `pra-custom-names.txt` and place it in your game's Root folder.
 
 ### Submitting Your Own Set
 
