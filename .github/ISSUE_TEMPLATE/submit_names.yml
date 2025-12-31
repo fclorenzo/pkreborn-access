@@ -63,7 +63,7 @@ body:
     validations:
       required: true
 
-  - type: textarea
+  - type: input
     id: notes
     attributes:
       label: Creator's Notes
