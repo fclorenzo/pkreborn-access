@@ -6,133 +6,40 @@ on:
 
 permissions:
   issues: write
+  contents: read
 
 jobs:
   triage-submission:
-    # Only run if the issue has the automated-review label
-    if: contains(github.event.issue.labels.*.name, 'automated-review') && contains(github.event.issue.labels.*.name, 'custom-names')
+    if: contains(github.event.issue.labels.*.name, 'automated-review') &&     contains(github.event.issue.labels.*.name, 'custom-names')
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Validate File and Structure
-        id: validate
+      - name: Parse Issue Body
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python3 .github/scripts/parse_issue.py
+
+      - name: Validate Structure (Columns & Numbers)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
-        run: |
-          cat << 'EOF' > validate_script.py
-          import os
-          import re
-          import sys
-          import urllib.request
+          FILE_URL: ${{ env.FILE_URL }}
+        run: python3 .github/scripts/validate_structure.py
 
-          def gh_comment_and_fail(msg):
-              issue = os.environ["ISSUE_NUMBER"]
-              os.system(f'gh issue comment {issue} --body "{msg}"')
-              os.system(f'gh issue edit {issue} --add-label "validation-failed" || true')
-              os.system(f'gh issue edit {issue} --remove-label "automated-review" || true')
-              sys.exit(1)
-
-          try:
-              # --- NATIVE PARSING START ---
-              body = os.environ.get('ISSUE_BODY', '')
-              payload = {}
-              # Split by '### ' headers
-              sections = re.split(r'^###\s+', body, flags=re.MULTILINE)
-              for section in sections:
-                  if not section.strip(): continue
-                  parts = section.strip().split('\n', 1)
-                  key = parts[0].strip()
-                  val = parts[1].strip() if len(parts) > 1 else ''
-                  payload[key] = val
-              # --- NATIVE PARSING END ---
-
-              # Look for "Upload File" or "File Upload" (in case you renamed it)
-              file_field = payload.get('Upload File') or payload.get('File Upload', '')
-
-              match = re.search(r'\[(.*?)\]\((.*?)\)', file_field)
-              if not match:
-                  gh_comment_and_fail('❌ **Submission Failed**\n\nNo valid file attachment found in the "Upload File" section.')
-
-              filename = match.group(1)
-              file_url = match.group(2)
-              print(f'Found file: {filename}')
-
-              target_name = 'pra-custom-names.txt'
-              if filename != target_name:
-                  print(f'Filename mismatch. Will rename {filename} -> {target_name} later.')
-
-              try:
-                  with urllib.request.urlopen(file_url) as response:
-                      content = response.read().decode('utf-8')
-              except Exception as e:
-                  gh_comment_and_fail(f'❌ **Download Error**\n\nCould not download the file. Error: {str(e)}')
-
-              lines = content.splitlines()
-              valid_entries = 0
-              errors = []
-
-              for i, line in enumerate(lines):
-                  line = line.strip()
-                  if not line or line.startswith('#'): continue
-
-                  parts = line.split(';')
-                  if len(parts) < 6:
-                      errors.append(f'Line {i+1}: Found {len(parts)} columns (Expected 6+).')
-                      if len(errors) > 3: break
-                      continue
-
-                  if not (parts[0].isdigit() and parts[2].isdigit() and parts[3].isdigit()):
-                      errors.append(f'Line {i+1}: Map ID, X, or Y are not numbers.')
-                      if len(errors) > 3: break
-                      continue
-
-                  valid_entries += 1
-
-              if errors:
-                  error_msg = '\n- '.join(errors)
-                  gh_comment_and_fail(f'❌ **Validation Failed**\n\n**Errors Found:**\n- {error_msg}')
-
-              if valid_entries == 0:
-                  gh_comment_and_fail('❌ **Validation Failed**\n\nFile appears empty or contains no valid data lines.')
-
-              print('✅ Validation Passed.')
-              # Success! Remove fail label if present, ensure automated-review is there
-              issue = os.environ["ISSUE_NUMBER"]
-              os.system(f'gh issue edit {issue} --remove-label "validation-failed" || true')
-              os.system(f'gh issue edit {issue} --add-label "automated-review" || true')
-
-              with open(os.environ['GITHUB_ENV'], 'a') as f:
-                  f.write(f'FILE_URL={file_url}\n')
-                  f.write(f'ORIGINAL_NAME={filename}\n')
-                  f.write(f'VALID_ENTRIES={valid_entries}\n')
-
-          except Exception as e:
-              gh_comment_and_fail(f'❌ **System Error**\n\n{str(e)}')
-          EOF
-
-          python3 validate_script.py
-
-      - name: Assign and Comment
+      - name: Success Comment
         if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}
-
-          MSG="🤖 **Beep Boop!**
+          gh issue edit ${{ github.event.issue.number }} --remove-label "validation-failed" --add-label "automated-review" --add-assignee ${{ github.repository_owner }}
           
-          I have successfully validated your submission.
-          - **File Status:** ✅ Valid Structure
-          - **Original Name:** \`${{ env.ORIGINAL_NAME }}\` (I will auto-rename this to \`pra-custom-names.txt\`)
-          - **Entries Found:** ${{ env.VALID_ENTRIES }}
-          - **Download URL:** [Link](${{ env.FILE_URL }})
+          gh issue comment ${{ github.event.issue.number }} --body "🤖 **Beep Boop!**
           
-          I have assigned this to @${{ github.repository_owner }} for final approval.
-          To publish this, comment: \`/approve\`"
-
-          gh issue comment ${{ github.event.issue.number }} --body "$MSG"
+          Structure validation passed!
+          - **File:** \`${{ env.ORIGINAL_FILENAME }}\`
+          - **Valid Entries:** ${{ env.VALID_ENTRIES }}
+          
+          @${{ github.repository_owner }}: Ready for review (and profanity check)."

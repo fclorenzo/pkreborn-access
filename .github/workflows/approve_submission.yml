@@ -10,14 +10,10 @@ permissions:
 
 jobs:
   approve-and-publish:
-    # Run only if:
-    # 1. It is NOT a PR comment
-    # 2. The comment starts with /approve
-    # 3. The issue has the 'automated-review' label
     if: >
       !github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/approve') &&
-      contains(github.event.issue.labels.*.name, 'automated-review')
+      contains(github.event.issue.labels.*.name, 'automated-review') && contains(github.event.issue.labels.*.name, 'custom-names')
     runs-on: ubuntu-latest
 
     steps:
@@ -30,127 +26,84 @@ jobs:
           OWNER: ${{ github.repository_owner }}
         run: |
           if [ "$ACTOR" != "$OWNER" ]; then
-            echo "❌ Permission denied. Only the repo owner ($OWNER) can approve."
+            echo "❌ Permission denied."
             exit 1
           fi
 
-      - name: Parse and Process
-        id: process
+      - name: Parse Issue Body
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_BODY: ${{ github.event.issue.body }}
-          CREATOR: ${{ github.event.issue.user.login }}
+        run: python3 .github/scripts/parse_issue.py
+
+      - name: Download File
         run: |
-          cat << 'EOF' > publish_script.py
-          import os
-          import re
-          import sys
-          import urllib.request
-          from datetime import datetime
+          curl -L -o submission.txt "${{ env.FILE_URL }}"
 
-          def gh_comment(msg):
-              os.system(f'gh issue comment {os.environ["ISSUE_NUMBER"]} --body "{msg}"')
-
-          try:
-              # --- NATIVE PARSING ---
-              # Reads the issue body directly, splitting by '### ' headers
-              body = os.environ.get('ISSUE_BODY', '')
-              payload = {}
-              sections = re.split(r'^###\s+', body, flags=re.MULTILINE)
-              for section in sections:
-                  if not section.strip(): continue
-                  parts = section.strip().split('\n', 1)
-                  key = parts[0].strip()
-                  val = parts[1].strip() if len(parts) > 1 else ''
-                  payload[key] = val
-              
-              # Extract Fields
-              # Matches the fields in your .github/ISSUE_TEMPLATE/submit_names.yml
-              set_name = payload.get('Label Set Name') or payload.get('Theme Name', 'Unknown')
-              language = payload.get('Language', 'Unknown')
-              progress = payload.get('Game Progress', 'Unknown')
-              notes = payload.get('Creator\'s Notes', 'None')
-              file_field = payload.get('Upload File') or payload.get('File Upload', '')
-
-              # Get File URL
-              match = re.search(r'\[(.*?)\]\((.*?)\)', file_field)
-              if not match:
-                  print("No file found.")
-                  sys.exit(1)
-              file_url = match.group(2)
-
-              # --- PROFANITY CHECK ---
-              # Basic safety check
-              BAD_WORDS = ["fuck", "nigger", "faggot", "shit", "cunt"] 
-              SAFE_WORDS = ["sharpedo", "cofagrigus"] 
-
-              try:
-                  with urllib.request.urlopen(file_url) as response:
-                      content = response.read().decode('utf-8', errors='ignore')
-              except:
-                  sys.exit(1)
-              
-              lowered = content.lower()
-              for safe in SAFE_WORDS: lowered = lowered.replace(safe, "")
-              
-              found_bad = [w for w in BAD_WORDS if f" {w} " in f" {lowered} "] 
-              
-              if found_bad:
-                  gh_comment(f"⚠️ **Review Halt:** Potentially offensive words found: {found_bad}. Manual check required.")
-                  sys.exit(1) # Stop here
-
-              # --- PREPARE DATA FOR BASH ---
-              # Writes variables to GITHUB_ENV so the next step can use them
-              with open(os.environ['GITHUB_ENV'], 'a') as f:
-                  f.write(f'SET_NAME={set_name}\n')
-                  f.write(f'LANGUAGE={language}\n')
-                  f.write(f'PROGRESS={progress}\n')
-                  f.write(f'NOTES={notes}\n')
-                  f.write(f'FILE_URL={file_url}\n')
-                  f.write(f'DATE={datetime.now().strftime("%Y-%m-%d")}\n')
-
-          except Exception as e:
-              print(e)
-              sys.exit(1)
-          EOF
+      - name: Run Profanity Check
+        id: profanity
+        run: |
+          # Run the user's custom script
+          # It prints "FLAGGED_LINES_START" if issues are found
+          OUTPUT=$(python3 .github/scripts/filters/check_content.py submission.txt)
           
-          python3 publish_script.py
+          if echo "$OUTPUT" | grep -q "FLAGGED_LINES_START"; then
+            echo "⚠️ Profanity found!"
+            echo "::error::Profanity check failed."
+            
+            # Save output to a file to use in the comment
+            echo "$OUTPUT" > flags.txt
+            echo "has_flags=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Content looks clean."
+            echo "has_flags=false" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Commit and Publish
+      - name: Halt on Profanity
+        if: steps.profanity.outputs.has_flags == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CREATOR: ${{ env.CREATOR }}
         run: |
-          # Create folder
+          # Read the flags and format a comment
+          # We extract lines between START and END
+          FLAGS=$(sed -n '/FLAGGED_LINES_START/,/FLAGGED_LINES_END/p' flags.txt | sed '1d;$d')
+          
+          COMMENT="⚠️ **Publication Halted: Content Warning**
+          
+          Your custom script flagged the following lines:
+          
+          | Line | Word | Context |
+          |---|---|---|
+          $(echo "$FLAGS" | awk -F'|' '{print "| "$1" | "$2" | "$3" |"}')
+          
+          Please review the file manually."
+          
+          gh issue comment ${{ github.event.issue.number }} --body "$COMMENT"
+          exit 1
+
+      - name: Publish to Repository
+        # Only runs if previous steps succeeded
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
           mkdir -p community_sets
           
-          # Create safe filename
-          SAFE_NAME=$(echo "$SET_NAME" | tr -dc '[:alnum:]_-')
-          FILENAME="community_sets/${CREATOR}_${SAFE_NAME}_pra-custom-names.txt"
+          SAFE_NAME=$(echo "${{ env.SET_NAME }}" | tr -dc '[:alnum:]_-')
+          TARGET="community_sets/${{ github.event.issue.user.login }}_${SAFE_NAME}.txt"
           
-          # Download
-          curl -L -o "$FILENAME" "$FILE_URL"
+          mv submission.txt "$TARGET"
           
-          # Update Table
-          TABLE_FILE="community_sets/README.md"
-          if [ ! -f "$TABLE_FILE" ]; then
-            echo "| Creator | Set Name | Language | Progress | Notes | Date | File |" > "$TABLE_FILE"
-            echo "|---|---|---|---|---|---|---|" >> "$TABLE_FILE"
-          fi
+          # Update README
+          TABLE="community_sets/README.md"
+          [ ! -f "$TABLE" ] && echo "| Creator | Set | Language | Progress | Notes | Date | Link |" > "$TABLE" && echo "|---|---|---|---|---|---|---|" >> "$TABLE"
           
-          # Append to table
-          # Note: We clean newlines from notes to keep the table row valid
-          CLEAN_NOTES=$(echo "$NOTES" | tr -d '\n\r')
-          echo "| $CREATOR | $SET_NAME | $LANGUAGE | $PROGRESS | $CLEAN_NOTES | $DATE | [Download]($FILENAME) |" >> "$TABLE_FILE"
+          DATE=$(date +%Y-%m-%d)
+          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | ${{ env.NOTES }} | $DATE | [Download]($TARGET) |" >> "$TABLE"
           
-          # Git Push
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "bot@users.noreply.github.com"
           git add community_sets/
-          git commit -m "Add label set: $SET_NAME by $CREATOR"
+          git commit -m "Add set: ${{ env.SET_NAME }}"
           git push
 
-          # Close Issue
-          gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!** Thank you for your contribution."
+          gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**"
           gh issue close ${{ github.event.issue.number }} --reason "completed"
