@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   triage-submission:
-    if: contains(github.event.issue.labels.*.name, 'automated-review') &&     contains(github.event.issue.labels.*.name, 'custom-names')
+    if: contains(github.event.issue.labels.*.name, 'automated-review') && contains(github.event.issue.labels.*.name, 'custom-names')
     runs-on: ubuntu-latest
 
     steps:
@@ -22,14 +22,57 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: python3 .github/scripts/parse_issue.py
 
-      - name: Validate Structure (Columns & Numbers)
+      - name: Download File
+        run: |
+          curl -L -o submission.txt "${{ env.FILE_URL }}"
+
+      - name: Validate Structure
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          FILE_URL: ${{ env.FILE_URL }}
-        run: python3 .github/scripts/validate_structure.py
+        run: python3 .github/scripts/validate_structure.py submission.txt
 
-      - name: Success Comment
+      - name: Run Profanity Check
+        id: profanity
+        run: |
+          # Run your custom script against the downloaded file
+          OUTPUT=$(python3 .github/scripts/filters/check_content.py submission.txt)
+          
+          # Check if the script flagged anything
+          if echo "$OUTPUT" | grep -q "FLAGGED_LINES_START"; then
+            echo "has_flags=true" >> $GITHUB_OUTPUT
+            # Save the raw output to a file so we can parse it in the next step
+            echo "$OUTPUT" > profanity_report.txt
+          else
+            echo "has_flags=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail on Profanity
+        if: steps.profanity.outputs.has_flags == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Extract the table rows from the python output
+          FLAGS=$(sed -n '/FLAGGED_LINES_START/,/FLAGGED_LINES_END/p' profanity_report.txt | sed '1d;$d')
+          
+          COMMENT="❌ **Validation Failed: Content Warning**
+          
+          Your file contains words that were flagged by our filter. Please verify the context or remove them and upload a new file.
+          
+          | Line | Word | Context |
+          |---|---|---|
+          $(echo "$FLAGS" | awk -F'|' '{print "| "$1" | "$2" | "$3" |"}')
+          "
+          
+          # Comment, Label as Failed, Remove Review Label, and Close
+          gh issue comment ${{ github.event.issue.number }} --body "$COMMENT"
+          gh issue edit ${{ github.event.issue.number }} --add-label "validation-failed" --remove-label "automated-review"
+          gh issue close ${{ github.event.issue.number }} --reason "not planned"
+          
+          # Fail the job
+          exit 1
+
+      - name: Success & Assign
         if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,8 +81,8 @@ jobs:
           
           gh issue comment ${{ github.event.issue.number }} --body "🤖 **Beep Boop!**
           
-          Structure validation passed!
-          - **File:** \`${{ env.ORIGINAL_FILENAME }}\`
-          - **Valid Entries:** ${{ env.VALID_ENTRIES }}
+          Validation Passed!
+          - **File Structure:** ✅ Valid (${{ env.VALID_ENTRIES }} entries)
+          - **Content Check:** ✅ Clean
           
-          @${{ github.repository_owner }}: Ready for review."
+          @${{ github.repository_owner }}: Ready for final approval."

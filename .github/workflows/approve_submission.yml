@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Need full history to check existing files/versions
+          fetch-depth: 0
 
       - name: Verify Permission
         env:
@@ -37,39 +37,6 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: python3 .github/scripts/parse_issue.py
 
-      - name: Download File
-        run: curl -L -o submission.txt "${{ env.FILE_URL }}"
-
-      - name: Run Profanity Check
-        id: profanity
-        run: |
-          OUTPUT=$(python3 .github/scripts/filters/check_content.py submission.txt)
-          
-          if echo "$OUTPUT" | grep -q "FLAGGED_LINES_START"; then
-            echo "$OUTPUT" > flags.txt
-            echo "has_flags=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_flags=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Halt on Profanity
-        if: steps.profanity.outputs.has_flags == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          FLAGS=$(sed -n '/FLAGGED_LINES_START/,/FLAGGED_LINES_END/p' flags.txt | sed '1d;$d')
-          COMMENT="⚠️ **Publication Halted: Content Warning**
-          
-          The following lines were flagged:
-          
-          | Line | Word | Context |
-          |---|---|---|
-          $(echo "$FLAGS" | awk -F'|' '{print "| "$1" | "$2" | "$3" |"}')
-          
-          Please review the file manually."
-          gh issue comment ${{ github.event.issue.number }} --body "$COMMENT"
-          exit 1
-
       - name: Calculate Version and Path
         id: calc_version
         env:
@@ -78,12 +45,15 @@ jobs:
           REQ_VERSION: ${{ env.VERSION }}
         run: python3 .github/scripts/calc_version.py
 
-      - name: Publish to Repository
+      - name: Download and Publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Create the final folder
           mkdir -p "${{ env.FINAL_FOLDER }}"
-          mv submission.txt "${{ env.FINAL_FOLDER }}/pra-custom-names.txt"
+          
+          # Download directly to the target path
+          curl -L -o "${{ env.FINAL_FOLDER }}/pra-custom-names.txt" "${{ env.FILE_URL }}"
           
           # Update Table
           TABLE="community_sets/README.md"
@@ -92,8 +62,11 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           LINK="[Download](${{ env.FINAL_FOLDER }}/pra-custom-names.txt)"
           
+          # Clean notes for the table row
+          CLEAN_NOTES=$(echo "${{ env.NOTES }}" | tr -d '\n\r')
+          
           # Append row
-          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | v${{ env.FINAL_VERSION }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | ${{ env.NOTES }} | $DATE | $LINK |" >> "$TABLE"
+          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | v${{ env.FINAL_VERSION }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | $CLEAN_NOTES | $DATE | $LINK |" >> "$TABLE"
           
           # Git Commit
           git config user.name "github-actions[bot]"
@@ -105,5 +78,6 @@ jobs:
           gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**
           - **Set:** ${{ env.SET_NAME }}
           - **Version:** v${{ env.FINAL_VERSION }}
+          - **Path:** \`${{ env.FINAL_FOLDER }}/pra-custom-names.txt\`"
           
           gh issue close ${{ github.event.issue.number }} --reason "completed"
