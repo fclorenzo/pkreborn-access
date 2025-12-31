@@ -8,15 +8,25 @@ def fail(msg):
     os.system(f'gh issue edit {os.environ["ISSUE_NUMBER"]} --remove-label "automated-review"')
     sys.exit(1)
 
-url = os.environ.get('FILE_URL')
-if not url:
-    fail('❌ **Validation Failed**\n\nNo file attachment found.')
-
-try:
-    with urllib.request.urlopen(url) as response:
-        content = response.read().decode('utf-8')
-except Exception as e:
-    fail(f'❌ **Download Error**\n\n{str(e)}')
+# Check if a filename argument was passed (e.g., "submission.txt")
+content = ""
+if len(sys.argv) > 1:
+    file_path = sys.argv[1]
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception as e:
+        fail(f'❌ **System Error**\n\nCould not read local file: {str(e)}')
+else:
+    # Fallback to downloading URL (Legacy support)
+    url = os.environ.get('FILE_URL')
+    if not url:
+        fail('❌ **Validation Failed**\n\nNo file attachment found.')
+    try:
+        with urllib.request.urlopen(url) as response:
+            content = response.read().decode('utf-8')
+    except Exception as e:
+        fail(f'❌ **Download Error**\n\n{str(e)}')
 
 lines = content.splitlines()
 valid_entries = 0
@@ -27,7 +37,6 @@ for i, line in enumerate(lines):
     if not line or line.startswith('#'): continue
 
     parts = line.split(';')
-    # CHANGED: Allow 5 columns (assuming optional notes are missing)
     if len(parts) < 5:
         errors.append(f'Line {i+1}: Found {len(parts)} columns (Expected 5+).')
     elif not (parts[0].isdigit() and parts[2].isdigit() and parts[3].isdigit()):
@@ -38,7 +47,7 @@ for i, line in enumerate(lines):
     if len(errors) > 3: break
 
 if errors:
-    fail(f'❌ **Validation Failed**\n\nErrors:\n- ' + '\n- '.join(errors))
+    fail(f'❌ **Structure Validation Failed**\n\nErrors:\n- ' + '\n- '.join(errors))
 
 if valid_entries == 0:
     fail('❌ **Validation Failed**\n\nFile is empty or invalid.')
@@ -47,4 +56,4 @@ if valid_entries == 0:
 print(f"Valid entries: {valid_entries}")
 with open(os.environ['GITHUB_ENV'], 'a') as f:
     f.write(f"VALID_ENTRIES={valid_entries}\n")
-    f.flush() # Force write to ensure it persists
+    f.flush()
