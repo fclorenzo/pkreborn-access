@@ -1527,7 +1527,8 @@ def save_custom_names
     # - Do NOT use semicolons (;) in any of the names or notes.
     # - You can also create entries in-game by pressing Shift+K on a selected event.
     #
-    # Community-submited custom label sets can be found 
+    # Community-submited custom label sets can be found at the community label sets library:
+    #[https://github.com/fclorenzo/pkreborn-access/blob/main/community_sets/README.md]
     #
     # For the full, detailed guide, please visit the project's README on GitHub:
     # [https://github.com/fclorenzo/pkreborn-access]

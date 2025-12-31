@@ -173,7 +173,7 @@ The **Community Label Sets** library allows players to share and download custom
 
 ### Downloading a Label Set
 
-You can browse all available label sets in the **[Community Sets Library](community_sets/README.md)**.
+You can browse all available label sets in the **[Community Sets Library](https://github.com/fclorenzo/pkreborn-access/blob/main/community_sets/README.md)**.
 The library table lists the Creator, Set Name, Language, Game Progress, and includes a direct download link.
 
 **To use a downloaded set:**
