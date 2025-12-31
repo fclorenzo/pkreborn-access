@@ -57,7 +57,7 @@ jobs:
           
           COMMENT="❌ **Validation Failed: Content Warning**
           
-          Your file contains words that were flagged by our filter. Please verify the context or remove them and upload a new file.
+          Your file contains words that were flagged by our filter. Please verify the context or remove them, open a new issue and upload a new file. If you think this was a mistake, please leave a comment explaining why.
           
           | Line | Word | Context |
           |---|---|---|
