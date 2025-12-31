@@ -17,9 +17,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      # 1. Checkout MAIN (to get the Python scripts)
+      - name: Checkout Code (Scripts)
         uses: actions/checkout@v4
         with:
+          path: main_code
+
+      # 2. Checkout DATA Branch (to get the files)
+      - name: Checkout Data (Community Sets)
+        uses: actions/checkout@v4
+        with:
+          ref: community-sets
+          path: community_data
           fetch-depth: 0
 
       - name: Verify Permission
@@ -35,7 +44,42 @@ jobs:
       - name: Parse Issue Body
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
-        run: python3 .github/scripts/parse_issue.py
+        # Run script from main_code, output env vars globally
+        run: python3 main_code/.github/scripts/parse_issue.py
+
+      - name: Download File
+        # Download to root workspace temporarily
+        run: curl -L -o submission.txt "${{ env.FILE_URL }}"
+
+      - name: Run Profanity Check
+        id: profanity
+        run: |
+          OUTPUT=$(python3 main_code/.github/scripts/filters/check_content.py submission.txt)
+          
+          if echo "$OUTPUT" | grep -q "FLAGGED_LINES_START"; then
+            echo "$OUTPUT" > flags.txt
+            echo "has_flags=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_flags=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Halt on Profanity
+        if: steps.profanity.outputs.has_flags == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FLAGS=$(sed -n '/FLAGGED_LINES_START/,/FLAGGED_LINES_END/p' flags.txt | sed '1d;$d')
+          COMMENT="⚠️ **Publication Halted: Content Warning**
+          
+          Your custom script flagged the following lines:
+          
+          | Line | Word | Context |
+          |---|---|---|
+          $(echo "$FLAGS" | awk -F'|' '{print "| "$1" | "$2" | "$3" |"}')
+          
+          Please review the file manually."
+          gh issue comment ${{ github.event.issue.number }} --body "$COMMENT"
+          exit 1
 
       - name: Calculate Version and Path
         id: calc_version
@@ -43,40 +87,47 @@ jobs:
           USER: ${{ github.event.issue.user.login }}
           SET_NAME: ${{ env.SET_NAME }}
           REQ_VERSION: ${{ env.VERSION }}
-        run: python3 .github/scripts/calc_version.py
+        run: |
+          # IMPORTANT: Switch to community_data directory so the script scans the correct branch
+          cd community_data
+          python3 ../main_code/.github/scripts/calc_version.py
 
-      - name: Download and Publish
+      - name: Publish to Data Branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Create the final folder
+          # Move work to the data folder
+          cd community_data
+          
+          # 1. Create Folder (FINAL_FOLDER is relative, e.g., "community_sets/user/set_v1")
           mkdir -p "${{ env.FINAL_FOLDER }}"
           
-          # Download directly to the target path
-          curl -L -o "${{ env.FINAL_FOLDER }}/pra-custom-names.txt" "${{ env.FILE_URL }}"
+          # 2. Move file from workspace root (../submission.txt) to target
+          mv ../submission.txt "${{ env.FINAL_FOLDER }}/pra-custom-names.txt"
           
-          # Update Table
+          # 3. Update Table
           TABLE="community_sets/README.md"
-          [ ! -f "$TABLE" ] && echo "| Creator | Set | Version | Language | Progress | Notes | Date | Link |" > "$TABLE" && echo "|---|---|---|---|---|---|---|---|" >> "$TABLE"
+          # (Table header check removed as we assume it exists on the branch now)
           
+          # Generate Link (Absolute Link for robustness across branches)
           DATE=$(date +%Y-%m-%d)
-          LINK="[Download](${{ env.FINAL_FOLDER }}/pra-custom-names.txt)"
+          RAW_LINK="https://github.com/${{ github.repository }}/blob/community-sets/${{ env.FINAL_FOLDER }}/pra-custom-names.txt"
           
-          # Clean notes for the table row
           CLEAN_NOTES=$(echo "${{ env.NOTES }}" | tr -d '\n\r')
           
-          # Append row
-          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | v${{ env.FINAL_VERSION }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | $CLEAN_NOTES | $DATE | $LINK |" >> "$TABLE"
+          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | v${{ env.FINAL_VERSION }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | $CLEAN_NOTES | $DATE | [Download]($RAW_LINK) |" >> "$TABLE"
           
-          # Git Commit
+          # 4. Commit and Push to community-sets
           git config user.name "github-actions[bot]"
           git config user.email "bot@users.noreply.github.com"
           git add community_sets/
           git commit -m "Add set: ${{ env.SET_NAME }} v${{ env.FINAL_VERSION }}"
-          git push
+          git push origin community-sets
 
+          # 5. Close Issue
           gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**
           - **Set:** ${{ env.SET_NAME }}
           - **Version:** v${{ env.FINAL_VERSION }}
+          - **Link:** [View File]($RAW_LINK)"
           
           gh issue close ${{ github.event.issue.number }} --reason "completed"
