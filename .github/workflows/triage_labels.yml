@@ -42,4 +42,4 @@ jobs:
           - **File:** \`${{ env.ORIGINAL_FILENAME }}\`
           - **Valid Entries:** ${{ env.VALID_ENTRIES }}
           
-          @${{ github.repository_owner }}: Ready for review (and profanity check)."
+          @${{ github.repository_owner }}: Ready for review."

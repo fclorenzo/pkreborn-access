@@ -69,7 +69,7 @@ jobs:
           
           COMMENT="⚠️ **Publication Halted: Content Warning**
           
-          Your custom script flagged the following lines:
+          The following lines were flagged:
           
           | Line | Word | Context |
           |---|---|---|
@@ -87,7 +87,7 @@ jobs:
         run: |
           mkdir -p community_sets
           
-          SAFE_NAME=$(echo "${{ env.SET_NAME }}" | tr -dc '[:alnum:]_-')
+          SAFE_NAME='pra-custom-names.txt'
           TARGET="community_sets/${{ github.event.issue.user.login }}_${SAFE_NAME}.txt"
           
           mv submission.txt "$TARGET"
