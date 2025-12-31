@@ -72,17 +72,9 @@ jobs:
           # 2. Download File directly to target
           curl -L -o "${{ env.FINAL_FOLDER }}/pra-custom-names.txt" "${{ env.FILE_URL }}"
           
-          # 3. Update Table
-          TABLE="community_sets/README.md"
-          # (We assume the table header exists on the branch)
-          
-          # Generate Link (Absolute Link for robustness)
-          DATE=$(date +%Y-%m-%d)
-          RAW_LINK="https://github.com/${{ github.repository }}/blob/community-sets/${{ env.FINAL_FOLDER }}/pra-custom-names.txt"
-          
-          CLEAN_NOTES=$(echo "${{ env.NOTES }}" | tr -d '\n\r')
-          
-          echo "| ${{ github.event.issue.user.login }} | ${{ env.SET_NAME }} | v${{ env.FINAL_VERSION }} | ${{ env.LANGUAGE }} | ${{ env.PROGRESS }} | $CLEAN_NOTES | $DATE | [Download]($RAW_LINK) |" >> "$TABLE"
+          # 3. Update Table (Using External Script)
+          # We call the script from the 'main_code' directory
+          python3 ../main_code/.github/scripts/update_table.py
           
           # 4. Commit and Push to community-sets
           git config user.name "github-actions[bot]"
@@ -93,8 +85,8 @@ jobs:
 
           # 5. Close Issue
           gh issue comment ${{ github.event.issue.number }} --body "✅ **Published!**
-            - **Set:** ${{ env.SET_NAME }}
-            - **Version:** v${{ env.FINAL_VERSION }}
-          Check it out in the [community sets libbrary](https://github.com/fclorenzo/pkreborn-access/blob/community-sets/community_sets/README.md)."
+          - **Set:** ${{ env.SET_NAME }}
+          - **Version:** v${{ env.FINAL_VERSION }}
+          - Check it out in the [community sets libbrary](https://github.com/fclorenzo/pkreborn-access/blob/community-sets/community_sets/README.md)."
 
           gh issue close ${{ github.event.issue.number }} --reason "completed"
