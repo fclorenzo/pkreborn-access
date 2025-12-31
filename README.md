@@ -211,7 +211,7 @@ To release a new version of your label set (e.g., to add more map notes or fix e
     - *Note: If you enter the same version number by mistake, our system will automatically detect it and bump it to the next available version (e.g., v1 -> v2).*
 4. Upload your updated `pra-custom-names.txt` file.
 
-Once approved, the new version will be added to the library table as a new entry.
+Once approved, the new version will be added to the library table, replacing the old version.
 
 ### Disclaimer
 
