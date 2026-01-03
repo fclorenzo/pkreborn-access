@@ -187,14 +187,12 @@ The library table lists the Creator, Set Name, Language, Game Progress, and incl
 If you have created a `pra-custom-names.txt` file and want to share it with the community:
 
 1. **[Create a new submission issue](https://github.com/fclorenzo/pkreborn-access/issues/new?template=submit_names.yml)**.
-2. Fill out the required information,:
+2. Fill out the required fields, and optionally the `creator notes` field to leave a note about your set:
    - **Label Set Name:** A unique name for your theme (e.g., "Lore Accurate Names").
    - **Version:** An integer number (e.g., 1, 2, 3, 10, 50000...). **Do not use decimals like 1.0.**
    - **Language:** The language of your labels.
    - **Game Progress:** How far into the game your labels cover (e.g., "Up to 7th gym").
    - **Upload File:** Drag and drop your `pra-custom-names.txt` file into the upload box or click the `Paste, drop, or click to add files` button.
-
-And optionally the `creator notes` field to leave a note about your set.
 3. Click **Create**.
 
 **What happens next?**
