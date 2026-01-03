@@ -122,7 +122,6 @@ This mod allows you to customize the names of events and create your own virtual
 2. Press **Shift + K**.
 3. Enter a new name (e.g., "Healing Machine") and an optional note.
 4. The event will now appear with this name in your list.
-5. You can filter for these by pressing **O** until you hear "Filter set to Notes".
 
 ### Creating Points of Interest (PoIs)
 
