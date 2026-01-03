@@ -193,6 +193,7 @@ If you have created a `pra-custom-names.txt` file and want to share it with the 
    - **Language:** The language of your labels.
    - **Game Progress:** How far into the game your labels cover (e.g., "Up to 7th gym").
    - **Upload File:** Drag and drop your `pra-custom-names.txt` file into the upload box or click the `Paste, drop, or click to add files` button.
+
 And optionally the `creator notes` field to leave a note about your set.
 3. Click **Create**.
 
