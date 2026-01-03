@@ -6,7 +6,7 @@ V4.0.2
 
 The Pokémon Reborn Access project (PRA) consists of mods to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password.
 
-Confirmed working with game version 19.5 on Windows and the NVDA screen reader: [https://www.nvaccess.org/download/](https://www.nvaccess.org/download/).
+Confirmed working with game version 19.5 on Windows and the [NVDA screen reader](https://www.nvaccess.org/download/).
 
 I will always try to keep the mods updated to work with the latest game version, but feedback about other platforms or game versions is welcome and encouraged!
 
@@ -228,7 +228,6 @@ You can also join the [Reborn server](https://www.rebornevo.com/discord/invite/r
 
 ## Known Bugs
 
-- Pathfinder is not able to find routes inside Nightclub.
 - Event cycling in wasteland makes the game music break.
 
 ## Contributing
