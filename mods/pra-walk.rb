@@ -12,25 +12,52 @@ class Game_Player < Game_Character
   alias_method :access_mod_walk_original_update, :update
 
   def update
-    # Call original update first
+    # 1. Run the original game logic first
     access_mod_walk_original_update
 
-    # If Auto-Walk is ON
+    # 2. Check Auto-Walk Logic
     if defined?($auto_walk) && $auto_walk
       
-      # SAFETY CHECK: Only disable if we had a route and it is now finished.
-      # We check if @current_autowalk_route is NOT nil (meaning we started)
-      # BUT is empty (meaning we finished).
+      # --- A. ENCOUNTER RATE BACKUP ---
+      # We use a persistent instance variable to store the original rate.
+      # This ensures we don't lose the player's original setting.
+      if @pra_saved_encounter_modifier.nil?
+        # Default to 1.0 (standard rate) if the variable returns nil
+        current_rate = $game_variables[:EncounterRateModifier]
+        @pra_saved_encounter_modifier = current_rate.nil? ? 1.0 : current_rate
+        
+        # Set encounters to 0 (Disable them)
+        $game_variables[:EncounterRateModifier] = 0
+      end
+
+      # --- B. DESTINATION CHECK ---
+      # Only disable if we had a route and it is now finished.
       if !@current_autowalk_route.nil? && @current_autowalk_route.empty?
         $auto_walk = false
         @current_autowalk_route = nil # Reset to nil
         tts("Destination reached.")
+        
+        # Restore encounter rates immediately
+        if @pra_saved_encounter_modifier
+           $game_variables[:EncounterRateModifier] = @pra_saved_encounter_modifier
+           @pra_saved_encounter_modifier = nil
+        end
         return
       end
 
-      # Otherwise, follow the path (if one exists)
+      # --- C. WALK ---
       unless $game_temp.in_battle || $game_temp.message_window_showing
         follow_autowalk_path
+      end
+
+    else
+      # --- D. SAFETY RESTORE ---
+      # This block runs if Auto-Walk is OFF. 
+      # It catches cases where you manually stopped walking (e.g., pressed J).
+      # If we still have a saved rate, restore it now so the game returns to normal.
+      if @pra_saved_encounter_modifier
+        $game_variables[:EncounterRateModifier] = @pra_saved_encounter_modifier
+        @pra_saved_encounter_modifier = nil
       end
     end
   end
