@@ -6,7 +6,7 @@ V4.0.3
 
 The Pokémon Reborn Access project (PRA) consists of mods to further enhance accessibility for blind players in the Pokémon Reborn game, designed to be played alongside the "blindstep" password.
 
-Confirmed working with game version 19.5 on Windows and the [NVDA screen reader](https://www.nvaccess.org/download/).
+Confirmed working with game version 19.6 on Windows and the [NVDA screen reader](https://www.nvaccess.org/download/).
 
 I will always try to keep the mods updated to work with the latest game version, but feedback about other platforms or game versions is welcome and encouraged!
 
