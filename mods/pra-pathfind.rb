@@ -261,18 +261,14 @@ class Game_Player < Game_Character
   end
 
 def create_poi
-  # 1. Get Coordinates (Default to current player position)
+  # 1. Get Coordinates
   default_x = $game_player.x
   default_y = $game_player.y
-  
   x_text = Kernel.pbMessageFreeText(_INTL("Enter X coordinate (default: #{default_x}):"), "", false, 4)
   y_text = Kernel.pbMessageFreeText(_INTL("Enter Y coordinate (default: #{default_y}):"), "", false, 4)
-  
-  # Use defaults if input is empty
   final_x = (x_text && !x_text.strip.empty?) ? x_text.to_i : default_x
   final_y = (y_text && !y_text.strip.empty?) ? y_text.to_i : default_y
   
-  # Validate bounds
   unless $game_map.valid?(final_x, final_y)
     tts("Invalid coordinates.")
     return
@@ -288,7 +284,7 @@ def create_poi
   # 3. Get Note
   note = Kernel.pbMessageFreeText(_INTL("Enter optional note (max 500 chars):"), "", false, 500)
   
-  # 4. Save to Custom Names
+  # 4. Save
   map_id = $game_map.map_id
   map_name = $game_map.name
   key = "#{map_id};#{final_x};#{final_y}"
@@ -296,15 +292,13 @@ def create_poi
   value = {
     map_name: map_name,
     event_name: name,
-    notes: note || ""
+    notes: note || "",
+    type: :poi # <--- EXPLICIT FLAG
   }
   
   $custom_event_names[key] = value
   save_custom_names
-  
   tts("PoI '#{name}' created at X #{final_x}, Y #{final_y}.")
-  
-  # Refresh list immediately so the player sees it
   populate_event_list
 end
 
@@ -380,9 +374,9 @@ def rename_selected_event
     value = {
       map_name: map_name,
       event_name: new_name,
-      notes: new_note || ""
+      notes: new_note || "",
+      type: :event # <--- EXPLICIT FLAG
     }
-
     # Update the in-memory hash
     $custom_event_names[key] = value
     
@@ -417,17 +411,22 @@ def add_note_to_selected_event
     # Create the unique key
     key = "#{map_id};#{x};#{y}"
     
-    # Check if this event already has a custom name we need to preserve
+    # Check if this event already has a custom name and type we need to preserve
     current_custom_name = ""
-    if $custom_event_names[key] && $custom_event_names[key][:event_name]
-      current_custom_name = $custom_event_names[key][:event_name]
+    current_type = :event # Default to event if we are adding a note to something new
+    # Preserve existing data
+    if $custom_event_names[key]
+      current_custom_name = $custom_event_names[key][:event_name] if $custom_event_names[key][:event_name]
+      current_type = $custom_event_names[key][:type] if $custom_event_names[key][:type]
+    elsif event.is_a?(VirtualEvent) && event.type == :poi
+      current_type = :poi
     end
-
     # Create value hash, preserving the name if it exists, updating the note
     value = {
       map_name: map_name,
       event_name: current_custom_name,
-      notes: new_note
+      notes: new_note,
+      type: current_type
     }
 
     # Update and save
@@ -816,26 +815,44 @@ def populate_event_list
       mid, ex, ey = key.split(';').map(&:to_i)
       next if mid != current_map_id
       next if value[:event_name] && value[:event_name].strip.downcase == "ignore"
+
+      # Determine if we should create a Virtual Event
+      should_create_virtual = false
       
-      # --- FIX 1: GHOST EVENT PREVENTION ---
-      real_event_exists = false
-      for ev in $game_map.events.values
-         if ev.x == ex && ev.y == ey
-           real_event_exists = true
-           break
-         end
+      case value[:type]
+      when :poi
+        # Explicit POI: Always create (unless it's a connection/duplicate POI)
+        should_create_virtual = true
+        
+      when :event
+        # Explicit Event: NEVER create a virtual copy. It's just a label for a real event.
+        should_create_virtual = false
+        
+      when :legacy, nil
+        # Legacy/Unknown: Use the Heuristic (Check if real event exists)
+        # If a real event exists (even invisible), DO NOT create virtual.
+        real_event_exists = false
+        for ev in $game_map.events.values
+           if ev.x == ex && ev.y == ey
+             real_event_exists = true
+             break
+           end
+        end
+        should_create_virtual = !real_event_exists
       end
-      next if real_event_exists
-      # -------------------------------------
-      
-      next if all_connections.any? { |c| c.x == ex && c.y == ey }
-      
-      ve = VirtualEvent.new(mid, ex, ey, :poi, value[:event_name])
-      all_others.push(ve)
+
+      if should_create_virtual
+        # Deduplicate against connections
+        next if all_connections.any? { |c| c.x == ex && c.y == ey }
+        
+        ve = VirtualEvent.new(mid, ex, ey, :poi, value[:event_name])
+        all_others.push(ve)
+      end
     end
 
     # 4. FINALIZE AND FILTER
     reduceEventsInLanes(all_connections)
+    reduceEventsInLanes(all_others)
 
     final_list = []
     case current_filter
@@ -876,12 +893,19 @@ def populate_event_list
 def reduceEventsInLanes(events_list)
     buckets = {}
     
-    # Bucket by Destination ID to ensure tiles leading to the same map group together
-    # regardless of whether one tile has a custom name and another doesn't.
-    get_dest = proc do |e|
+    # --- UPDATED BUCKETING LOGIC ---
+    # We now create buckets for ANY event that should be grouped.
+    # 1. Connections group by Destination ID.
+    # 2. Named NPCs/POIs group by their Name.
+    get_group_key = proc do |e|
       if e.is_a?(VirtualEvent) && e.type == :connection
-        e.destination_id 
+        "conn_#{e.destination_id}"
       elsif is_teleport_event?(e)
+        dest = get_teleport_destination_name(e) # Or logic to get ID
+        # Since getting the exact ID from real events is tricky without parsing commands again,
+        # we can stick to grouping real connections by their coordinates if needed, 
+        # but usually, they fall into the 'connection' bucket if we extracted the ID.
+        # For now, let's group adjacent teleport events if they go to the same map ID.
         dest_id = nil
         if e.list
           e.list.each do |cmd|
@@ -891,22 +915,55 @@ def reduceEventsInLanes(events_list)
             end
           end
         end
-        dest_id
+        dest_id ? "conn_#{dest_id}" : nil
       else
-        nil 
+        # --- NEW: Group by Name ---
+        # If the event has a specific name (Custom or Real), use that as the key.
+        # We ignore generic names to prevent merging random items.
+        name_to_check = nil
+        if e.respond_to?(:custom_name) && e.custom_name && !e.custom_name.strip.empty?
+          name_to_check = e.custom_name
+        elsif e.is_a?(VirtualEvent) && e.name
+          name_to_check = e.name
+        elsif e.respond_to?(:name)
+          name_to_check = e.name
+        end
+
+        # Only group if the name is valid and not a generic system name
+        if name_to_check && !name_to_check.strip.empty? && name_to_check != "Interactable object" && name_to_check != "Point of Interest"
+          "name_#{name_to_check}"
+        else
+          nil # Don't group generic events
+        end
       end
     end
 
+    # Fill Buckets
     events_list.each do |e|
-      key = get_dest.call(e)
-      next unless key
-      buckets[key] ||= []
-      buckets[key] << e
+      key = get_group_key.call(e)
+      if key
+        buckets[key] ||= []
+        buckets[key] << e
+      else
+        # If it doesn't fit a bucket, it shouldn't be removed, but our logic below clears the list.
+        # So we treat "nil" key as "Unique events", but we can't bucket them together.
+        # We will handle them by keeping them separate.
+        # TRICK: Use the object ID as a unique key for non-groupables.
+        buckets[e.object_id] = [e]
+      end
     end
 
     events_list.clear
     
-    buckets.each do |dest, bucket|
+    # Process Buckets
+    buckets.each do |key, bucket|
+      # If bucket has 1 item, just add it back
+      if bucket.size == 1
+        events_list << bucket[0]
+        next
+      end
+
+      # For multiple items, perform the spatial clustering (Flood Fill)
       while !bucket.empty?
         current = bucket.shift
         cluster = [current]
@@ -914,10 +971,19 @@ def reduceEventsInLanes(events_list)
         loop do
           found_new = false
           bucket.dup.each do |candidate|
+            # Check adjacency (including diagonals if you want, but strictly adjacent is safer)
             is_connected = cluster.any? do |c| 
-              (c.x - candidate.x).abs + (c.y - candidate.y).abs == 1
+              (c.x - candidate.x).abs <= 1 && (c.y - candidate.y).abs <= 1 && 
+              !((c.x - candidate.x).abs == 1 && (c.y - candidate.y).abs == 1) # Strict 4-dir adjacency? Or 8? 
+              # Let's stick to 4-direction adjacency for now to avoid merging things through walls
+              # (c.x - candidate.x).abs + (c.y - candidate.y).abs == 1
             end
-            if is_connected
+            
+            # Allow diagonal grouping for Names (e.g. 2x2 sprite), but maybe stick to linear for connections?
+            # Let's use 1-tile distance (Chebyshev) to be generous for duplicates.
+            dist = (current.x - candidate.x).abs + (current.y - candidate.y).abs
+            
+            if dist <= 1 # Adjacent (Up/Down/Left/Right)
               cluster << candidate
               bucket.delete(candidate)
               found_new = true
@@ -926,9 +992,11 @@ def reduceEventsInLanes(events_list)
           break unless found_new
         end
         
+        # Sort by coordinates to find "Middle" or "Top-Left"
         cluster.sort_by! { |e| [e.x, e.y] }
         mid_event = cluster[cluster.size / 2]
         
+        # Consolidate candidates
         all_coords = []
         cluster.each do |e|
           all_coords << [e.x, e.y]
@@ -937,29 +1005,35 @@ def reduceEventsInLanes(events_list)
           end
         end
         
-        # --- CLUSTER NAMING FIX ---
-        # Scan the entire cluster to see if ANY tile has a custom name.
+        # Preserve the Cluster Name (if one was found during the grouping)
+        # This repeats the logic we added for connections, but ensures it works for Names too.
         found_custom_name = nil
         cluster.each do |e|
-          key = "#{$game_map.map_id};#{e.x};#{e.y}"
-          if $custom_event_names[key] && $custom_event_names[key][:event_name] && !$custom_event_names[key][:event_name].strip.empty?
-             found_custom_name = $custom_event_names[key][:event_name]
+          # Priority 1: Already has a custom_name set on the object
+          if e.respond_to?(:custom_name) && e.custom_name
+             found_custom_name = e.custom_name
+             break
+          end
+          
+          # Priority 2: Check the global hash for this specific coordinate
+          key_coords = "#{$game_map.map_id};#{e.x};#{e.y}"
+          if $custom_event_names[key_coords] && $custom_event_names[key_coords][:event_name] && 
+             !$custom_event_names[key_coords][:event_name].strip.empty?
+             found_custom_name = $custom_event_names[key_coords][:event_name]
              break 
           end
         end
         
-        # If we found a custom name anywhere in the lane, apply it to the representative
         if found_custom_name
            mid_event.custom_name = found_custom_name
         end
-        # --------------------------
         
         mid_event.candidates = all_coords.uniq
         events_list << mid_event
       end
     end
   end
-
+  
   def pathfind_to_selected_event
     idx = PraSession.selected_event_index
     list = PraSession.mapevents
@@ -1519,30 +1593,37 @@ CUSTOM_NAMES_FILE = "pra-custom-names.txt"
 
 # Method to load the custom names from the file
 def load_custom_names
-  # Ensure the hash is empty before loading
   $custom_event_names = {}
-  
   return unless File.exist?(CUSTOM_NAMES_FILE)
 
   File.open(CUSTOM_NAMES_FILE, "r") do |file|
     file.each_line do |line|
-      # Skip comments and empty lines
       next if line.start_with?("#") || line.strip.empty?
       
       parts = line.strip.split(";")
-      # Ensure the line has at least the minimum required columns
       next if parts.length < 5 
       
-      map_id, map_name, x, y, event_name, notes = parts
+      # Attempt to read the new 7th column (type)
+      map_id, map_name, x, y, event_name, notes, type_str = parts
       
-      # Create a unique key from the map ID and coordinates
       key = "#{map_id};#{x};#{y}"
       
-      # Store the data in the global hash
+      # Determine Type
+      # :poi   = Explicitly created via Shift+L
+      # :event = Explicitly renamed via Shift+K
+      # :legacy = Old file entry (unknown intent)
+      type = :legacy
+      if type_str
+        cleaned_type = type_str.strip.downcase
+        type = :poi if cleaned_type == "poi"
+        type = :event if cleaned_type == "event"
+      end
+
       $custom_event_names[key] = {
         map_name: map_name,
         event_name: event_name,
-        notes: notes || ""
+        notes: notes || "",
+        type: type
       }
     end
   end
@@ -1551,44 +1632,28 @@ end
 
 # Method to save the custom names to the file
 def save_custom_names
-  # --- Documentation Header ---
   header = <<~TEXT
     # Pokémon Reborn Access - Custom Event Names
-    # This file allows you to provide custom, meaningful names for in-game events, as well as ignoring events and creating your own Points of Interest.
-    # The mod will automatically read this file when the game starts.
-    #
     # --- FORMAT ---
-    # Each line must have 6 fields, separated by a semicolon (;).
-    # map_id;map_name;coord_x;coord_y;event_name;notes
-    #
-    # --- IMPORTANT ---
-    # - Do NOT use semicolons (;) in any of the names or notes.
-    # - You can also create entries in-game by pressing Shift+K on a selected event.
-    #
-    # For the full, detailed guide, please visit the project's README on GitHub:
-    # [https://github.com/fclorenzo/pkreborn-access]
-    #
+    # map_id;map_name;coord_x;coord_y;event_name;notes;type
+    # Type can be 'event' (renamed real event) or 'poi' (virtual point of interest).
   TEXT
 
   File.open(CUSTOM_NAMES_FILE, "w") do |file|
-    # Write the header to the file
     file.puts(header)
-    
-    # Iterate through the in-memory hash and write each entry to the file
     $custom_event_names.each do |key, value|
       map_id, x, y = key.split(";")
       
-      # Format the line according to the spec
-      line = [
-        map_id,
-        value[:map_name],
-        x,
-        y,
-        value[:event_name],
-        value[:notes]
-      ].join(";")
+      # Determine what to write for the type column
+      type_str = nil
+      type_str = "poi" if value[:type] == :poi
+      type_str = "event" if value[:type] == :event
+      # If :legacy, we write nothing (preserve old format) to avoid assuming wrong intent
       
-      file.puts(line)
+      parts = [map_id, value[:map_name], x, y, value[:event_name], value[:notes]]
+      parts.push(type_str) if type_str # Only add 7th column if we know the type
+      
+      file.puts(parts.join(";"))
     end
   end
   tts ("Custom event names saved to #{CUSTOM_NAMES_FILE}.")
