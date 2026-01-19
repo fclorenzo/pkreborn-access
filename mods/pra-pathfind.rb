@@ -1628,7 +1628,7 @@ def load_custom_names
       next if line.start_with?("#") || line.strip.empty?
       
       parts = line.strip.split(";").map(&:strip)
-      next if parts.length < 6
+      next if parts.length < 5
       
       # Attempt to read the new 7th column (type)
       map_id, map_name, x, y, event_name, notes, type_str = parts
