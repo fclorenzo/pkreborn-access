@@ -37,7 +37,7 @@ for i, line in enumerate(lines):
     if not line or line.startswith('#'): continue
 
     parts = line.split(';')
-    if len(parts) < 5:
+    if len(parts) < 6:
         errors.append(f'Line {i+1}: Found {len(parts)} columns (Expected 5+).')
     elif not (parts[0].isdigit() and parts[2].isdigit() and parts[3].isdigit()):
         errors.append(f'Line {i+1}: ID/X/Y are not numbers.')
