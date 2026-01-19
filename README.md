@@ -153,14 +153,15 @@ The `pra-custom-names.txt` file is a simple text file that uses a semicolon (`;`
 | 4 | `coord_y` | Yes | The event's Y coordinate on the map. |
 | 5 | `event_name` | Yes | The new, meaningful name you want the mod to announce. |
 | 6 | `notes` | No | Optional notes (e.g., instructions). These are announced when you press **N**. |
+| 7 | `type` | Yes | Defines the entry type: `event` or `poi`. |
 
 **Example:**
 
 ``` plaintext
 # Real Event
-586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.
+586;Azurine Island;36;29;Pokemon Trainer;Battle, mandatory.;event
 # Virtual PoI
-586;Azurine Island;40;30;Good Fishing Spot;Use Good Rod here.
+586;Azurine Island;40;30;Good Fishing Spot;Use Good Rod here.;poi
 ```
 
 **Important Rule:** Please do not use semicolons (`;`) in the names or notes you create, as this character is used to separate the data fields.
