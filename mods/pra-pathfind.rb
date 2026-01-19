@@ -379,7 +379,7 @@ def rename_selected_event
     elsif event.is_a?(VirtualEvent) && event.type == :poi
        current_type = :poi
     end
-    
+
     value = {
       map_name: map_name,
       event_name: new_name,
@@ -749,9 +749,11 @@ def populate_event_list
       key = "#{$game_map.map_id};#{event.x};#{event.y}"
       custom_name_data = $custom_event_names[key]
 
-      if custom_name_data && custom_name_data[:event_name] &&
-         custom_name_data[:event_name].strip.downcase == "ignore"
-        next 
+      # We apply the custom name (even "ignore") so the grouper can see it.
+      if custom_name_data && custom_name_data[:event_name]
+         event.custom_name = custom_name_data[:event_name]
+      else
+         event.custom_name = nil
       end
 
       if is_teleport_event?(event)
@@ -809,7 +811,6 @@ def populate_event_list
               else
                  final_name = get_map_name(connected_id)
               end
-              # -------------------------------------------------
 
               ve = VirtualEvent.new($game_map.map_id, x, y, :connection, final_name, [], connected_id)
               all_connections.push(ve)
@@ -867,8 +868,7 @@ def populate_event_list
     reduceEventsInLanes(all_connections)
     reduceEventsInLanes(all_others)
 
-    # Now that they are grouped, if the group is named "ignore", remove it.
-    
+    # --- FINAL FILTER: REMOVE IGNORED GROUPS ---
     reject_ignore = proc do |e|
        (e.respond_to?(:custom_name) && e.custom_name && e.custom_name.strip.downcase == "ignore") ||
        (e.respond_to?(:name) && e.name && e.name.strip.downcase == "ignore")
@@ -876,7 +876,6 @@ def populate_event_list
 
     all_connections.reject!(&reject_ignore)
     all_others.reject!(&reject_ignore)
-
     final_list = []
     case current_filter
     when :all
