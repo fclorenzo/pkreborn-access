@@ -692,15 +692,15 @@ def announce_selected_event
     if is_teleport_event?(event)
       destination = get_teleport_destination_name(event)
       if destination && !destination.strip.empty?
-        announcement_text = "Connection to #{destination}"
+        announcement_text = destination
       elsif event.name && !event.name.strip.empty?
-        announcement_text = "Connection to #{event.name}"
+        announcement_text = event.name
       else
-        announcement_text = "Connection"
+        announcement_text = "Unknown Connection"
       end
 
     elsif event.is_a?(VirtualEvent) && event.type == :connection
-       announcement_text = "Connection to #{event.name}"
+       announcement_text = event.name
 
     elsif event.name && !event.name.strip.empty?
       announcement_text = event.name
@@ -827,21 +827,24 @@ def populate_event_list
       when :event
         # Explicit Event: NEVER create a virtual copy. It's just a label for a real event.
         should_create_virtual = false
-        
-      when :legacy, nil
-        # Legacy/Unknown: Use the Heuristic (Check if real event exists)
-        # If a real event exists (even invisible), DO NOT create virtual.
-        real_event_exists = false
-        for ev in $game_map.events.values
-           if ev.x == ex && ev.y == ey
-             real_event_exists = true
-             break
-           end
-        end
-        should_create_virtual = !real_event_exists
+
       end
 
-      if should_create_virtual
+#          when :legacy, nil
+#         # Legacy/Unknown: Use the Heuristic (Check if real event exists)
+#         # If a real event exists (even invisible), DO NOT create virtual.
+#         real_event_exists = false
+#         for ev in $game_map.events.values
+#            if ev.x == ex && ev.y == ey
+#              real_event_exists = true
+#              break
+#            end
+#         end
+#         should_create_virtual = !real_event_exists
+#       end
+#  end
+
+ if should_create_virtual
         # Deduplicate against connections
         next if all_connections.any? { |c| c.x == ex && c.y == ey }
         
@@ -971,19 +974,13 @@ def reduceEventsInLanes(events_list)
         loop do
           found_new = false
           bucket.dup.each do |candidate|
-            # Check adjacency (including diagonals if you want, but strictly adjacent is safer)
+            # Check if candidate is adjacent (4-way) to ANY tile in the cluster
             is_connected = cluster.any? do |c| 
-              (c.x - candidate.x).abs <= 1 && (c.y - candidate.y).abs <= 1 && 
-              !((c.x - candidate.x).abs == 1 && (c.y - candidate.y).abs == 1) # Strict 4-dir adjacency? Or 8? 
-              # Let's stick to 4-direction adjacency for now to avoid merging things through walls
-              # (c.x - candidate.x).abs + (c.y - candidate.y).abs == 1
+              (c.x - candidate.x).abs + (c.y - candidate.y).abs == 1
             end
             
-            # Allow diagonal grouping for Names (e.g. 2x2 sprite), but maybe stick to linear for connections?
-            # Let's use 1-tile distance (Chebyshev) to be generous for duplicates.
-            dist = (current.x - candidate.x).abs + (current.y - candidate.y).abs
-            
-            if dist <= 1 # Adjacent (Up/Down/Left/Right)
+            # --- FIX: Use 'is_connected' instead of 'dist' ---
+            if is_connected
               cluster << candidate
               bucket.delete(candidate)
               found_new = true
@@ -1612,7 +1609,7 @@ def load_custom_names
       # :poi   = Explicitly created via Shift+L
       # :event = Explicitly renamed via Shift+K
       # :legacy = Old file entry (unknown intent)
-      type = :legacy
+      type = :event
       if type_str
         cleaned_type = type_str.strip.downcase
         type = :poi if cleaned_type == "poi"
@@ -1634,9 +1631,18 @@ end
 def save_custom_names
   header = <<~TEXT
     # Pokémon Reborn Access - Custom Event Names
+    # This file allows you to provide custom, meaningful names for in-game events, as well as ignoring events and creating your own Points of Interest.
+    # The mod will automatically read this file when the game starts.
     # --- FORMAT ---
+    # Each line must have 7 fields, separated by a semicolon (;).
     # map_id;map_name;coord_x;coord_y;event_name;notes;type
     # Type can be 'event' (renamed real event) or 'poi' (virtual point of interest).
+    # --- IMPORTANT ---
+    # - Do NOT use semicolons (;) in any of the names or notes.
+    # - You can also create entries in-game by pressing Shift+K on a selected event, or create a POI with Shift+L.
+    # For the full, detailed guide, please visit the project's README on GitHub:
+    # [https://github.com/fclorenzo/pkreborn-access]
+    #
   TEXT
 
   File.open(CUSTOM_NAMES_FILE, "w") do |file|
@@ -1645,11 +1651,7 @@ def save_custom_names
       map_id, x, y = key.split(";")
       
       # Determine what to write for the type column
-      type_str = nil
-      type_str = "poi" if value[:type] == :poi
-      type_str = "event" if value[:type] == :event
-      # If :legacy, we write nothing (preserve old format) to avoid assuming wrong intent
-      
+      type_str = (value[:type] == :poi) ? "poi" : "event"      
       parts = [map_id, value[:map_name], x, y, value[:event_name], value[:notes]]
       parts.push(type_str) if type_str # Only add 7th column if we know the type
       
