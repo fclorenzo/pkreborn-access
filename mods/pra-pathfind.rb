@@ -371,6 +371,15 @@ def rename_selected_event
 
     # Create the unique key and the value hash
     key = "#{map_id};#{x};#{y}"
+
+    # --- FIX: Preserve POI type ---
+    current_type = :event
+    if $custom_event_names[key] && $custom_event_names[key][:type]
+       current_type = $custom_event_names[key][:type]
+    elsif event.is_a?(VirtualEvent) && event.type == :poi
+       current_type = :poi
+    end
+    
     value = {
       map_name: map_name,
       event_name: new_name,
@@ -790,18 +799,19 @@ def populate_event_list
             if is_passable || is_ledge || is_water
               
               # Check Ignore
+              # We apply the name if it exists, otherwise default.
               key = "#{$game_map.map_id};#{x};#{y}"
               custom_name_data = $custom_event_names[key]
-              if custom_name_data && custom_name_data[:event_name] &&
-                 custom_name_data[:event_name].strip.downcase == "ignore"
-                next
-              end
               
-              # Use Default Name (Naming logic is now handled in reduceEventsInLanes)
-              default_name = get_map_name(connected_id)
+              final_name = ""
+              if custom_name_data && custom_name_data[:event_name]
+                 final_name = custom_name_data[:event_name]
+              else
+                 final_name = get_map_name(connected_id)
+              end
+              # -------------------------------------------------
 
-              # Pass connected_id as the destination_id
-              ve = VirtualEvent.new($game_map.map_id, x, y, :connection, default_name, [], connected_id)
+              ve = VirtualEvent.new($game_map.map_id, x, y, :connection, final_name, [], connected_id)
               all_connections.push(ve)
             end
           end
@@ -856,6 +866,16 @@ def populate_event_list
     # 4. FINALIZE AND FILTER
     reduceEventsInLanes(all_connections)
     reduceEventsInLanes(all_others)
+
+    # Now that they are grouped, if the group is named "ignore", remove it.
+    
+    reject_ignore = proc do |e|
+       (e.respond_to?(:custom_name) && e.custom_name && e.custom_name.strip.downcase == "ignore") ||
+       (e.respond_to?(:name) && e.name && e.name.strip.downcase == "ignore")
+    end
+
+    all_connections.reject!(&reject_ignore)
+    all_others.reject!(&reject_ignore)
 
     final_list = []
     case current_filter
@@ -932,15 +952,14 @@ def reduceEventsInLanes(events_list)
           name_to_check = e.name
         end
 
-        # Only group if the name is valid and not a generic system name
+        # IMPORTANT: Allow grouping by "ignore" so ignored tiles cluster together
         if name_to_check && !name_to_check.strip.empty? && name_to_check != "Interactable object" && name_to_check != "Point of Interest"
           "name_#{name_to_check}"
         else
-          nil # Don't group generic events
+          nil
         end
       end
     end
-
     # Fill Buckets
     events_list.each do |e|
       key = get_group_key.call(e)
@@ -1002,35 +1021,47 @@ def reduceEventsInLanes(events_list)
           end
         end
         
-        # Preserve the Cluster Name (if one was found during the grouping)
-        # This repeats the logic we added for connections, but ensures it works for Names too.
+        # --- CLUSTER NAMING FIX (WITH IGNORE PRIORITY) ---
         found_custom_name = nil
+        should_ignore_cluster = false
+        
         cluster.each do |e|
-          # Priority 1: Already has a custom_name set on the object
+          # Determine the name for this specific tile
+          name = nil
           if e.respond_to?(:custom_name) && e.custom_name
-             found_custom_name = e.custom_name
-             break
+             name = e.custom_name
+          else
+             # Fallback to checking hash directly (safety)
+             key_coords = "#{$game_map.map_id};#{e.x};#{e.y}"
+             if $custom_event_names[key_coords] && $custom_event_names[key_coords][:event_name]
+                name = $custom_event_names[key_coords][:event_name]
+             end
           end
           
-          # Priority 2: Check the global hash for this specific coordinate
-          key_coords = "#{$game_map.map_id};#{e.x};#{e.y}"
-          if $custom_event_names[key_coords] && $custom_event_names[key_coords][:event_name] && 
-             !$custom_event_names[key_coords][:event_name].strip.empty?
-             found_custom_name = $custom_event_names[key_coords][:event_name]
-             break 
+          # Check priority
+          if name
+             if name.strip.downcase == "ignore"
+                should_ignore_cluster = true
+                break # Found ignore! The whole cluster is doomed.
+             elsif !name.strip.empty?
+                found_custom_name = name
+             end
           end
         end
         
-        if found_custom_name
+        if should_ignore_cluster
+           mid_event.custom_name = "ignore"
+        elsif found_custom_name
            mid_event.custom_name = found_custom_name
         end
+        # -------------------------------------------------
         
         mid_event.candidates = all_coords.uniq
         events_list << mid_event
       end
     end
-  end
-  
+  end  
+
   def pathfind_to_selected_event
     idx = PraSession.selected_event_index
     list = PraSession.mapevents
@@ -1597,8 +1628,8 @@ def load_custom_names
     file.each_line do |line|
       next if line.start_with?("#") || line.strip.empty?
       
-      parts = line.strip.split(";")
-      next if parts.length < 5 
+      parts = line.strip.split(";").map(&:strip)
+      next if parts.length < 6
       
       # Attempt to read the new 7th column (type)
       map_id, map_name, x, y, event_name, notes, type_str = parts
