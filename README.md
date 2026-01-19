@@ -81,7 +81,7 @@ The "Accessible Summary" option is also available when you select a Pokémon in 
     - **Note:** If you need the **Terra Readability Mod** (for game versions older than 19.5.38), you must download the `blindstep.dat` and `settings.rb` files from **[Release V2.12.4](https://github.com/fclorenzo/pkreborn-access/releases/tag/V2.12.4)**, as they are no longer included in the latest version.
 4. Finally, create a folder called "Mods" inside the "patch" folder of your game, usually something like "Reborn-xxx-OS>patch" (where "xxx" corresponds to your game version, and "OS" corresponds to your operating system), and paste the file(s) you just downloaded there.
 5. **[Legacy Instructions: Game Version < 19.5.38]**
-   For the Terra Readability mod, you will need to place the `blindstep.dat` file in your "Data" folder. Specifically the root folder ("Reborn-xxx-windows>Data"), this will not work in a "patch>Data" folder. You also need to add the "blindstep" language in the languages array in the `settings.rb` file, in the "Scripts>Reborn" folder ("Reborn-xxx-windows>Scripts>Reborn"). Manually make the change needed by finding the languages array in the settings file, that should look like this:
+   For the Terra Readability mod, you will need to place the `blindstep.dat` file in your "Data" folder. Specifically the root folder ("Reborn-xxx-OS>Data"), this will not work in a "patch>Data" folder. You also need to add the "blindstep" language in the languages array in the `settings.rb` file, in the "Scripts>Reborn" folder ("Reborn-xxx-OS>Scripts>Reborn"). Manually make the change needed by finding the languages array in the settings file, that should look like this:
 
     ```Settings.rb
     LANGUAGES = [
