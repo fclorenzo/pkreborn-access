@@ -8,7 +8,7 @@ The Pokémon Reborn Access project (PRA) consists of mods to further enhance acc
 
 Confirmed working with game version 19.6.
 
-I will always try to keep the mods updated to work with the latest game version, feedback about your experience is welcome and encouraged!
+I will always try to keep the mods updated to work with the latest game versions, and feedback about your experience is welcome and encouraged!
 
 ## Contents
 
