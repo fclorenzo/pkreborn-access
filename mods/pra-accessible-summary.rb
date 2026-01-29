@@ -499,12 +499,8 @@ module PRA_AccessibleSummaryPC
     cmdRelease = -1
     cmdAccessibleSummary = -1 # Our new command variable
 
-    if pokemon.isEgg?
-      commands[cmdSummary = commands.length] = _INTL("Summary")
-    else
       commands[cmdSummary = commands.length] = _INTL("Summary")
       commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
-    end
     
     if @screen.isDeposit?(@selection)
       commands[cmdDeposit = commands.length] = _INTL("Deposit")
@@ -598,7 +594,7 @@ class PokemonStorageScreen
           
           commands[cmdWithdraw = commands.length] = _INTL("Withdraw")
           commands[cmdSummary = commands.length] = _INTL("Summary")
-          commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary") unless pokemon.isEgg?
+          commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
           commands[cmdMark = commands.length] = _INTL("Mark")
           commands[cmdRelease = commands.length] = _INTL("Release")
           commands[commands.length] = _INTL("Cancel")
@@ -649,7 +645,7 @@ class PokemonStorageScreen
           
           commands[cmdStore = commands.length] = _INTL("Store")
           commands[cmdSummary = commands.length] = _INTL("Summary")
-          commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary") unless pokemon.isEgg?
+          commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
           commands[cmdMark = commands.length] = _INTL("Mark")
           commands[cmdRelease = commands.length] = _INTL("Release")
           commands[commands.length] = _INTL("Cancel")
@@ -709,7 +705,7 @@ commands = []; cmdMove = -1; cmdSummary = -1; cmdAccessibleSummary = -1; cmdMult
 cmdStoreWithdraw = -1; cmdItem = -1; cmdMark = -1; cmdRelease = -1
             commands[cmdMove = commands.length] = _INTL("Move")
             commands[cmdSummary = commands.length] = _INTL("Summary")
-            if (pokemon && !pokemon.isEgg?) || (heldpoke && !heldpoke.isEgg?)
+            if pokemon || heldpoke
               commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
             end
             commands[cmdMultiMove = commands.length] = _INTL("Multi-Move") unless selected[0] == -1
@@ -820,7 +816,7 @@ class PokeBattle_Scene
         commands[cmdShift = commands.length] = _INTL("Switch In") if !party[pkmnindex].isEgg?
         commands[cmdSummary = commands.length] = _INTL("Summary")
         # Inject our command
-        commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary") if !party[pkmnindex].isEgg?
+        commands[cmdAccessibleSummary = commands.length] = _INTL("Accessible Summary")
         commands[commands.length] = _INTL("Cancel")
         
         command = scene.pbShowCommands(_INTL("Do what with {1}?", party[pkmnindex].name), commands)
