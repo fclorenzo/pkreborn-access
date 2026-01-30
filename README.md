@@ -1,6 +1,6 @@
 # Pokémon Reborn Access
 
-V4.0.5
+V4.1.0
 
 ## Description
 
@@ -58,11 +58,16 @@ When you open the menu for a Pokémon in your party, a new option is available:
 - **Accessible Summary**: Selecting this opens a sub-menu with three choices:
   - **Display BST**: Reads the Pokémon's species, form, typing, base stats, and abilities.
   - **Pokemon Details**: Reads more in-depth information, including level, held item, nature, IVs, EVs, and moves.
+  - **Biology**: Reads a descriptive text about the Pokémon's appearance and behavior (sourced from Bulbapedia).
   - **Export Team**: Exports your party to a file in pokepaste format.
 
 ### Pokémon PC Menu Controls
 
-The "Accessible Summary" option is also available when you select a Pokémon in a PC box. It provides the "Display BST" and "Pokemon Details" sub-options.
+The "Accessible Summary" option is also available when you select a Pokémon in a PC box. It provides the "Display BST", "Pokemon Details" and "Biology" sub-options.
+
+### Battle Controls
+
+When selecting a Pokémon to switch in during battle, the "Accessible Summary" option is also available. It provides the "Display BST", "Pokemon Details" and "Biology" sub-options.
 
 ## Installation
 
