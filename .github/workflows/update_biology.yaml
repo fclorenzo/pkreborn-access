@@ -1,17 +1,18 @@
-# .github/workflows/update_biology.yml  
 name: Update Biology Data
 
 on:
   schedule:
-    - cron: '0 0 1 * *' # Runs at midnight on the first day of every month
-  workflow_dispatch: # Allows manual trigger button
+    # Runs at midnight on the first day of every month
+    - cron: '0 0 1 * *' 
+  workflow_dispatch: # Allows manual trigger button (The "special command")
 
 jobs:
   scrape-and-commit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Important for pushing changes
 
     steps:
-
       # 1. Checkout MAIN (to get the Python scripts)
       - name: Checkout Code (Scripts)
         uses: actions/checkout@v4
@@ -22,9 +23,8 @@ jobs:
       - name: Checkout Data (Biology)
         uses: actions/checkout@v4
         with:
-          ref: Biology
+          ref: Biology  # Ensure this branch exists!
           path: data
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -34,13 +34,18 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4
 
+      # 3. Run Scraper with output path argument
       - name: Run Scraper
-        run: .github/scripts/scraper.py
+        # Note the path: We run the script from main_code, but save to data/
+        run: python main_code/.github/scripts/scraper.py data/pokemon_biology.json
 
+      # 4. Commit and Push ONLY to the Data branch
       - name: Commit and Push if changed
         run: |
+          cd data  # <--- CRITICAL: Switch to the data directory
           git config user.name "Automated Scraper"
           git config user.email "actions@users.noreply.github.com"
           git add pokemon_biology.json
+          # The '|| exit 0' prevents failure if there are no changes
           git commit -m "Update Pokemon Biology JSON" || exit 0
           git push

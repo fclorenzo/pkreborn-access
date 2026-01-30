@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import json
 import time
 import re
+import sys #
+import os
 
 # 1. Get the list of Pokémon with IDs from PokeAPI
 def get_pokemon_list():
@@ -148,7 +150,17 @@ def scrape_biology():
     return final_data
 
 if __name__ == "__main__":
+    output_path = 'pokemon_biology.json'
+    if len(sys.argv) > 1:
+        output_path = sys.argv[1]
+        
     data = scrape_biology()
-    with open('pokemon_biology.json', 'w', encoding='utf-8') as f:
+    
+    # Ensure directory exists if path includes one
+    directory = os.path.dirname(output_path)
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory)
+
+    with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print("Scrape complete. Saved to pokemon_biology.json")
+    print(f"Scrape complete. Saved to {output_path}")
