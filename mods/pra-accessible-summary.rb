@@ -1,3 +1,5 @@
+require 'json'
+
 # Add "Accessible Summary" to the Pokémon Screen Menu
 class PokemonScreen
   # Create a copy of the original pbPokemonScreen method to modify
@@ -163,6 +165,7 @@ def pbPokemonScreen
           sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [
             _INTL("Display BST"),
             _INTL("Pokemon Details"),
+            _INTL("Biology"),
             _INTL("Export Team"),
             _INTL("Cancel")
           ])
@@ -173,10 +176,14 @@ def pbPokemonScreen
             pbDisplayBSTData(pkmn)
           when 1 # Pokemon Details
             # Call the helper function we added earlier
-            torDisplayPokemonDetails(pkmn)          when 2
+            torDisplayPokemonDetails(pkmn)
+          when 2 # Biology
+            bio_text = BiologyDataManager.get_biology(pkmn)
+            tts(bio_text, true)
+          when 3
             teamtotext
             break # Exit menu after exporting
-          when -1, 2 # Cancel
+          when -1, 4 # Cancel
             break
           end
         end
@@ -526,6 +533,7 @@ module PRA_AccessibleSummaryPC
         sub_command = pbShowCommands(_INTL("Accessible Summary"), [
           _INTL("Display BST"),
           _INTL("Pokemon Details"),
+          _INTL("Biology"),
           _INTL("Cancel")
         ])
 
@@ -534,7 +542,10 @@ module PRA_AccessibleSummaryPC
           pbDisplayBSTData(pokemon)
         when 1 # Pokemon Details
           torDisplayPokemonDetails(pokemon)
-        when -1, 2 # Cancel
+        when 2 # Biology
+            bio_text = BiologyDataManager.get_biology(pkmn)
+            tts(bio_text, true)
+        when -1, 3 # Cancel
           break
         end
       end
@@ -607,11 +618,14 @@ class PokemonStorageScreen
             pbSummary(selected, nil)
           elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
             loop do
-              sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Cancel")])
+              sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Biology"), _INTL("Cancel")])
               case sub_command
               when 0; pbDisplayBSTData(pokemon)
               when 1; torDisplayPokemonDetails(pokemon)
-              when -1, 2; break
+            when 2; # Biology
+            bio_text = BiologyDataManager.get_biology(pokemon)
+            tts(bio_text, true)
+              when -1, 3; break
               end
             end
           elsif command == cmdMark
@@ -658,11 +672,14 @@ class PokemonStorageScreen
             pbSummary([-1, selected], nil)
           elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
             loop do
-              sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Cancel")])
+              sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Biology"), _INTL("Cancel")])
               case sub_command
               when 0; pbDisplayBSTData(pokemon)
               when 1; torDisplayPokemonDetails(pokemon)
-              when -1, 2; break
+            when 2; # Biology
+            bio_text = BiologyDataManager.get_biology(pokemon)
+            tts(bio_text, true)
+              when -1, 3; break
               end
             end
           elsif command == cmdMark
@@ -742,11 +759,14 @@ cmdStoreWithdraw = -1; cmdItem = -1; cmdMark = -1; cmdRelease = -1
             elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
               pkmn_to_inspect = heldpoke || pokemon
               loop do
-                sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Cancel")])
+                sub_command = @scene.pbShowCommands(_INTL("Accessible Summary"), [_INTL("Display BST"), _INTL("Pokemon Details"), _INTL("Biology"), _INTL("Cancel")])
                 case sub_command
                 when 0; pbDisplayBSTData(pkmn_to_inspect)
                 when 1; torDisplayPokemonDetails(pkmn_to_inspect)
-                when -1, 2; break
+                when 2; # Biology
+            bio_text = BiologyDataManager.get_biology(pkmn_to_inspect)
+            tts(bio_text, true)
+                when -1, 3; break
                 end
               end
             elsif command == cmdStoreWithdraw
@@ -835,12 +855,16 @@ elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
           sub_command = scene.pbShowCommands(_INTL("Accessible Summary"), [
             _INTL("Display BST"),
             _INTL("Pokemon Details"),
+            _INTL("Biology"),
             _INTL("Cancel")
           ])
           case sub_command
           when 0; pbDisplayBSTData(party[pkmnindex])
           when 1; torDisplayPokemonDetails(party[pkmnindex])
-          when -1, 2; break
+          when 2; # Biology
+            bio_text = BiologyDataManager.get_biology(party[pkmnindex])
+            tts(bio_text, true)
+          when -1, 3; break
           end
         end
       end
@@ -855,5 +879,120 @@ elsif cmdAccessibleSummary != -1 && command == cmdAccessibleSummary
     pbFadeInAndShow(@sprites, visiblesprites)
     @battle.logSwitch(index, ret) if ret >= 0
     return ret
+  end
+end
+
+module BiologyDataManager
+  @biology_data = nil
+  DATA_URL = "https://raw.githubusercontent.com/YourName/YourRepo/main/pokemon_biology.json"
+  FILE_PATH = "pokemon_biology.json"
+
+  def self.ensure_data_exists
+    return true if File.exist?(FILE_PATH)
+
+    begin
+      tts("Downloading Pokemon biology data. Please wait.")
+      if defined?(pbDownloadToString)
+        json_content = pbDownloadToString(DATA_URL)
+        File.open(FILE_PATH, "wb") { |f| f.write(json_content) }
+      else
+        require 'net/http'
+        require 'uri'
+        uri = URI.parse(DATA_URL)
+        response = Net::HTTP.get_response(uri)
+        if response.is_a?(Net::HTTPSuccess)
+          File.open(FILE_PATH, "wb") { |f| f.write(response.body) }
+        else
+          tts("Download failed. Server error.")
+          return false
+        end
+      end
+      tts("Download complete.")
+      return true
+    rescue Exception => e
+      tts("Biology download error: #{e.message}")
+      return false
+    end
+  end
+
+  def self.get_biology(pkmn)
+    return "Invalid Pokemon." if pkmn.nil?
+
+    if @biology_data.nil?
+      return "Biology data missing." unless ensure_data_exists
+      begin
+        # Force UTF-8 reading to handle special chars like 'é'
+        json_data = File.open(FILE_PATH, "r:UTF-8") { |f| f.read }
+        # Remove BOM (Byte Order Mark) if present
+        json_data = json_data.sub("\xEF\xBB\xBF", "")
+        @biology_data = JSON.parse(json_data)
+      rescue Exception => e
+        return "Error parsing biology data: #{e.message}"
+      end
+    end
+    
+    # 1. Look up the main Species Key
+    species_name = getMonName(pkmn.species) rescue nil
+    return "Unknown Species Name." if species_name.nil?
+    
+    species_key = species_name.upcase 
+    entry = @biology_data[species_key]
+    
+    # Fallback: Try stripping prefixes (e.g. "ALOLAN VULPIX" -> "VULPIX") if the main key isn't found
+    if entry.nil?
+      parts = species_key.split(" ")
+      if parts.length > 1
+        entry = @biology_data[parts.last] 
+      end
+    end
+
+    return "Biology description not found for #{species_key}." if entry.nil?
+
+    forms_list = entry["forms"]
+    return "No description text available." if forms_list.nil? || forms_list.empty?
+
+    # --- NEW MATCHING LOGIC ---
+    
+    # 1. If it's the base form, try to find "default" or "Normal"
+    if pkmn.form == 0
+      return forms_list["default"] if forms_list["default"]
+      # Sometimes the base form is explicitly named "Normal Form" or similar in the keys
+      forms_list.each do |key, text|
+        return text if key.downcase.include?("normal") || key.downcase.include?("default")
+      end
+      return forms_list.values.first # Absolute fallback
+    end
+
+    # 2. If it is an alternate form (pkmn.form > 0), we need to fuzzy match.
+    # Reborn stores form names in the cache, usually like "Alola Form" or "Galarian Form"
+    begin
+      reborn_form_name = $cache.pkmn[pkmn.species].forms[pkmn.form]
+    rescue
+      reborn_form_name = nil
+    end
+
+    if reborn_form_name
+      # Clean the form name: "Alola Form" -> "Alola"
+      search_term = reborn_form_name.gsub(" Form", "").gsub("Forme", "").strip.downcase
+      
+      # Iterate through JSON keys (e.g., "Alolan Meowth")
+      forms_list.each do |key, text|
+        # If JSON key is "Alolan Meowth" and search_term is "Alola", this should match.
+        if key.downcase.include?(search_term)
+          return text
+        end
+      end
+    end
+
+    # 3. Last Resort: Try exact match of getMonName just in case
+    full_name = getMonName(pkmn.species, pkmn.form)
+    forms_list.each do |key, text|
+      if key.downcase == full_name.downcase
+        return text
+      end
+    end
+
+    # 4. Fallback to default if specific form not found
+    return forms_list["default"] || forms_list.values.first
   end
 end
