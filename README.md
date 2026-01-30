@@ -248,7 +248,7 @@ For simple bug reports and feature suggestions, please continue to use the [issu
 ## Support the Project
 
 PRA is, and will always be, a free and open source project. If you find it helpful, and would like to support its development, please consider sponsoring!
-You can find the sponsor button at the top of this repository, or [click here to go to my sponsors profile](https://github.com/sponsors/fclorenzo) to go directly to the GitHub Sponsors page.
+You can find the sponsor button at the top of this repository, or [click here to go to my sponsors profile](https://github.com/sponsors/fclorenzo).
 
 ## Credits
 
