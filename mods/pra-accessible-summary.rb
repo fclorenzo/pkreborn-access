@@ -884,7 +884,8 @@ end
 
 module BiologyDataManager
   @biology_data = nil
-  DATA_URL = "https://raw.githubusercontent.com/fclorenzo/pkreborn-access/biology/data/pokemon_biology.json"
+  # Updated URL to use Capitalized 'Biology' branch matching your git setup
+  DATA_URL = "https://raw.githubusercontent.com/fclorenzo/pkreborn-access/biology/pokemon_biology.json"
   FILE_PATH = "pokemon_biology.json"
 
   def self.ensure_data_exists
@@ -892,8 +893,13 @@ module BiologyDataManager
 
     begin
       tts("Downloading Pokemon biology data. Please wait.")
+      
+      # We verify if we can reach the internet/file first
       if defined?(pbDownloadToString)
         json_content = pbDownloadToString(DATA_URL)
+        if json_content.nil? || json_content.empty?
+           return "Download failed. Empty response."
+        end
         File.open(FILE_PATH, "wb") { |f| f.write(json_content) }
       else
         require 'net/http'
@@ -903,15 +909,15 @@ module BiologyDataManager
         if response.is_a?(Net::HTTPSuccess)
           File.open(FILE_PATH, "wb") { |f| f.write(response.body) }
         else
-          tts("Download failed. Server error.")
-          return false
+          return "Download failed. Server error: #{response.code}."
         end
       end
+      
       tts("Download complete.")
       return true
     rescue Exception => e
-      tts("Biology download error: #{e.message}")
-      return false
+      # Return the actual error message so it can be spoken
+      return "Biology download error: #{e.message}"
     end
   end
 
@@ -919,7 +925,14 @@ module BiologyDataManager
     return "Invalid Pokemon." if pkmn.nil?
 
     if @biology_data.nil?
-      return "Biology data missing." unless ensure_data_exists
+      # Capture the result of the download attempt
+      result = ensure_data_exists
+      
+      # If result is NOT true, it's an error string. Return it directly.
+      if result != true
+        return result 
+      end
+
       begin
         # Force UTF-8 reading to handle special chars like 'é'
         json_data = File.open(FILE_PATH, "r:UTF-8") { |f| f.read }
@@ -938,7 +951,7 @@ module BiologyDataManager
     species_key = species_name.upcase 
     entry = @biology_data[species_key]
     
-    # Fallback: Try stripping prefixes (e.g. "ALOLAN VULPIX" -> "VULPIX") if the main key isn't found
+    # Fallback: Try stripping prefixes (e.g. "ALOLAN VULPIX" -> "VULPIX")
     if entry.nil?
       parts = species_key.split(" ")
       if parts.length > 1
@@ -948,23 +961,22 @@ module BiologyDataManager
 
     return "Biology description not found for #{species_key}." if entry.nil?
 
+    # 2. Handle Forms
     forms_list = entry["forms"]
     return "No description text available." if forms_list.nil? || forms_list.empty?
 
-    # --- NEW MATCHING LOGIC ---
+    # --- MATCHING LOGIC ---
     
     # 1. If it's the base form, try to find "default" or "Normal"
     if pkmn.form == 0
       return forms_list["default"] if forms_list["default"]
-      # Sometimes the base form is explicitly named "Normal Form" or similar in the keys
       forms_list.each do |key, text|
         return text if key.downcase.include?("normal") || key.downcase.include?("default")
       end
       return forms_list.values.first # Absolute fallback
     end
 
-    # 2. If it is an alternate form (pkmn.form > 0), we need to fuzzy match.
-    # Reborn stores form names in the cache, usually like "Alola Form" or "Galarian Form"
+    # 2. If it is an alternate form, fuzzy match name.
     begin
       reborn_form_name = $cache.pkmn[pkmn.species].forms[pkmn.form]
     rescue
@@ -972,19 +984,15 @@ module BiologyDataManager
     end
 
     if reborn_form_name
-      # Clean the form name: "Alola Form" -> "Alola"
       search_term = reborn_form_name.gsub(" Form", "").gsub("Forme", "").strip.downcase
-      
-      # Iterate through JSON keys (e.g., "Alolan Meowth")
       forms_list.each do |key, text|
-        # If JSON key is "Alolan Meowth" and search_term is "Alola", this should match.
         if key.downcase.include?(search_term)
           return text
         end
       end
     end
 
-    # 3. Last Resort: Try exact match of getMonName just in case
+    # 3. Last Resort: Try exact match of full name
     full_name = getMonName(pkmn.species, pkmn.form)
     forms_list.each do |key, text|
       if key.downcase == full_name.downcase
@@ -992,7 +1000,6 @@ module BiologyDataManager
       end
     end
 
-    # 4. Fallback to default if specific form not found
     return forms_list["default"] || forms_list.values.first
   end
 end
