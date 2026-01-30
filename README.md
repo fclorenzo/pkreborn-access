@@ -58,7 +58,7 @@ When you open the menu for a Pokémon in your party, a new option is available:
 - **Accessible Summary**: Selecting this opens a sub-menu with three choices:
   - **Display BST**: Reads the Pokémon's species, form, typing, base stats, and abilities.
   - **Pokemon Details**: Reads more in-depth information, including level, held item, nature, IVs, EVs, and moves.
-  - **Biology**: Reads a descriptive text about the Pokémon's appearance and behavior (sourced from Bulbapedia).
+  - **Biology**: Reads a descriptive text about the Pokémon's appearance and behavior (sourced from Bulbapedia). Needs an internet connection in the first run to be able to pull the data.
   - **Export Team**: Exports your party to a file in pokepaste format.
 
 ### Pokémon PC Menu Controls
@@ -260,6 +260,7 @@ You can find the sponsor button at the top of this repository, or [click here to
 - KilehKa — for modifying Terra's dialogues to improve readability for text-to-speech users.
 - Maulpaul — for implementing the original auto walk mod.
 - The blindstep channel in the [reborn Discord server](https://www.rebornevo.com/discord/invite/rebornevo/) — for beta testing, suggesting features, and valuable feedback.
+- [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page) — for the biology data on Pokémon, including descriptions.
 
 ---
 
