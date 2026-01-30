@@ -245,6 +245,11 @@ Contributions from other developers are welcome and greatly appreciated! If you 
 
 For simple bug reports and feature suggestions, please continue to use the [issues page](https://github.com/fclorenzo/pkreborn-access/issues).
 
+## Support the Project
+
+PRA is, and will always be, a free and open source project. If you find it helpful, and would like to support its development, please consider sponsoring!
+You can find the sponsor button at the top of this repository, or [click here to go to my sponsors profile](https://github.com/sponsors/fclorenzo) to go directly to the GitHub Sponsors page.
+
 ## Credits
 
 - [Torre's Decat](https://www.rebornevo.com/forums/topic/59095-torres-madness-modpacks-debug-rogue-mod-stat-display-qol-bug-patching/) — for the accessible displaying of pokémon stats and team exporting.
