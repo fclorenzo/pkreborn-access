@@ -884,7 +884,7 @@ end
 
 module BiologyDataManager
   @biology_data = nil
-  DATA_URL = "https://raw.githubusercontent.com/YourName/YourRepo/main/pokemon_biology.json"
+  DATA_URL = "https://raw.githubusercontent.com/fclorenzo/pkreborn-access/biology/data/pokemon_biology.json"
   FILE_PATH = "pokemon_biology.json"
 
   def self.ensure_data_exists
