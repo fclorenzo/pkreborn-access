@@ -20,10 +20,10 @@ jobs:
           path: main_code
 
       # 2. Checkout DATA Branch (to get the files)
-      - name: Checkout Data (Biology)
+      - name: Checkout Data (biology)
         uses: actions/checkout@v4
         with:
-          ref: Biology  # Ensure this branch exists!
+          ref: biology  # Ensure this branch exists!
           path: data
 
       - name: Set up Python
