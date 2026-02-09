@@ -37,16 +37,22 @@ end
 
 # VirtualEvent class
 class VirtualEvent
-  attr_accessor :x, :y, :map_id, :type, :custom_name, :candidates, :destination_id
+  # FIX: Added :id to the list of accessible attributes
+  attr_accessor :id, :x, :y, :map_id, :type, :custom_name, :candidates, :destination_id
   
   def initialize(map_id, x, y, type=:poi, name="Point of Interest", candidates=[], destination_id=nil)
+    # FIX: Generate a pseudo-ID based on location.
+    # We use negative numbers to distinguish them from real map events (which are positive).
+    # Logic: -(X * 1000 + Y) ensures a unique ID for every tile.
+    @id = -((x * 1000) + y)
+    
     @map_id = map_id
     @x = x
     @y = y
     @type = type
     @custom_name = name
-    @candidates = candidates 
-    @destination_id = destination_id # Used for grouping connections by target map
+    @candidates = candidates
+    @destination_id = destination_id
   end
   
   # Duck-typing: pretend to be a Game_Event so existing methods accept it
@@ -220,14 +226,16 @@ class Game_Player < Game_Character
     return false
   end
 
-  # Checks if we can perform a 2-tile jump over a ledge or event
+# Checks if we can perform a 2-tile jump over a ledge or event
   def is_path_ledge_passable?(x, y, d)
     # Get the coordinates of the tile immediately in front (the gap/ledge)
     new_x = x + (d == 6 ? 1 : d == 4 ? -1 : 0)
     new_y = y + (d == 2 ? 1 : d == 8 ? -1 : 0)
-    return false unless self.map.valid?(new_x, new_y)
+    
+    # Use global $game_map to be safe
+    return false unless $game_map.valid?(new_x, new_y)
 
-    # 1. Check for Jump Events (The "Route 4" Fix)
+    # 1. Check for Jump Events
     for event in $game_map.events.values
       if event.x == new_x && event.y == new_y && is_jump_event?(event, d)
         return true
@@ -235,31 +243,59 @@ class Game_Player < Game_Character
     end
     
     # 2. Check for Standard Ledges
-    terrain_tag = self.map.terrain_tag(new_x, new_y)
-    if terrain_tag == PBTerrain::Ledge
-      return passable?(new_x, new_y, d)
+    terrain_tag = $game_map.terrain_tag(new_x, new_y)
+    
+    # Robust Check: Constant OR 1
+    ledge_id = defined?(PBTerrain::Ledge) ? PBTerrain::Ledge : 1
+    
+    if terrain_tag == ledge_id
+      # FORCE RETURN TRUE. We trust the tag. 
+      # Logic filtering happens in push_neighbthe.
+      return true 
     end
     
     return false
   end
 
-  def getEventTiles(event, map = $game_map)
+def getEventTiles(event, map = $game_map)
     possibleTiles = []
-    if !$MapFactory.isPassable?(map.map_id, event.x, event.y + 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y + 2)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y + 2), 2))
+    #tts("Scanning targets for Event #{event.id} at #{event.x}, #{event.y}")
+    
+    # Define the 4 directions
+    directions = [
+      { dir: 2, dx: 0, dy: 1, face: 8 }, 
+      { dir: 4, dx: -1, dy: 0, face: 6 }, 
+      { dir: 6, dx: 1, dy: 0, face: 4 }, 
+      { dir: 8, dx: 0, dy: -1, face: 2 }
+    ]
+
+    found_any = false
+    
+    for d in directions
+      x1 = event.x + d[:dx]
+      y1 = event.y + d[:dy]
+      x2 = event.x + (d[:dx] * 2)
+      y2 = event.y + (d[:dy] * 2)
+
+      # Check 1: Standard (1 tile away)
+      if map.valid?(x1, y1) && map.passable?(x1, y1, 0, $game_player)
+        possibleTiles.push(EventWithRelativeDirection.new(Node.new(x1, y1), d[:face]))
+        found_any = true
+      # Check 2: Reach-Over (2 tiles away)
+      elsif map.valid?(x2, y2) && map.passable?(x2, y2, 0, $game_player)
+        possibleTiles.push(EventWithRelativeDirection.new(Node.new(x2, y2), d[:face]))
+        found_any = true
+      end
     end
-    if !$MapFactory.isPassable?(map.map_id, event.x - 1, event.y) && $MapFactory.isPassable?(map.map_id, event.x - 2, event.y)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x - 2, event.y), 4))
+
+    if found_any
+      #tts("Target found.")
+    else
+      #tts("Error. No valid standing spots found around NPC.")
     end
-    if !$MapFactory.isPassable?(map.map_id, event.x + 1, event.y) && $MapFactory.isPassable?(map.map_id, event.x + 2, event.y)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x + 2, event.y), 6))
-    end
-    if !$MapFactory.isPassable?(map.map_id, event.x, event.y - 1) && $MapFactory.isPassable?(map.map_id, event.x, event.y - 2)
-      possibleTiles.push(EventWithRelativeDirection.new(Node.new(event.x, event.y - 2), 8))
-    end
+
     return possibleTiles
   end
-
 def create_poi
   # 1. Get Coordinates
   default_x = $game_player.x
@@ -461,6 +497,9 @@ def is_path_passable?(x, y, d)
         return false
       end
     end
+
+  tag = $game_map.terrain_tag(x, y)
+  return false if tag == 1 # Force the pathfinder to treat this as an obstacle, not a floor
 
     # First, check if the tile is normally passable
     return true if passable?(x, y, d)
@@ -1375,6 +1414,7 @@ def reduceEventsInLanes(events_list)
   end
 
 # Helper to add valid neighbors to the A* list
+  # NUCLEAR DEBUG VERSION: Logs EVERYTHING
   def push_neighbthe(neighbthes, node, dir, target = nil)
     # Calculate offsets
     offsetx, offsety =  0,  1 if dir == 2
@@ -1382,17 +1422,160 @@ def reduceEventsInLanes(events_list)
     offsetx, offsety =  1,  0 if dir == 6
     offsetx, offsety =  0, -1 if dir == 8
 
-    # 1. Normal Movement (1 tile away)
-    if is_path_passable?(node.x, node.y, dir) || (target && target.equals(Node.new(node.x + offsetx, node.y + offsety)))
-      neighbthes.push(Node.new(node.x + offsetx, node.y + offsety))
-    
-    # 2. Ledge/Jump Movement (2 tiles away)
-    # If the immediate path is blocked/special, check if we can jump over it
-    elsif is_path_ledge_passable?(node.x, node.y, dir)
-      neighbthes.push(Node.new(node.x + offsetx * 2, node.y + offsety * 2))
-    end
-  end
+    next_x = node.x + offsetx
+    next_y = node.y + offsety
 
+    # --- HELPER: Debug Event Scan ---
+    scan_events = ->(tx, ty, context) {
+      found_something = false
+      if $game_map.events
+        # tts("#{context} scanning at #{tx}, #{ty}...") # Uncomment if needed
+        for event in $game_map.events.values
+          if event.x == tx && event.y == ty
+            found_something = true
+            name = event.character_name
+            thr = event.through
+            id = event.id
+            # Log everything found
+            #tts("Found Event #{id} at #{tx},#{ty}. Name: '#{name}'. Thr: #{thr}")
+            
+            if name != "" && !thr
+               return true # Blocked
+            end
+          end
+        end
+      end
+      return false
+    }
+    # --------------------------------
+
+    # 1. MOVEMENT (Walking)
+    can_walk = is_path_passable?(node.x, node.y, dir)
+    next_tag = $game_map.valid?(next_x, next_y) ? $game_map.terrain_tag(next_x, next_y) : 0
+    
+    # Override for Stairs
+    if !can_walk && (next_tag == 27 || next_tag == 28)
+      can_walk = true 
+    end
+
+    if can_walk && scan_events.call(next_x, next_y, "Walk")
+       can_walk = false
+    end
+    
+    if next_tag == 4 || next_tag == 5 || next_tag == 26
+       can_walk = false
+    end
+
+    if can_walk || (target && target.equals(Node.new(next_x, next_y)))
+      neighbthes.push(Node.new(next_x, next_y))
+    end
+    
+    # 2. JUMP LOGIC
+    if is_path_ledge_passable?(node.x, node.y, dir)
+      
+      ledge_x = next_x
+      ledge_y = next_y
+      return unless $game_map.valid?(ledge_x, ledge_y)
+
+      # tts("Checking Jump #{dir} at #{ledge_x},#{ledge_y}") # Announce Jump Attempt
+
+      # Tile Data
+      tag = 0
+      tile_id = 0
+      [2, 1, 0].each do |layer|
+        tid = $game_map.data[ledge_x, ledge_y, layer]
+        next if tid == 0
+        t_tag = $game_map.terrain_tag(ledge_x, ledge_y)
+        if t_tag == 1 || t_tag == 27 || t_tag == 28
+          tag = t_tag
+          tile_id = tid
+          break
+        end
+      end
+      tag = $game_map.terrain_tag(ledge_x, ledge_y) if tag == 0
+      is_ledge = (tag == 1)
+      is_stair = (tag == 27 || tag == 28)
+      
+      has_jump_event = false
+      for event in $game_map.events.values
+        if event.x == ledge_x && event.y == ledge_y && is_jump_event?(event, dir)
+          has_jump_event = true
+          break
+        end
+      end
+
+      # Physics Check
+      if is_ledge && !has_jump_event
+         passages = $game_map.passages[tile_id] rescue 0
+         blocked = false
+         blocked = true if dir == 2 && (passages & 0x01 == 0x01)
+         blocked = true if dir == 4 && (passages & 0x02 == 0x02)
+         blocked = true if dir == 6 && (passages & 0x04 == 0x04)
+         blocked = true if dir == 8 && (passages & 0x08 == 0x08)
+         
+         if !blocked
+            # tts("Jump rejected: Not blocked.")
+            return 
+         end
+      end
+
+      return if !is_ledge && !is_stair && !has_jump_event
+
+      # Chain Jump
+      # tts("Chain Jump Start")
+      landing_x = node.x + offsetx * 2
+      landing_y = node.y + offsety * 2
+      
+      5.times do
+        break unless $game_map.valid?(landing_x, landing_y)
+        
+        # --- NEW: Check for Obstacles INSIDE the slide ---
+        # If we slide through a rock, we should probably stop or block.
+        if scan_events.call(landing_x, landing_y, "Slide")
+           # tts("Slide blocked by event at #{landing_x},#{landing_y}")
+           # If we hit an event, we stop sliding. 
+           # If this is the rock, landing_x/y is now the rock's pos.
+           break 
+        end
+
+        l_tag = $game_map.terrain_tag(landing_x, landing_y)
+        if (l_tag == 1 || l_tag == 27 || l_tag == 28)
+          landing_x += offsetx
+          landing_y += offsety
+        else
+          break
+        end
+      end
+      
+      # Landing Validation
+      # tts("Landing Check at #{landing_x}, #{landing_y}")
+      landing_node = Node.new(landing_x, landing_y)
+
+      # --- FINAL OBSTACLE CHECK ---
+      if scan_events.call(landing_x, landing_y, "Landing")
+         tts("Jump BLOCKED by event at #{landing_x}, #{landing_y}")
+         return 
+      end
+      
+      l_tag = $game_map.terrain_tag(landing_x, landing_y)
+      if l_tag == 4 || l_tag == 5 || l_tag == 26
+         tts("Jump BLOCKED by tag #{l_tag}")
+         return
+      end
+
+      if target && target.equals(landing_node)
+         neighbthes.push(landing_node)
+         return
+      end
+
+      if $game_map.valid?(landing_x, landing_y) && $game_map.passable?(landing_x, landing_y, 0, $game_player)
+         # tts("Jump Validated to #{landing_x}, #{landing_y}")
+         neighbthes.push(landing_node)
+      else
+         # tts("Jump Rejected: Impassable.")
+      end
+    end
+  end  
   # Updated getNeighbthes using the new push logic
   def getNeighbthes(node, target, isTargetPassable, targetDirection, map)
     neighbthes = []
@@ -1405,8 +1588,8 @@ def reduceEventsInLanes(events_list)
     push_neighbthe(neighbthes, node, 8, chooseTarget)
     
     return neighbthes
-  end  
-  
+  end
+
   def getTargetDirection(target, map)
     for event in map.events.values
       if event.x != target.x || event.y != target.y
