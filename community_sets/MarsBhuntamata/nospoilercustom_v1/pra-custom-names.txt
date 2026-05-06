@@ -1,0 +1,1629 @@
+# Pokémon Reborn Access - Custom Event Names
+# This file allows you to provide custom, meaningful names for in-game events, as well as ignoring events and creating your own Points of Interest.
+# The mod will automatically read this file when the game starts.
+# --- FORMAT ---
+# Each line must have 7 fields, separated by a semicolon (;).
+# map_id;map_name;coord_x;coord_y;event_name;notes;type
+# Type can be 'event' (renamed real event) or 'poi' (virtual point of interest).
+# --- IMPORTANT ---
+# - Do NOT use semicolons (;) in any of the names or notes.
+# - You can also create entries in-game by pressing Shift+K on a selected event, or create a POI with Shift+L.
+# For the full, detailed guide, please visit the project's README on GitHub:
+# [https://github.com/fclorenzo/pkreborn-access]
+#
+37;Lower Peridot Ward;27;69;npc;;event
+37;Lower Peridot Ward;28;69;npc;;event
+37;Lower Peridot Ward;31;67;npc;;event
+37;Lower Peridot Ward;42;61;npc;;event
+37;Lower Peridot Ward;45;65;Hiker;Quest;event
+37;Lower Peridot Ward;48;60;<>- grandview avenue;;event
+37;Lower Peridot Ward;56;60;npc;;event
+37;Lower Peridot Ward;60;65;girl;;event
+37;Lower Peridot Ward;64;62;npc;;event
+37;Lower Peridot Ward;68;59;<>- grandview avenue;;event
+37;Lower Peridot Ward;69;58;cop;;event
+37;Lower Peridot Ward;70;58;cop;;event
+37;Lower Peridot Ward;75;64;opal down;;event
+29;Opal Ward;19;64;npc;;event
+29;Opal Ward;18;56;bridge trainer;;event
+29;Opal Ward;19;56;ignore;;event
+29;Opal Ward;25;59;npc;;event
+29;Opal Ward;23;56;bridge trainer;;event
+29;Opal Ward;21;56;bridge trainer;;event
+29;Opal Ward;22;56;ignore;;event
+29;Opal Ward;24;57;ignore;;event
+29;Opal Ward;27;64;potion npc;;event
+29;Opal Ward;34;59;npc;;event
+29;Opal Ward;35;57;npc;;event
+29;Opal Ward;39;62;ignore;;event
+29;Opal Ward;39;61;step;;event
+29;Opal Ward;39;59;bridge trainer;;event
+29;Opal Ward;39;58;ignore;;event
+29;Opal Ward;35;48;victoria;;event
+39;Grand Hall;3;7;charmander;;event
+39;Grand Hall;3;5;bulbasaur;;event
+39;Grand Hall;1;3;ame;;event
+39;Grand Hall;5;5;chikorita;;event
+39;Grand Hall;5;7;sindaquil;;event
+39;Grand Hall;3;9;squirtle;;event
+39;Grand Hall;7;5;treco;;event
+39;Grand Hall;5;9;totodile;;event
+39;Grand Hall;7;7;torchick;;event
+39;Grand Hall;7;9;mudkip;;event
+39;Grand Hall;9;5;turtwig;;event
+39;Grand Hall;9;7;chimchar;;event
+39;Grand Hall;9;9;piplup;;event
+39;Grand Hall;10;1;random starter;;event
+39;Grand Hall;11;5;snivy;;event
+39;Grand Hall;11;7;tepig;;event
+39;Grand Hall;11;9;oshawot;;event
+39;Grand Hall;13;5;chespin;;event
+39;Grand Hall;13;7;fennekin;;event
+39;Grand Hall;13;9;froky;;event
+39;Grand Hall;15;5;rowlet;;event
+39;Grand Hall;15;7;litten;;event
+39;Grand Hall;15;9;popplio;;event
+38;Grand Hall;15;7;gym hint npc;;event
+38;Grand Hall;9;7;npc;;event
+38;Grand Hall;8;9;npc;;event
+38;Grand Hall;10;13;tips npc;;event
+38;Grand Hall;18;7;trainer bringer;;event
+38;Grand Hall;15;16;tv;;event
+38;Grand Hall;20;7;npc;;event
+38;Grand Hall;10;16;tips npc;;event
+38;Grand Hall;6;5;password npc;;event
+38;Grand Hall;19;16;npc;;event
+38;Grand Hall;22;12;npc;;event
+38;Grand Hall;23;12;npc;;event
+38;Grand Hall;25;18;vendor;;event
+38;Grand Hall;19;19;common candy seller+rainbow field readout;;event
+38;Grand Hall;16;18;npc;;event
+38;Grand Hall;15;19;npc;;event
+38;Grand Hall;20;23;lore npc;;event
+38;Grand Hall;20;24;lore npc;;event
+38;Grand Hall;17;27;suspicious salesman;;event
+38;Grand Hall;15;28;suspicious Salesman;He's not lying. He's a quest.;event
+38;Grand Hall;9;19;pc;;event
+38;Grand Hall;11;25;hint npc;;event
+38;Grand Hall;10;24;tips npc;;event
+38;Grand Hall;27;26;jerk2;;event
+38;Grand Hall;26;27;jerk3;;event
+38;Grand Hall;3;9;npc;;event
+38;Grand Hall;5;20;nurse;;event
+29;Opal Ward;34;50;snubble/stuffle;;event
+38;Grand Hall;8;25;hint npc;;event
+38;Grand Hall;17;9;jonah;;event
+29;Opal Ward;40;62;eric;;event
+29;Opal Ward;42;62;ignore;;event
+29;Opal Ward;43;61;ignore;;event
+29;Opal Ward;40;57;ignore;;event
+29;Opal Ward;44;60;ignore;;event
+29;Opal Ward;41;56;ignore;;event
+29;Opal Ward;45;59;ignore;;event
+29;Opal Ward;42;55;ignore;;event
+29;Opal Ward;46;58;ignore;;event
+29;Opal Ward;43;54;ignore;;event
+29;Opal Ward;44;53;ignore;;event
+29;Opal Ward;22;55;paul;;event
+29;Opal Ward;42;42;techy jonathan;;event
+29;Opal Ward;39;60;eric;;event
+29;Opal Ward;20;56;paul;;event
+29;Opal Ward;48;42;claudette;;event
+29;Opal Ward;47;42;claudette;;event
+29;Opal Ward;43;27;norman;;event
+29;Opal Ward;51;25;randy;;event
+29;Opal Ward;50;26;randy;;event
+37;Lower Peridot Ward;57;65;lindsey;;event
+37;Lower Peridot Ward;51;53;sod;;event
+37;Lower Peridot Ward;55;46;gulpin;;event
+43;Lower Peridot Ward;12;7;whizmur;;event
+37;Lower Peridot Ward;57;52;whizmur house;;event
+37;Lower Peridot Ward;43;53;<>- union street;;event
+37;Lower Peridot Ward;44;43;hera;;event
+37;Lower Peridot Ward;41;34;<>- neopath road;;event
+37;Lower Peridot Ward;49;37;officer;;event
+37;Lower Peridot Ward;49;38;officer2;;event
+37;Lower Peridot Ward;50;37;<>- neopath road;;event
+37;Lower Peridot Ward;54;34;gym sign;;event
+50;Lower Peridot Ward;12;8;tips npc;;event
+50;Lower Peridot Ward;10;6;tv;;event
+37;Lower Peridot Ward;42;24;house;;event
+37;Lower Peridot Ward;41;18;<>- spitrail street;;event
+37;Lower Peridot Ward;42;17;marigold;rose incense;event
+55;Lower Peridot Ward;12;10;npc;;event
+55;Lower Peridot Ward;4;9;tips npc;;event
+55;Lower Peridot Ward;4;7;grandma;;event
+55;Lower Peridot Ward;6;5;attendent;;event
+37;Lower Peridot Ward;30;11;<>- spitrail street;;event
+37;Lower Peridot Ward;33;11;skitty house;;event
+55;Lower Peridot Ward;7;7;npc;;event
+42;Lower Peridot Ward;31;6;quiz guy;;event
+37;Lower Peridot Ward;29;33;quiz house;;event
+37;Lower Peridot Ward;27;35;andy;;event
+37;Lower Peridot Ward;26;33;<>- neopath road;;event
+37;Lower Peridot Ward;23;31;name rater sign;;event
+37;Lower Peridot Ward;19;44;rod house;;event
+47;Lower Peridot Ward;9;6;fisherman;;event
+37;Lower Peridot Ward;25;53;npc;;event
+37;Lower Peridot Ward;26;54;>- union street;;event
+37;Lower Peridot Ward;25;56;npc;;event
+37;Lower Peridot Ward;27;56;npc;;event
+45;Lower Peridot Ward;6;4;maury;;event
+45;Lower Peridot Ward;4;4;maury;;event
+37;Lower Peridot Ward;33;50;pool   house;early  game fishing;event
+37;Lower Peridot Ward;57;60;lindsey;;event
+37;Lower Peridot Ward;27;34;andy;;event
+37;Lower Peridot Ward;75;13;opal up;;event
+37;Lower Peridot Ward;21;18;npc;;event
+49;Lower Peridot Ward;7;9;name rater;;event
+49;Lower Peridot Ward;6;7;wife;;event
+49;Lower Peridot Ward;13;7;name generator npc;;event
+37;Lower Peridot Ward;20;31;name rater's house;;event
+37;Lower Peridot Ward;16;14;agate ad;;event
+37;Lower Peridot Ward;15;14;ignore;;event
+56;Lower Peridot Ward;10;7;seacrest;;event
+56;Lower Peridot Ward;9;6;seacrest;;event
+56;Lower Peridot Ward;6;10;npc;;event
+56;Lower Peridot Ward;12;5;garden;;event
+37;Lower Peridot Ward;12;15;seacrest apartment;;event
+44;Lower Peridot Ward;9;5;tv;;event
+37;Lower Peridot Ward;38;54;snack house;;event
+37;Lower Peridot Ward;68;37;<- neopath road;;event
+37;Lower Peridot Ward;66;34;Julia's sign;;event
+37;Lower Peridot Ward;62;41;sleeping bum;;event
+37;Lower Peridot Ward;58;43;hidden pokemon house;;event
+37;Lower Peridot Ward;65;34;ignore;;event
+37;Lower Peridot Ward;66;31;npc;;event
+37;Lower Peridot Ward;64;28;gym door;;event
+37;Lower Peridot Ward;63;24;puzzle skip for julia's gym;;event
+37;Lower Peridot Ward;64;24;ignore;;event
+37;Lower Peridot Ward;65;24;ignore;;event
+37;Lower Peridot Ward;59;14;npc;;event
+37;Lower Peridot Ward;55;10;seth;;event
+52;Lower Peridot Alley;17;7;npc;;event
+52;Lower Peridot Alley;7;8;macy;;event
+52;Lower Peridot Alley;4;9;npc;;event
+52;Lower Peridot Alley;4;8;step;;event
+52;Lower Peridot Alley;4;7;step;;event
+52;Lower Peridot Alley;8;6;tynamo;;event
+37;Lower Peridot Ward;58;29;something;;event
+37;Lower Peridot Ward;58;26;omething;;event
+57;Peridot Ward;72;65;<- mosswater street;;event
+37;Lower Peridot Ward;36;28;thief;;event
+37;Lower Peridot Ward;35;28;thief2;;event
+37;Lower Peridot Ward;22;50;npc;;event
+37;Lower Peridot Ward;46;54;teddiursa;;event
+37;Lower Peridot Ward;15;23;teddiursa;;event
+37;Lower Peridot Ward;23;68;teddiursa;;event
+57;Peridot Ward;74;66;npc;;event
+57;Peridot Ward;79;64;sid;;event
+57;Peridot Ward;81;57;murfy;;event
+57;Peridot Ward;80;56;tony;;event
+59;Peridot Ward;8;5;trader;;event
+57;Peridot Ward;83;58;munna house;;event
+57;Peridot Ward;82;64;sid;;event
+57;Peridot Ward;73;57;npc;;event
+57;Peridot Ward;65;66;npc;;event
+57;Peridot Ward;72;51;<- blacksteam street;;event
+57;Peridot Ward;72;43;kid;;event
+57;Peridot Ward;67;46;npc;;event
+61;Peridot Ward;7;4;tv;;event
+61;Peridot Ward;10;6;mom;;event
+57;Peridot Ward;68;43;potion house;;event
+57;Peridot Ward;63;46;<- blacksteam street;;event
+57;Peridot Ward;72;35;craig;;event
+57;Peridot Ward;80;41;house;;event
+57;Peridot Ward;84;42;roger;;event
+58;North Peridot Alley;10;12;reginald;;event
+58;North Peridot Alley;9;12;reginald;;event
+58;North Peridot Alley;7;7;Eric;Zangoose hint;event
+58;North Peridot Alley;10;4;ledge left;;event
+57;Peridot Ward;77;29;something;;event
+57;Peridot Ward;76;29;something;;event
+57;Peridot Ward;75;29;something;;event
+57;Peridot Ward;63;32;<- cinderton street;;event
+57;Peridot Ward;66;31;trill;;event
+57;Peridot Ward;67;23;jimmy;;event
+64;Peridot Ward;9;9;woman;;event
+57;Peridot Ward;64;18;iglybuff's lady house;;event
+57;Peridot Ward;71;19;jackie;;event
+57;Peridot Ward;73;18;<- sunset circle;;event
+57;Peridot Ward;75;9;npc;;event
+57;Peridot Ward;77;16;shauna;;event
+57;Peridot Ward;39;53;charlie;;event
+57;Peridot Ward;26;46;<>- blacksteam street;;event
+57;Peridot Ward;22;53;npc;;event
+57;Peridot Ward;22;31;>- cinderton street;;event
+57;Peridot Ward;27;31;snack vendor;;event
+57;Peridot Ward;21;36;charlie;;event
+29;Opal Ward;18;35;bob;;event
+40;Opal Ward;5;6;teddiursa;;event
+40;Opal Ward;7;11;bob;;event
+37;Lower Peridot Ward;68;9;cricketot house;;event
+53;Lower Peridot Ward;13;10;kid;;event
+53;Lower Peridot Ward;5;9;mom;;event
+53;Lower Peridot Ward;5;8;mom;;event
+53;Lower Peridot Ward;2;8;something;;event
+53;Lower Peridot Ward;2;7;something;;event
+37;Lower Peridot Ward;52;11;dellybird house;;event
+54;Lower Peridot Ward;7;7;grandpa;;event
+54;Lower Peridot Ward;4;9;npc;;event
+54;Lower Peridot Ward;14;9;npc;;event
+57;Peridot Ward;60;53;teddiursa;;event
+57;Peridot Ward;60;46;apartment;grubbin/joltic;event
+63;Peridot Ward;14;8;grubbin/joltic;;event
+63;Peridot Ward;11;10;npc;;event
+63;Peridot Ward;6;5;npc;;event
+57;Peridot Ward;76;35;craig;;event
+57;Peridot Ward;71;22;cirskit;;event
+57;Peridot Ward;66;34;trill;;event
+57;Peridot Ward;75;35;craig;;event
+57;Peridot Ward;78;16;shauna;;event
+62;Peridot Ward;8;5;goon;;event
+57;Peridot Ward;71;10;scammers' house;;event
+57;Peridot Ward;79;16;shauna;;event
+60;Peridot Ward;10;7;sticker lady;;event
+57;Peridot Ward;53;29;sticker lady's house;;event
+57;Peridot Ward;24;36;marshall;;event
+57;Peridot Ward;33;38;protein house;;event
+70;Peridot PokeMart;5;5;clerk;;event
+70;Peridot PokeMart;12;4;npc;;event
+70;Peridot PokeMart;12;6;npc;;event
+57;Peridot Ward;39;49;charlie;;event
+69;Peridot Ward;12;8;npc;;event
+69;Peridot Ward;5;11;npc;;event
+69;Peridot Ward;15;7;tv;;event
+57;Peridot Ward;41;46;house;;event
+57;Peridot Ward;66;30;trill;;event
+40;Opal Ward;10;6;pansear/panper;;event
+68;Peridot Ward;5;7;stuffle/snubble owner;;event
+68;Peridot Ward;8;8;stuffle/snubble;;event
+68;Peridot Ward;7;5;tv;;event
+68;Peridot Ward;13;7;sister;;event
+37;Lower Peridot Ward;64;29;Julia;;event
+57;Peridot Ward;63;62;Julia;;event
+71;Mosswater Industrial;58;54;sealed door;;event
+71;Mosswater Industrial;58;55;ignore;k;event
+71;Mosswater Industrial;50;52;1;;event
+71;Mosswater Industrial;48;36;1 exit;;event
+71;Mosswater Industrial;47;33;Ace;;event
+71;Mosswater Industrial;44;33;meteors1;;event
+71;Mosswater Industrial;44;29;mary/coleman;;event
+71;Mosswater Industrial;44;31;mary/coleman;;event
+71;Mosswater Industrial;45;24;meteors2;;event
+71;Mosswater Industrial;50;24;meteors2;;event
+71;Mosswater Industrial;49;24;bruno/ray;;event
+71;Mosswater Industrial;47;24;Bruno/ray;;event
+71;Mosswater Industrial;58;30;locked door;;event
+71;Mosswater Industrial;59;30;locked door;;event
+71;Mosswater Industrial;60;30;panel1;;event
+71;Mosswater Industrial;70;8;meteors3;;event
+71;Mosswater Industrial;65;8;meteors3;;event
+71;Mosswater Industrial;66;8;Simon/Tara;;event
+71;Mosswater Industrial;68;8;Simon/Tara;;event
+71;Mosswater Industrial;68;6;Pulse3;b;event
+71;Mosswater Industrial;69;6;Pulse4;;event
+71;Mosswater Industrial;66;6;password 1-4;;event
+71;Mosswater Industrial;49;8;Devin/Sanchez;;event
+71;Mosswater Industrial;52;8;meteors4;;event
+71;Mosswater Industrial;51;8;Devin/Sanchez;;event
+71;Mosswater Industrial;50;7;Password 1-1;;event
+71;Mosswater Industrial;28;8;Pulse2;;event
+71;Mosswater Industrial;27;8;Pulse1;;event
+71;Mosswater Industrial;26;8;Pulse0;;event
+71;Mosswater Industrial;23;8;password 1-2;;event
+71;Mosswater Industrial;26;24;Hilda/Ricardo;;event
+71;Mosswater Industrial;32;24;Meteors5;;event
+71;Mosswater Industrial;28;24;Hilda/Rocardo;;event
+71;Mosswater Industrial;24;31;Password 1-3;;event
+71;Mosswater Industrial;71;47;sealed exit;;event
+71;Mosswater Industrial;70;47;ignore;;event
+71;Mosswater Industrial;69;47;elevator;;event
+71;Mosswater Industrial;70;51;sealed exit;;event
+71;Mosswater Industrial;71;51;ignore;;event
+71;Mosswater Industrial;89;26;cutscene;;poi
+71;Mosswater Industrial;90;28;2f exit;;event
+71;Mosswater Industrial;95;29;2f datachip room path;;event
+71;Mosswater Industrial;64;27;2 exit;;event
+71;Mosswater Industrial;64;35;Datachip room;;event
+71;Mosswater Industrial;87;41;datachip room exit;;event
+71;Mosswater Industrial;99;26;right hallway;;event
+71;Mosswater Industrial;65;22;right hallway exit;;event
+71;Mosswater Industrial;70;22;2;;event
+71;Mosswater Industrial;84;9;2 exit;;event
+71;Mosswater Industrial;86;7;winter/michaela;;event
+71;Mosswater Industrial;86;10;meteors6;;event
+71;Mosswater Industrial;86;9;winter/michaela;;event
+71;Mosswater Industrial;87;6;pulse5c;;event
+71;Mosswater Industrial;89;6;password 2-4;;event
+71;Mosswater Industrial;81;26;3;;event
+71;Mosswater Industrial;52;22;3 exit;;event
+71;Mosswater Industrial;39;22;broken console;;event
+71;Mosswater Industrial;38;22;ignore;;event
+71;Mosswater Industrial;39;35;4;;event
+71;Mosswater Industrial;23;45;4 exit;;event
+71;Mosswater Industrial;21;49;antoine/demian;;event
+71;Mosswater Industrial;24;49;meteors7;;event
+71;Mosswater Industrial;23;49;antoine/demian;;event
+71;Mosswater Industrial;18;48;password 2-2;;event
+71;Mosswater Industrial;24;22;5;;event
+71;Mosswater Industrial;12;32;5 exit;;event
+71;Mosswater Industrial;7;27;Grant/Janis;;event
+71;Mosswater Industrial;4;27;meteors8;;event
+71;Mosswater Industrial;5;27;Grant/Janis;;event
+71;Mosswater Industrial;6;25;pulse678;;event
+71;Mosswater Industrial;5;25;password 2-3;;event
+71;Mosswater Industrial;42;2;locked door;;event
+71;Mosswater Industrial;43;2;boomies door;;event
+71;Mosswater Industrial;8;11;rod/ringo;;event
+71;Mosswater Industrial;8;9;rod/ringo;;event
+71;Mosswater Industrial;3;10;boomies;;event
+71;Mosswater Industrial;11;14;boomies room exit;;event
+71;Mosswater Industrial;90;22;3f;;event
+71;Mosswater Industrial;59;18;3f to 2f;;event
+71;Mosswater Industrial;59;9;Aster/Eclipse;;event
+57;Peridot Ward;21;40;factory readout guy;;event
+78;Peridot Gym;8;21;telecom;;event
+78;Peridot Gym;10;20;gate1;;event
+78;Peridot Gym;9;20;ignore;;event
+78;Peridot Gym;11;20;ignore;;event
+78;Peridot Gym;13;16;Ivan;;event
+78;Peridot Gym;11;15;ignore;;event
+78;Peridot Gym;6;19;bill;;event
+78;Peridot Gym;9;15;gate2;;event
+78;Peridot Gym;10;15;ignore;;event
+78;Peridot Gym;4;22;volt2;;event
+78;Peridot Gym;9;11;gate3;;event
+78;Peridot Gym;10;11;ignore;;event
+78;Peridot Gym;11;11;ignore;;event
+78;Peridot Gym;3;10;lennon;;event
+78;Peridot Gym;5;8;volt3;;event
+78;Peridot Gym;9;7;ignore;;event
+78;Peridot Gym;10;7;gate4;;event
+78;Peridot Gym;11;7;ignore;;event
+78;Peridot Gym;19;19;Yan;;event
+78;Peridot Gym;18;22;volt4;;event
+351;Peridot Gym;12;10;Julia;;event
+37;Lower Peridot Ward;64;34;Victoria;;event
+37;Lower Peridot Ward;35;69;numel;;event
+43;Lower Peridot Ward;9;7;House owner/hiker;;event
+57;Peridot Ward;16;30;snubble/stuffle house;;event
+29;Opal Ward;51;51;elio;;event
+29;Opal Ward;50;23;thug;;event
+29;Opal Ward;43;23;norman;;event
+29;Opal Ward;35;20;cop;;event
+36;Obsidia Ward;14;36;<- opal bridge;;event
+36;Obsidia Ward;10;31;npc;;event
+36;Obsidia Ward;14;29;npc;;event
+36;Obsidia Ward;22;37;npc;;event
+36;Obsidia Ward;14;22;npc;;event
+36;Obsidia Ward;28;32;Franklin;;event
+36;Obsidia Ward;32;36;<>- main street;;event
+36;Obsidia Ward;28;26;<>- goldenrod street;;event
+36;Obsidia Ward;33;24;daycare sign;;event
+104;Obsidia Ward;11;4;trader;;event
+104;Obsidia Ward;13;7;tv;;event
+104;Obsidia Ward;12;10;dad;;event
+36;Obsidia Ward;20;18;railnet building;;event
+36;Obsidia Ward;25;23;trader's house;;event
+83;Obsidia Pokemon Center;10;4;nurse;;event
+83;Obsidia Pokemon Center;12;6;npc;;event
+83;Obsidia Pokemon Center;12;8;npc;;event
+83;Obsidia Pokemon Center;13;10;npc;;event
+83;Obsidia Pokemon Center;14;3;pc;;event
+83;Obsidia Pokemon Center;6;9;npc;;event
+83;Obsidia Pokemon Center;5;6;sticker lady;;event
+83;Obsidia Pokemon Center;15;6;concerned mom;;event
+106;Obsidia Daycare;9;7;Grant/Janis;;event
+106;Obsidia Daycare;13;10;Grant/Janis;;event
+36;Obsidia Ward;31;22;npc;;event
+256;Sweet Kiss Candy Shop;3;5;swirlix;;event
+256;Sweet Kiss Candy Shop;4;11;npc;;event
+256;Sweet Kiss Candy Shop;7;9;npc;;event
+256;Sweet Kiss Candy Shop;7;10;npc;;event
+256;Sweet Kiss Candy Shop;9;5;tips npc;;event
+256;Sweet Kiss Candy Shop;9;10;representative;;event
+256;Sweet Kiss Candy Shop;13;5;Kid;;event
+256;Sweet Kiss Candy Shop;16;8;npc;;event
+256;Sweet Kiss Candy Shop;17;11;vendor1 right;;event
+256;Sweet Kiss Candy Shop;17;12;common candy vendor;;event
+36;Obsidia Ward;42;37;candy shop sign;;event
+36;Obsidia Ward;44;37;npc;;event
+36;Obsidia Ward;41;39;npc;;event
+36;Obsidia Ward;42;42;npc;;event
+36;Obsidia Ward;45;41;npc;;event
+36;Obsidia Ward;40;44;npc;;event
+36;Obsidia Ward;41;45;davinson;;event
+36;Obsidia Ward;50;39;npc;;event
+36;Obsidia Ward;56;42;npc;;event
+36;Obsidia Ward;47;46;<>- main street;;event
+36;Obsidia Ward;70;39;npc;;event
+36;Obsidia Ward;72;38;npc;;event
+36;Obsidia Ward;74;42;npc;;event
+36;Obsidia Ward;74;37;<- main street;;event
+36;Obsidia Ward;74;38;npc;;event
+36;Obsidia Ward;35;43;npc;;event
+36;Obsidia Ward;34;46;npc;;event
+36;Obsidia Ward;32;44;npc;;event
+36;Obsidia Ward;14;16;>- saffron street;;event
+36;Obsidia Ward;12;17;npc;;event
+81;South Obsidia Ward;40;42;> - lilycove street;;event
+81;South Obsidia Ward;36;36;hophop;;event
+81;South Obsidia Ward;41;36;hophop;;event
+81;South Obsidia Ward;42;38;hophop;;event
+81;South Obsidia Ward;37;38;hophop;;event
+81;South Obsidia Ward;35;37;hophop;;event
+81;South Obsidia Ward;42;36;hophop;;event
+81;South Obsidia Ward;35;36;hophop;;event
+81;South Obsidia Ward;39;36;hophop;;event
+81;South Obsidia Ward;35;38;hophop;;event
+81;South Obsidia Ward;42;37;hophop;;event
+81;South Obsidia Ward;40;38;hophop;;event
+81;South Obsidia Ward;36;38;hophop;;event
+81;South Obsidia Ward;40;36;hophop;;event
+81;South Obsidia Ward;41;38;hophop;;event
+81;South Obsidia Ward;38;36;hophop;;event
+81;South Obsidia Ward;38;38;hophop;;event
+81;South Obsidia Ward;39;38;hophop;;event
+81;South Obsidia Ward;38;34;hophop;;event
+81;South Obsidia Ward;36;33;hophop;;event
+81;South Obsidia Ward;39;32;hophop;;event
+81;South Obsidia Ward;42;32;hophop;;event
+81;South Obsidia Ward;41;34;hophop;;event
+81;South Obsidia Ward;37;32;hophop;;event
+81;South Obsidia Ward;40;32;hophop;;event
+81;South Obsidia Ward;43;33;hophop;;event
+81;South Obsidia Ward;42;34;hophop;;event
+81;South Obsidia Ward;41;32;hophop;;event
+81;South Obsidia Ward;43;34;hophop;;event
+81;South Obsidia Ward;39;34;hophop;;event
+81;South Obsidia Ward;40;34;hophop;;event
+81;South Obsidia Ward;36;32;hophop;;event
+81;South Obsidia Ward;37;34;hophop;;event
+81;South Obsidia Ward;38;32;hophop;;event
+81;South Obsidia Ward;36;34;hophop;;event
+81;South Obsidia Ward;37;36;hophop;;event
+81;South Obsidia Ward;51;36;hophop;;event
+81;South Obsidia Ward;46;36;hophop;;event
+81;South Obsidia Ward;44;36;hophop;;event
+81;South Obsidia Ward;44;35;hophop;;event
+81;South Obsidia Ward;44;34;hophop;;event
+81;South Obsidia Ward;46;34;hophop;;event
+81;South Obsidia Ward;49;36;hophop;;event
+81;South Obsidia Ward;47;36;hophop;;event
+81;South Obsidia Ward;45;36;hophop;;event
+81;South Obsidia Ward;49;34;hophop;;event
+81;South Obsidia Ward;50;34;hophop;;event
+81;South Obsidia Ward;51;35;hophop;;event
+81;South Obsidia Ward;48;36;hophop;;event
+81;South Obsidia Ward;45;34;hophop;;event
+81;South Obsidia Ward;47;34;hophop;;event
+81;South Obsidia Ward;48;34;hophop;;event
+81;South Obsidia Ward;51;34;hophop;;event
+81;South Obsidia Ward;50;36;hophop;;event
+81;South Obsidia Ward;38;29;hophop;;event
+81;South Obsidia Ward;37;29;hophop;;event
+81;South Obsidia Ward;36;27;hophop;;event
+81;South Obsidia Ward;42;29;south obsidia to 2f1;;event
+81;South Obsidia Ward;41;29;hophop;;event
+81;South Obsidia Ward;39;29;hophop;;event
+81;South Obsidia Ward;36;29;hophop;;event
+81;South Obsidia Ward;35;28;hophop;;event
+81;South Obsidia Ward;35;27;hophop;;event
+81;South Obsidia Ward;37;27;hophop;;event
+81;South Obsidia Ward;39;27;hophop;;event
+81;South Obsidia Ward;40;27;hophop;;event
+81;South Obsidia Ward;41;27;hophop;;event
+81;South Obsidia Ward;42;28;hophop;;event
+81;South Obsidia Ward;40;29;hophop;;event
+81;South Obsidia Ward;35;29;hophop;;event
+81;South Obsidia Ward;38;27;hophop;;event
+81;South Obsidia Ward;42;27;hophop;;event
+81;South Obsidia Ward;48;39;hophop;;event
+81;South Obsidia Ward;49;40;hophop;;event
+81;South Obsidia Ward;49;41;hophop;;event
+81;South Obsidia Ward;47;41;hophop;;event
+81;South Obsidia Ward;46;41;hophop;;event
+81;South Obsidia Ward;44;41;hophop;;event
+81;South Obsidia Ward;43;41;hophop;;event
+81;South Obsidia Ward;42;40;hophop;;event
+81;South Obsidia Ward;42;39;hophop;;event
+81;South Obsidia Ward;43;39;hophop;;event
+81;South Obsidia Ward;45;39;hophop;;event
+81;South Obsidia Ward;46;39;hophop;;event
+81;South Obsidia Ward;47;39;hophop;;event
+81;South Obsidia Ward;45;41;hophop;;event
+81;South Obsidia Ward;42;41;hophop;;event
+81;South Obsidia Ward;44;39;hophop;;event
+81;South Obsidia Ward;48;41;hophop;;event
+81;South Obsidia Ward;49;39;hophop;;event
+81;South Obsidia Ward;51;28;hophop;;event
+81;South Obsidia Ward;50;28;hophop;;event
+81;South Obsidia Ward;48;28;hophop;;event
+81;South Obsidia Ward;47;28;hophop;;event
+81;South Obsidia Ward;45;28;hophop;;event
+81;South Obsidia Ward;44;27;hophop;;event
+81;South Obsidia Ward;45;26;hophop;;event
+81;South Obsidia Ward;46;26;hophop;;event
+81;South Obsidia Ward;47;26;hophop;;event
+81;South Obsidia Ward;48;26;hophop;;event
+81;South Obsidia Ward;50;26;hophop;;event
+81;South Obsidia Ward;49;28;hophop;;event
+81;South Obsidia Ward;46;28;hophop;;event
+81;South Obsidia Ward;44;28;hophop;;event
+81;South Obsidia Ward;44;26;hophop;;event
+81;South Obsidia Ward;49;26;hophop;;event
+81;South Obsidia Ward;51;26;hophop;;event
+81;South Obsidia Ward;51;27;hophop;;event
+81;South Obsidia Ward;43;11;> - jubilife street;;event
+81;South Obsidia Ward;46;42;Wayne;;event
+81;South Obsidia Ward;46;11;lilipup's house;;event
+86;South Obsidia Ward;7;8;lilipup;;event
+86;South Obsidia Ward;6;8;owner;;event
+86;South Obsidia Ward;7;6;estate clerk;;event
+29;Opal Ward;55;35;guard;;event
+29;Opal Ward;31;28;elena;;event
+29;Opal Ward;47;51;elio;;event
+57;Peridot Ward;15;50;factory guy;;event
+58;North Peridot Alley;6;7;eric;;event
+29;Opal Ward;23;42;zane;;event
+81;South Obsidia Ward;47;42;Wayne;;event
+85;Obsidia Slums 1F;50;40;raif;;event
+85;Obsidia Slums 1F;32;34;npc;;event
+85;Obsidia Slums 1F;27;31;Ulf;;event
+85;Obsidia Slums 1F;53;40;raif;;event
+85;Obsidia Slums 1F;44;24;Omar;;event
+85;Obsidia Slums 1F;44;25;Omar;;event
+85;Obsidia Slums 1F;39;24;elevator1;;event
+85;Obsidia Slums 1F;27;29;Ulf;;event
+85;Obsidia Slums 1F;19;31;npc;;event
+85;Obsidia Slums 1F;17;31;step;;event
+85;Obsidia Slums 1F;11;35;gregory;;event
+85;Obsidia Slums 1F;13;35;gregory;;event
+85;Obsidia Slums 1F;7;32;npc;;event
+85;Obsidia Slums 1F;4;27;light shard  npc;;event
+85;Obsidia Slums 1F;4;16;npc;;event
+85;Obsidia Slums 1F;9;9;victoria;;event
+85;Obsidia Slums 1F;6;9;victoria;;event
+85;Obsidia Slums 1F;12;8;1f main to b1f escalater left;;event
+88;Obsidia Slums B1F;27;7;b1f escalater left to 1f main;;event
+85;Obsidia Slums 1F;8;3;1f main to 1f1;path to 2f;event
+90;Obsidia Slums 1F;9;48;1f1 to 1f main;;event
+85;Obsidia Slums 1F;49;48;south obsidia left;;event
+88;Obsidia Slums B1F;23;8;something;;event
+88;Obsidia Slums B1F;20;5;b1f esculater left to b1f playground;;event
+96;Obsidia Slums B1F;9;17;b1f2 to b1f escalater  left;;event
+96;Obsidia Slums B1F;10;8;door;;event
+90;Obsidia Slums 1F;7;39;Nevil;;event
+90;Obsidia Slums 1F;14;40;ledge down;;event
+90;Obsidia Slums 1F;15;41;ledge down;;event
+90;Obsidia Slums 1F;14;44;ledge down;;event
+90;Obsidia Slums 1F;15;43;ledge down;;event
+90;Obsidia Slums 1F;15;45;ledge down;;event
+90;Obsidia Slums 1F;21;39;brody;;event
+90;Obsidia Slums 1F;24;39;1f1 to 2f1;;event
+91;Obsidia Slums 2F;25;4;2f1 to 1f1;;event
+91;Obsidia Slums 2F;26;9;roof access sign;;event
+91;Obsidia Slums 2F;18;8;ledge left;;event
+91;Obsidia Slums 2F;16;8;ledge left;;event
+91;Obsidia Slums 2F;14;8;ledge left;;event
+91;Obsidia Slums 2F;17;9;ledge down;;event
+91;Obsidia Slums 2F;18;6;ledge up;;event
+91;Obsidia Slums 2F;17;5;ledge left;;event
+91;Obsidia Slums 2F;15;5;ledge left;;event
+90;Obsidia Slums 1F;19;39;brody;;event
+91;Obsidia Slums 2F;9;6;ledge down;;event
+91;Obsidia Slums 2F;9;8;ledge up;;event
+91;Obsidia Slums 2F;8;9;ledge left;;event
+91;Obsidia Slums 2F;7;8;ledge up;;event
+91;Obsidia Slums 2F;6;9;ledge down;;event
+91;Obsidia Slums 2F;14;17;ledge right;;event
+91;Obsidia Slums 2F;16;17;ledge right;;event
+91;Obsidia Slums 2F;11;15;2f1 to 3f;;event
+92;Obsidia Slums 3F;14;12;Corey;;event
+91;Obsidia Slums 2F;25;19;something;;event
+91;Obsidia Slums 2F;18;28;mason;;event
+91;Obsidia Slums 2F;18;27;mason;;event
+91;Obsidia Slums 2F;7;30;2f1 to south obsidia;;event
+81;South Obsidia Ward;47;40;south obsidia to 2f2;;event
+91;Obsidia Slums 2F;16;43;2f2 to south obsidia;walk a bit down and right to see the box.;event
+89;Obsidia Slums;22;6;box;;event
+89;Obsidia Slums;22;5;panel;;event
+89;Obsidia Slums;23;9;elevator exit;;event
+88;Obsidia Slums B1F;51;23;elevator1;;event
+88;Obsidia Slums B1F;48;31;kai;Quest;event
+88;Obsidia Slums B1F;38;15;b1f main to b1f2;;event
+88;Obsidia Slums B1F;25;23;elevator2;;event
+88;Obsidia Slums B1F;18;17;b1f main to makuhita room;;event
+88;Obsidia Slums B1F;9;17;makuhita room to b1f main;;event
+88;Obsidia Slums B1F;21;14;plaza sign;;event
+88;Obsidia Slums B1F;22;14;ignore;;event
+95;Obsidia Slums B1F;17;68;b1f2 to b1f main;;event
+95;Obsidia Slums B1F;10;60;dax;;event
+95;Obsidia Slums B1F;15;49;scraggy event;;event
+95;Obsidia Slums B1F;16;34;b1f2 to scraggy room;;event
+95;Obsidia Slums B1F;16;22;scraggy room to b1f2;;event
+95;Obsidia Slums B1F;31;12;scraggy room to b1f4;;event
+95;Obsidia Slums B1F;28;34;b1f4 to scraggy room;;event
+95;Obsidia Slums B1F;27;58;b1f4 to b1f5;;event
+88;Obsidia Slums B1F;46;6;b1f5 to b1f4;;event
+88;Obsidia Slums B1F;49;11;b1f5 escalater to 1f;;event
+88;Obsidia Slums B1F;53;8;something;;event
+88;Obsidia Slums B1F;58;17;b1f5 to b1f6;;event
+88;Obsidia Slums B1F;68;8;b1f6 to b1f5;;event
+88;Obsidia Slums B1F;85;7;something;;event
+88;Obsidia Slums B1F;86;8;b1f6 to railnet side;;event
+88;Obsidia Slums B1F;74;21;step;;event
+88;Obsidia Slums B1F;75;22;step;;event
+88;Obsidia Slums B1F;73;22;railnet side to b1f6;;event
+88;Obsidia Slums B1F;74;24;step;;event
+88;Obsidia Slums B1F;76;23;step;;event
+88;Obsidia Slums B1F;75;25;step;;event
+88;Obsidia Slums B1F;77;24;step;;event
+88;Obsidia Slums B1F;76;26;step;;event
+88;Obsidia Slums B1F;77;27;step;;event
+88;Obsidia Slums B1F;80;24;step;;event
+88;Obsidia Slums B1F;84;27;npc;;event
+85;Obsidia Slums 1F;40;12;1f escalater right to b1f;;event
+85;Obsidia Slums 1F;43;21;gatekeeper;;event
+85;Obsidia Slums 1F;49;17;1f main to 1f2;;event
+85;Obsidia Slums 1F;42;5;1f main to 1f3;south obsidia right this way;event
+85;Obsidia Slums 1F;63;20;1f3 to 1f main;;event
+90;Obsidia Slums 1F;2;13;1f2 to 1f main;;event
+90;Obsidia Slums 1F;26;25;1f2 to egg room;;event
+90;Obsidia Slums 1F;6;9;ledge up;;event
+90;Obsidia Slums 1F;7;8;ledge right;;event
+90;Obsidia Slums 1F;5;8;ledge up;;event
+90;Obsidia Slums 1F;6;7;ledge right;;event
+90;Obsidia Slums 1F;8;6;ledge right;;event
+90;Obsidia Slums 1F;14;6;ledge right;;event
+90;Obsidia Slums 1F;15;7;ledge down;;event
+90;Obsidia Slums 1F;16;8;ledge right;;event
+90;Obsidia Slums 1F;17;9;ledge down;;event
+90;Obsidia Slums 1F;18;8;ledge right;;event
+90;Obsidia Slums 1F;19;9;ledge right;;event
+90;Obsidia Slums 1F;20;8;ledge right;;event
+90;Obsidia Slums 1F;19;7;ledge up;;event
+90;Obsidia Slums 1F;21;6;ledge right;;event
+90;Obsidia Slums 1F;24;6;ledge right;;event
+90;Obsidia Slums 1F;26;6;ledge right;;event
+90;Obsidia Slums 1F;27;8;ledge down;;event
+90;Obsidia Slums 1F;26;9;ledge left;;event
+90;Obsidia Slums 1F;25;8;ledge right;;event
+85;Obsidia Slums 1F;56;45;egg;;event
+85;Obsidia Slums 1F;55;39;egg room to 1f2;;event
+85;Obsidia Slums 1F;74;15;spoink;;event
+85;Obsidia Slums 1F;77;23;south obsidia right;;event
+81;South Obsidia Ward;58;28;npc;;event
+81;South Obsidia Ward;68;30;gate npc;;event
+99;Coral Ward;9;10;hiker;;event
+97;Coral Ward;48;17;trader's house;;event
+97;Coral Ward;43;21;lore npc;;event
+97;Coral Ward;40;17;gym sign;;event
+97;Coral Ward;39;17;gym sign;;event
+97;Coral Ward;38;17;<>- faeward street;;event
+97;Coral Ward;47;26;warehouse2;;event
+97;Coral Ward;55;26;warehouse3;;event
+97;Coral Ward;40;26;agate ad;;event
+97;Coral Ward;38;26;ignore;;event
+97;Coral Ward;37;26;ignore;;event
+97;Coral Ward;35;26;<>- greycast street;;event
+97;Coral Ward;35;24;npc;;event
+98;Coral Ward;11;10;danielle;;event
+98;Coral Ward;8;5;attendent;;event
+97;Coral Ward;40;9;Danielle's apartment;;event
+97;Coral Ward;35;10;<>- shantyport street;;event
+97;Coral Ward;28;21;warehouse1;;event
+97;Coral Ward;25;28;reformed gangster;;event
+97;Coral Ward;18;26;Wade;;event
+420;Coral Stairway;6;10;npc;;event
+420;Coral Stairway;12;4;npc;;event
+81;South Obsidia Ward;53;16;Carter;;event
+81;South Obsidia Ward;64;12;salon sign;;event
+81;South Obsidia Ward;54;12;lost kid;;event
+36;Obsidia Ward;70;52;npc;;event
+81;South Obsidia Ward;66;7;something;;event
+81;South Obsidia Ward;66;11;< - jubilife street;;event
+36;Obsidia Ward;14;53;vinny;;event
+105;Obsidia Alleyway;12;11;terance;;event
+105;Obsidia Alleyway;18;9;sally;;event
+105;Obsidia Alleyway;15;7;plusel/minun;;event
+105;Obsidia Alleyway;24;10;brittnay;;event
+36;Obsidia Ward;11;53;vinny;;event
+105;Obsidia Alleyway;12;13;terance;;event
+105;Obsidia Alleyway;24;5;brittnay;;event
+105;Obsidia Alleyway;24;7;brittnay;;event
+369;Critical Capture;10;11;npc;;event
+369;Critical Capture;9;5;clerk;;event
+82;Central Obsidia Salon;3;11;clerk;;event
+82;Central Obsidia Salon;3;8;happiness checker;;event
+82;Central Obsidia Salon;7;7;clerk2;;event
+38;Grand Hall;21;9;jb;;event
+105;Obsidia Alleyway;22;3;mightina;;event
+85;Obsidia Slums 1F;12;29;blocking npc;;event
+85;Obsidia Slums 1F;13;27;npc;;event
+91;Obsidia Slums 2F;3;44;elevator2;;event
+91;Obsidia Slums 2F;29;43;elevator1;;event
+85;Obsidia Slums 1F;13;24;elevator2;;event
+105;Obsidia Alleyway;15;3;litlio;;event
+101;Glamazonia Salon;8;7;styler;;event
+101;Glamazonia Salon;10;6;glamio;;event
+101;Glamazonia Salon;8;5;glamio;;event
+101;Glamazonia Salon;11;4;glamio;;event
+101;Glamazonia Salon;13;4;furfru groomer;;event
+101;Glamazonia Salon;14;6;owner;;event
+269;Obsidia Park;17;29;chad;;event
+269;Obsidia Park;34;35;wigglytree1;;event
+269;Obsidia Park;44;35;wigglytree2;;event
+269;Obsidia Park;48;31;wigglytree3;;event
+269;Obsidia Park;29;26;wigglytree4;;event
+269;Obsidia Park;34;24;wigglytree6;;event
+269;Obsidia Park;46;24;wigglytree7;;event
+269;Obsidia Park;56;26;minta;;event
+269;Obsidia Park;68;22;cutscene;;event
+269;Obsidia Park;68;24;wigglytree9;;event
+269;Obsidia Park;47;19;ama/christopher;;event
+269;Obsidia Park;47;16;ama/christopher;;event
+269;Obsidia Park;47;18;ama/christopher;;event
+269;Obsidia Park;38;8;warehouse key building;;event
+269;Obsidia Park;33;18;wigglytree10;;event
+269;Obsidia Park;39;20;wigglytree11;;event
+269;Obsidia Park;16;14;Zel;;event
+36;Obsidia Ward;54;15;npc;;event
+36;Obsidia Ward;52;15;eilee;;event
+36;Obsidia Ward;60;19;npc;;event
+36;Obsidia Ward;43;16;npc;;event
+112;Department Store;10;6;membership card giver;;event
+112;Department Store;8;6;guide;;event
+112;Department Store;5;10;hint npc;;event
+112;Department Store;13;5;vendor;;event
+112;Department Store;5;5;vendor2;;event
+112;Department Store;9;4;elevator;;event
+36;Obsidia Ward;60;23;building;;event
+36;Obsidia Ward;69;19;npc;;event
+36;Obsidia Ward;66;14;<- saffron street;;event
+36;Obsidia Ward;52;14;eilee;;event
+36;Obsidia Ward;62;38;npc;;event
+36;Obsidia Ward;72;54;south  obsidia right;;event
+36;Obsidia Ward;45;54;south obsidia left;;event
+110;Coral Ward;11;10;grunt;;event
+248;Coral Ward;11;9;spoink;;event
+36;Obsidia Ward;37;40;npc;;event
+115;Onyx Ward;45;38;arcade sign;;event
+115;Onyx Ward;45;37;baxter;;event
+115;Onyx Ward;46;36;<- easterling street;;event
+115;Onyx Ward;23;38;relearner sign;;event
+115;Onyx Ward;16;38;house door;;event
+115;Onyx Ward;15;39;move relearner;;event
+115;Onyx Ward;14;38;>- easterling street;;event
+97;Coral Ward;17;23;lotad;;event
+29;Opal Ward;52;11;lilipup;;event
+115;Onyx Ward;34;39;jaycee;;event
+115;Onyx Ward;13;37;lilipup owner;;event
+115;Onyx Ward;13;19;>- ivyline road;;event
+115;Onyx Ward;11;16;genell;;event
+115;Onyx Ward;25;16;tammy;;event
+115;Onyx Ward;38;14;jole;;event
+115;Onyx Ward;45;15;blane;;event
+115;Onyx Ward;46;15;npc;;event
+118;Onyx Ward;5;9;egg  trader;;event
+421;Onyx Stairway;12;6;gloom hint npc;;event
+115;Onyx Ward;47;19;<- ivyline road;;event
+115;Onyx Ward;29;36;npc;;event
+115;Onyx Ward;28;36;npc;;event
+118;Onyx Ward;7;7;attendent;;event
+118;Onyx Ward;15;10;npc;;event
+115;Onyx Ward;30;35;apartment complex;;event
+115;Onyx Ward;23;15;julia's fan;;event
+115;Onyx Ward;24;14;titania's fan;;event
+115;Onyx Ward;25;14;florinia's fan;;event
+115;Onyx Ward;26;14;amaria's fan;;event
+115;Onyx Ward;49;15;school sign;;event
+115;Onyx Ward;50;15;ignore;;event
+115;Onyx Ward;20;14;school left entrance;;event
+115;Onyx Ward;44;15;blane;;event
+120;Onyx Trainers' School;14;3;pc;;event
+120;Onyx Trainers' School;15;3;ignore;;event
+120;Onyx Trainers' School;17;3;"discharge vs lava plume";;event
+120;Onyx Trainers' School;16;3;"all about huntail, the deep sea pokémon";;event
+120;Onyx Trainers' School;18;3;ignore;;event
+120;Onyx Trainers' School;17;8;"pokémon by base stat total";;event
+120;Onyx Trainers' School;18;8;ignore;;event
+120;Onyx Trainers' School;16;8;"calculating total power";;event
+120;Onyx Trainers' School;18;10;npc;;event
+120;Onyx Trainers' School;12;8;npc;;event
+120;Onyx Trainers' School;10;4;nurse;;event
+120;Onyx Trainers' School;25;5;tristy/jojo;;event
+120;Onyx Trainers' School;25;10;trainer2;;event
+120;Onyx Trainers' School;25;7;tristy/jojo;;event
+120;Onyx Trainers' School;34;10;noah;;event
+120;Onyx Trainers' School;39;6;2f;;event
+121;Onyx Trainers' School 2F;37;6;1f;;event
+122;Onyx Trainers' School 2F;18;4;"all about beartic, the freezing pokémon";;event
+122;Onyx Trainers' School 2F;19;4;ignore;;event
+122;Onyx Trainers' School 2F;17;6;coin case npc;;event
+122;Onyx Trainers' School 2F;15;6;"study notes: ninjask stat caps";;event
+121;Onyx Trainers' School 2F;33;4;coin case room;;event
+122;Onyx Trainers' School 2F;17;11;coin case room exit;;event
+121;Onyx Trainers' School 2F;29;5;landon;;event
+121;Onyx Trainers' School 2F;28;4;locked door;;event
+117;Onyx Arcade;33;5;npc;;event
+117;Onyx Arcade;35;6;coins;;event
+117;Onyx Arcade;35;3;npc;;event
+117;Onyx Arcade;35;7;representative;;event
+117;Onyx Arcade;33;7;coins;;event
+117;Onyx Arcade;31;6;coins;;event
+117;Onyx Arcade;32;4;coins;;event
+117;Onyx Arcade;36;3;coins;;event
+117;Onyx Arcade;37;2;npc;;event
+117;Onyx Arcade;35;2;coins;;event
+117;Onyx Arcade;34;2;npc;;event
+117;Onyx Arcade;31;2;coins;;event
+117;Onyx Arcade;29;4;machine1;;event
+117;Onyx Arcade;29;3;ignore;;event
+117;Onyx Arcade;28;4;ignore;;event
+117;Onyx Arcade;28;3;ignore;;event
+117;Onyx Arcade;29;2;ignore;;event
+117;Onyx Arcade;28;2;ignore;;event
+117;Onyx Arcade;27;4;npc;;event
+117;Onyx Arcade;26;4;coins;;event
+117;Onyx Arcade;25;2;npc;;event
+117;Onyx Arcade;24;3;machine2;;event
+117;Onyx Arcade;24;4;ignore;;event
+117;Onyx Arcade;24;2;ignore;;event
+117;Onyx Arcade;23;3;ignore;;event
+117;Onyx Arcade;23;4;ignore;;event
+117;Onyx Arcade;23;2;ignore;;event
+117;Onyx Arcade;21;2;coins;;event
+117;Onyx Arcade;20;2;coin npc;;event
+117;Onyx Arcade;19;2;coins;;event
+117;Onyx Arcade;18;4;coin npc;;event
+117;Onyx Arcade;19;3;machine3;;event
+117;Onyx Arcade;18;6;coins;;event
+117;Onyx Arcade;18;7;npc;;event
+117;Onyx Arcade;19;7;voltorb flip1;;event
+117;Onyx Arcade;20;7;ignore;;event
+117;Onyx Arcade;17;7;ignore;;event
+117;Onyx Arcade;21;7;ignore;;event
+117;Onyx Arcade;16;7;ignore;;event
+117;Onyx Arcade;22;7;coin npc;;event
+117;Onyx Arcade;15;6;coins;;event
+117;Onyx Arcade;14;7;npc;;event
+117;Onyx Arcade;13;7;ignore;;event
+117;Onyx Arcade;15;7;voltorb flip2;;event
+117;Onyx Arcade;14;4;coins;;event
+117;Onyx Arcade;13;2;coin vendor;;event
+117;Onyx Arcade;10;5;npc;;event
+117;Onyx Arcade;12;7;voltorb flip3;;event
+117;Onyx Arcade;11;7;ignore;;event
+117;Onyx Arcade;9;6;25 rulette;;event
+117;Onyx Arcade;9;5;ignore;;event
+117;Onyx Arcade;8;6;ignore;;event
+117;Onyx Arcade;7;6;ignore;;event
+117;Onyx Arcade;7;5;ignore;;event
+117;Onyx Arcade;7;7;coins;;event
+117;Onyx Arcade;8;2;healer;;event
+117;Onyx Arcade;5;5;npc;;event
+117;Onyx Arcade;4;6;100 rulette;;event
+117;Onyx Arcade;4;5;ignore;;event
+117;Onyx Arcade;15;2;tm vendor;;event
+117;Onyx Arcade;3;6;ignore;;event
+117;Onyx Arcade;16;2;pokemon vendor;;event
+117;Onyx Arcade;3;3;coins;;event
+117;Onyx Arcade;2;6;ignore;;event
+117;Onyx Arcade;0;7;coins;;event
+117;Onyx Arcade;2;5;ignore;;event
+117;Onyx Arcade;0;3;npc;;event
+117;Onyx Arcade;0;2;coins;;event
+117;Onyx Arcade;23;7;npc;;event
+117;Onyx Arcade;24;7;ignore;;event
+117;Onyx Arcade;25;6;coins;;event
+117;Onyx Arcade;28;7;ignore;;event
+117;Onyx Arcade;29;7;ignore;;event
+115;Onyx Ward;45;14;school right entrance;;event
+121;Onyx Trainers' School 2F;23;4;porygon room;;event
+122;Onyx Trainers' School 2F;1;6;"study notes: beat up attack";;event
+122;Onyx Trainers' School 2F;3;5;"study notes: answers to ms. belatry's final";;event
+122;Onyx Trainers' School 2F;2;4;"all about honchkrow, the big boss pokémon";;event
+122;Onyx Trainers' School 2F;1;4;ignore;;event
+122;Onyx Trainers' School 2F;4;6;"study notes: ...";;event
+122;Onyx Trainers' School 2F;0;8;computer;;event
+121;Onyx Trainers' School 2F;21;8;terry;;event
+121;Onyx Trainers' School 2F;19;7;locked door2;;event
+121;Onyx Trainers' School 2F;15;7;diary room;;event
+123;Onyx Trainers' School 2F;10;9;"study notes: never-miss moves";;event
+123;Onyx Trainers' School 2F;9;7;"on fairytales";;event
+123;Onyx Trainers' School 2F;10;6;tv;;event
+123;Onyx Trainers' School 2F;8;6;"the personal diary of florinia";;event
+123;Onyx Trainers' School 2F;12;6;"the personal diary of titania";;event
+123;Onyx Trainers' School 2F;7;6;ignore;;event
+123;Onyx Trainers' School 2F;13;6;ignore;;event
+123;Onyx Trainers' School 2F;4;6;"the personal diary of julia";;event
+123;Onyx Trainers' School 2F;16;6;"the personal diary of amaria";;event
+123;Onyx Trainers' School 2F;17;6;ignore;;event
+123;Onyx Trainers' School 2F;3;6;ignore;;event
+123;Onyx Trainers' School 2F;10;14;diary room exit;;event
+121;Onyx Trainers' School 2F;13;11;student;;event
+121;Onyx Trainers' School 2F;11;7;locked door3;;event
+121;Onyx Trainers' School 2F;8;7;tutors room;;event
+123;Onyx Trainers' School 2F;29;10;left room;;event
+123;Onyx Trainers' School 2F;33;30;tutor1;;event
+123;Onyx Trainers' School 2F;29;32;magician tutor;;event
+123;Onyx Trainers' School 2F;40;33;left room exit;;event
+123;Onyx Trainers' School 2F;32;14;tutors room exit;;event
+123;Onyx Trainers' School 2F;29;4;left room2;;event
+516;Onyx Trainers' School 3F;12;7;left room2 exit;;event
+516;Onyx Trainers' School 3F;8;7;npc;;event
+516;Onyx Trainers' School 3F;2;8;npc;;event
+123;Onyx Trainers' School 2F;31;3;upper room;;event
+123;Onyx Trainers' School 2F;9;37;upper room exit;;event
+123;Onyx Trainers' School 2F;11;33;tutor3;;event
+123;Onyx Trainers' School 2F;6;28;tutor4;;event
+121;Onyx Trainers' School 2F;6;8;susan;;event
+121;Onyx Trainers' School 2F;3;9;2f let1;;event
+124;Onyx Trainers' School;34;10;upper gate;;event
+124;Onyx Trainers' School;37;11;2f right;;event
+124;Onyx Trainers' School;27;7;tray;;event
+124;Onyx Trainers' School;30;4;skip shard;;event
+124;Onyx Trainers' School;25;6;npc;;event
+124;Onyx Trainers' School;26;3;quiz1;;event
+124;Onyx Trainers' School;25;3;"the fast and the furious pokémon!";;event
+124;Onyx Trainers' School;24;3;ignore;;event
+124;Onyx Trainers' School;23;3;quiz2;;event
+124;Onyx Trainers' School;19;6;npc;;event
+124;Onyx Trainers' School;18;9;lithi;;event
+124;Onyx Trainers' School;19;3;quiz3;;event
+124;Onyx Trainers' School;17;3;quiz4;;event
+124;Onyx Trainers' School;12;13;destry;;event
+124;Onyx Trainers' School;9;7;npc;;event
+124;Onyx Trainers' School;4;11;npc;;event
+124;Onyx Trainers' School;3;6;sky;;event
+124;Onyx Trainers' School;5;4;npc;;event
+124;Onyx Trainers' School;4;3;quiz5;;event
+124;Onyx Trainers' School;6;3;"all about starmie, the mysterious pokémon.";;event
+124;Onyx Trainers' School;0;7;2f far left;;event
+124;Onyx Trainers' School;7;3;quiz6;;event
+124;Onyx Trainers' School;11;3;quiz7;;event
+124;Onyx Trainers' School;13;3;quiz8;;event
+119;Onyx Trainers' School;13;4;"corsola, the coral pokémon: an overview";;event
+119;Onyx Trainers' School;12;4;ignore;;event
+119;Onyx Trainers' School;9;4;locked door;;event
+119;Onyx Trainers' School;8;4;ignore;;event
+119;Onyx Trainers' School;5;4;"dusclops, nfe tan"dusclops, nfe tank";;event
+119;Onyx Trainers' School;4;4;ignore;;event
+125;Onyx Trainers' School;5;9;fern;;event
+119;Onyx Trainers' School;2;6;1f gym entrance;;event
+124;Onyx Trainers' School;39;5;2f right;;event
+120;Onyx Trainers' School;3;4;seed girl;;event
+120;Onyx Trainers' School;5;3;gate switch;;event
+120;Onyx Trainers' School;8;9;npc;;event
+125;Onyx Trainers' School;5;8;gym;;event
+120;Onyx Trainers' School;8;7;vendor;;event
+127;Onyx Trainers' Arena;9;4;florinia;;event
+118;Onyx Ward;13;9;sky;;event
+118;Onyx Ward;14;6;elevator;;event
+129;Onyx Ward;7;6;panel;;event
+120;Onyx Trainers' School;5;6;tm girl;;event
+38;Grand Hall;24;26;punk;;event
+423;Jasper Stairway;9;10;cop;;event
+423;Jasper Stairway;8;9;cop;;event
+130;Jasper Ward;50;33;police station sign;;event
+130;Jasper Ward;66;33;<- willowreed road;;event
+130;Jasper Ward;68;33;simon;;event
+130;Jasper Ward;34;32;joe;;event
+130;Jasper Ward;35;31;<>- willowreed road;;event
+133;Police Station;4;5;chief;;event
+133;Police Station;2;5;cop;;event
+133;Police Station;18;7;growlith;;event
+130;Jasper Ward;33;32;growlith;k;event
+134;Jasper Ward;15;10;ross;;event
+134;Jasper Ward;4;2;morison;;event
+134;Jasper Ward;4;3;morison;;event
+134;Jasper Ward;13;1;jasper ward pokemon center exit;;event
+134;Jasper Ward;13;13;jasper ward police station exit;;event
+136;Jasper Pokemon Center;6;4;npc;;event
+136;Jasper Pokemon Center;10;4;nurse;;event
+136;Jasper Pokemon Center;14;3;pc;;event
+134;Jasper Ward;0;4;jasper ward left;;event
+130;Jasper Ward;25;23;jasper ward lright entrance;;event
+130;Jasper Ward;21;27;jasper ward left2;;event
+135;Jasper Ward;16;10;jasper ward right2;;event
+135;Jasper Ward;12;13;jasper ward left, forest side;;event
+135;Jasper Ward;6;3;tara;;event
+135;Jasper Ward;6;2;tara;;event
+135;Jasper Ward;6;4;something;;event
+135;Jasper Ward;4;6;something2;;event
+132;Malchous Forest Park;82;38;steps;;event
+132;Malchous Forest Park;82;36;steps;;event
+132;Malchous Forest Park;106;14;jasper ward up;;event
+132;Malchous Forest Park;99;41;jasper ward down;;event
+132;Malchous Forest Park;66;40;wiggly tree1;;event
+132;Malchous Forest Park;66;39;item behind the vines;;event
+132;Malchous Forest Park;67;25;wiggly tree2;;event
+132;Malchous Forest Park;61;40;heather;;event
+132;Malchous Forest Park;48;38;wiggly tree;;event
+132;Malchous Forest Park;53;9;ringo;;event
+132;Malchous Forest Park;46;13;wiggly tree;;event
+132;Malchous Forest Park;48;19;rod;;event
+132;Malchous Forest Park;35;35;step;;event
+132;Malchous Forest Park;35;37;ignore;;event
+132;Malchous Forest Park;39;35;grechon/regina;;event
+132;Malchous Forest Park;39;38;grechon/regina;;event
+132;Malchous Forest Park;40;36;ignore;;event
+132;Malchous Forest Park;40;38;ignore;;event
+132;Malchous Forest Park;41;36;map change;;poi
+132;Malchous Forest Park;44;35;step;;event
+132;Malchous Forest Park;44;34;map change right;;poi
+132;Malchous Forest Park;19;12;egg;;event
+132;Malchous Forest Park;39;37;grechon/regina;;event
+132;Malchous Forest Park;39;36;map change;;poi
+132;Malchous Forest Park;45;32;step;;event
+132;Malchous Forest Park;45;30;ignore;;event
+132;Malchous Forest Park;45;29;ignore;;event
+132;Malchous Forest Park;47;34;heather;;event
+885;Jasper Ward Gym;22;39;taka;;event
+132;Malchous Forest Park;53;35;gym sign;;event
+132;Malchous Forest Park;54;35;ignore;;event
+130;Jasper Ward;36;23;imolga;;event
+130;Jasper Ward;37;17;step;;event
+130;Jasper Ward;32;17;jasper ward near center;;event
+130;Jasper Ward;44;14;mareep's owner's house;;event
+138;Jasper Ward;51;7;man;;event
+138;Jasper Ward;49;4;elevator;;event
+130;Jasper Ward;66;18;<>- heatherhill lane;;event
+130;Jasper Ward;32;31;jasper ward left pathway;;event
+137;Jasper Ward;14;8;mareep;;event
+137;Jasper Ward;14;7;mareep;;event
+138;Jasper Ward;49;7;man;;event
+146;Abandoned Power Plant;10;7;kid;;event
+146;Abandoned Power Plant;12;8;drifloon;;event
+146;Abandoned Power Plant;18;12;powerplant sign;;event
+146;Abandoned Power Plant;19;12;ignore;;event
+146;Abandoned Power Plant;23;10;gym door;;event
+142;Beryl Ward;19;34;<- stoker road;;event
+142;Beryl Ward;0;31;beryl up;can't label this one.;event
+149;Beryl Ward;34;29;house;;event
+149;Beryl Ward;39;30;<>- stoker road;;event
+149;Beryl Ward;47;32;beryl middle left;;event
+149;Beryl Ward;22;30;<>- stoker road;;event
+149;Beryl Ward;8;33;rotocrine1;;event
+150;Rhodochrine Jungle;159;101;beryl1;;event
+150;Rhodochrine Jungle;118;101;cutscene;;event
+150;Rhodochrine Jungle;118;102;step;;event
+150;Rhodochrine Jungle;113;95;stealth success;;poi
+150;Rhodochrine Jungle;104;64;ben;;event
+150;Rhodochrine Jungle;104;63;ben;;event
+150;Rhodochrine Jungle;109;52;coleman;;event
+150;Rhodochrine Jungle;109;55;coleman;;event
+150;Rhodochrine Jungle;111;54;tree;;event
+150;Rhodochrine Jungle;121;51;stairs1 exit;;event
+150;Rhodochrine Jungle;121;52;stairs1;;event
+150;Rhodochrine Jungle;122;61;something;;event
+150;Rhodochrine Jungle;130;52;fern;;event
+150;Rhodochrine Jungle;137;48;step;;event
+150;Rhodochrine Jungle;138;48;step;;event
+154;Rhodochrine Jungle;13;10;healer;;event
+150;Rhodochrine Jungle;142;53;healing house;;event
+150;Rhodochrine Jungle;113;82;mary;;event
+150;Rhodochrine Jungle;137;50;fern;;event
+150;Rhodochrine Jungle;130;53;step;;event
+85;Obsidia Slums 1F;20;30;kid;;event
+85;Obsidia Slums 1F;4;7;switch;;event
+88;Obsidia Slums B1F;5;7;makuhita;;event
+38;Grand Hall;22;9;will;;event
+130;Jasper Ward;19;14;house;;event
+130;Jasper Ward;22;17;<>- heatherhill lane;;event
+138;Jasper Ward;29;4;elevator;;event
+139;Jasper Ward;7;6;panel;;event
+140;Jasper Ward;11;9;lady;;event
+130;Jasper Ward;24;14;elevator house;;event
+130;Jasper Ward;22;31;<>- willowreed road;;event
+130;Jasper Ward;54;20;second drifloon kid event;;event
+130;Jasper Ward;76;25;mareep house;;event
+150;Rhodochrine Jungle;93;42;kenneth;;event
+150;Rhodochrine Jungle;73;43;step  left;;event
+150;Rhodochrine Jungle;67;52;tm house;;event
+150;Rhodochrine Jungle;109;31;something;;event
+150;Rhodochrine Jungle;112;27;something;;event
+150;Rhodochrine Jungle;118;26;step;;event
+150;Rhodochrine Jungle;118;25;step exit;;event
+150;Rhodochrine Jungle;132;73;tree (note);cut this tree to reveal Mary and a path forward;event
+150;Rhodochrine Jungle;113;79;mary;;event
+150;Rhodochrine Jungle;132;72;map change down in case you forgot where the tree to mary is;;event
+150;Rhodochrine Jungle;86;70;trader's house;;event
+150;Rhodochrine Jungle;44;73;endow;;event
+150;Rhodochrine Jungle;18;56;tropius;;event
+150;Rhodochrine Jungle;41;94;nuzleaf  hole;;event
+153;The Underroot;14;82;mine  rock;;event
+153;The Underroot;24;75;iggly tree;;event
+153;The Underroot;28;75;step;;event
+153;The Underroot;28;73;step;;event
+153;The Underroot;18;45;pool;;poi
+153;The Underroot;40;31;stairs right;;event
+153;The Underroot;42;31;stairs right exit;;event
+153;The Underroot;16;23;cage door;;event
+153;The Underroot;16;68;rotocrine1;;event
+150;Rhodochrine Jungle;30;91;underroot1;;event
+150;Rhodochrine Jungle;24;103;cop house;;event
+153;The Underroot;28;86;rotocrine2;;event
+150;Rhodochrine Jungle;70;100;underroot2;;event
+153;The Underroot;60;15;rotocrine3;;event
+150;Rhodochrine Jungle;90;21;underroot3;;event
+130;Jasper Ward;48;23;police2;;event
+138;Jasper Ward;12;7;meteor;;event
+138;Jasper Ward;13;5;police1;;event
+153;The Underroot;85;49;rotocrine4;;event
+153;The Underroot;65;57;something;;event
+153;The Underroot;77;80;cage2;;event
+153;The Underroot;77;86;mine rock;;event
+153;The Underroot;57;85;step;;event
+153;The Underroot;57;86;ignore;;event
+153;The Underroot;60;85;step;;event
+153;The Underroot;60;86;ignore;;event
+153;The Underroot;54;73;mine rock;;event
+153;The Underroot;58;86;map change right;;poi
+150;Rhodochrine Jungle;152;85;tree;;event
+153;The Underroot;18;20;police3;;event
+154;Rhodochrine Jungle;19;47;bruno;;event
+154;Rhodochrine Jungle;16;45;police4;;event
+150;Rhodochrine Jungle;56;86;tutor house;;event
+150;Rhodochrine Jungle;29;68;stantler cutscene;;event
+150;Rhodochrine Jungle;31;68;ignore;;event
+150;Rhodochrine Jungle;30;68;ignore;;event
+150;Rhodochrine Jungle;82;95;tailow cutscene;;event
+153;The Underroot;35;87;mine rock;;event
+149;Beryl Ward;17;21;<>- little poe street;;event
+149;Beryl Ward;16;15;left house;;event
+426;Beryl Library;6;10;left room;;event
+426;Beryl Library;5;9;left room exit;;event
+426;Beryl Library;9;8;upper room;;event
+427;Beryl Library;5;8;radomus;;event
+427;Beryl Library;5;7;check later;;event
+427;Beryl Library;4;7;something;;event
+426;Beryl Library;24;16;alcove exit;;event
+426;Beryl Library;25;15;alcove entrance;;event
+426;Beryl Library;20;8;hole entrance;;event
+427;Beryl Library;15;13;hole exit;;event
+427;Beryl Library;16;8;hole;;event
+427;Beryl Library;14;8;growlith;;event
+155;Beryl Ward;6;5;Brenna;;event
+155;Beryl Ward;6;6;brenna;;event
+155;Beryl Ward;3;6;left house exit;;event
+150;Rhodochrine Jungle;147;44;step;;event
+150;Rhodochrine Jungle;145;43;ignore;;event
+150;Rhodochrine Jungle;153;42;amaria;;event
+150;Rhodochrine Jungle;147;42;ignore;;event
+150;Rhodochrine Jungle;145;41;ignore;;event
+150;Rhodochrine Jungle;142;42;wiggly tree;;event
+150;Rhodochrine Jungle;148;81;underroot 4;;event
+150;Rhodochrine Jungle;73;42;step left exit;;event
+150;Rhodochrine Jungle;48;23;something2;;event
+150;Rhodochrine Jungle;48;22;step;;event
+150;Rhodochrine Jungle;44;26;ignore;;event
+150;Rhodochrine Jungle;48;21;ignore;;event
+150;Rhodochrine Jungle;42;16;cage door;;event
+150;Rhodochrine Jungle;20;19;cage door2;;event
+150;Rhodochrine Jungle;125;49;stairs2;;event
+150;Rhodochrine Jungle;125;48;stairs2 exit;;event
+150;Rhodochrine Jungle;132;39;wiggly tree;;event
+150;Rhodochrine Jungle;134;26;ace;;event
+149;Beryl Ward;19;6;<>- kingsbury street;;event
+149;Beryl Ward;32;19;after ace cutscene;;event
+149;Beryl Ward;34;20;<>- little poe street;;event
+149;Beryl Ward;42;15;<>- kingsbury street;;event
+149;Beryl Ward;47;10;beryl up;can't label this one.;event
+142;Beryl Ward;5;12;<- kingsbury street;;event
+142;Beryl Ward;5;20;magnetic lure guy;;event
+142;Beryl Ward;7;22;snack vendor;;event
+160;Beryl PokeMart;4;8;npc;;event
+160;Beryl PokeMart;5;5;clerk left;;event
+160;Beryl PokeMart;11;4;tips npc;;event
+142;Beryl Ward;14;15;<- little poe street;;event
+142;Beryl Ward;15;19;npc;;event
+142;Beryl Ward;18;12;npc;;event
+142;Beryl Ward;17;0;beryl left;can't name this one;event
+161;Beryl Ward;11;9;npc;;event
+161;Beryl Ward;5;9;npc;;event
+161;Beryl Ward;6;6;elevator;;event
+173;Beryl Ward;12;11;helioptal;;event
+142;Beryl Ward;7;8;elevator house;;event
+142;Beryl Ward;0;10;beryl left;can't label this one.;event
+151;Beryl Ward;28;16;gym sign;;event
+151;Beryl Ward;27;16;ignore;;event
+152;Beryl Cemetery;12;10;"elizabeth connal";;event
+152;Beryl Cemetery;11;9;pumpkin;;event
+152;Beryl Cemetery;8;9;"zina vanhanen";;event
+152;Beryl Cemetery;8;12;something;;event
+152;Beryl Cemetery;9;14;pumpkin;;event
+152;Beryl Cemetery;15;14;pumpkin;;event
+152;Beryl Cemetery;13;21;pumpkin;;event
+152;Beryl Cemetery;9;22;pumpkin;;event
+152;Beryl Cemetery;18;23;"lyssa copperman";;event
+152;Beryl Cemetery;18;20;something;;event
+152;Beryl Cemetery;19;20;"monty belrose";;event
+152;Beryl Cemetery;21;20;"caroline belrose";;event
+152;Beryl Cemetery;23;21;pumpkin;;event
+150;Rhodochrine Jungle;138;84;hole;;event
+150;Rhodochrine Jungle;159;79;beryl 2;;event
+427;Beryl Library;3;7;check later;;event
+150;Rhodochrine Jungle;159;39;beryl3;;event
+159;Beryl Pokemon Center;10;4;nurse;;event
+159;Beryl Pokemon Center;14;3;pc;;event
+159;Beryl Pokemon Center;15;7;npc;;event
+159;Beryl Pokemon Center;5;7;npc;;event
+159;Beryl Pokemon Center;6;10;password npc;;event
+162;Beryl Gym;11;19;chief;;event
+162;Beryl Gym;9;19;telecom;;event
+162;Beryl Gym;11;15;c1;;event
+162;Beryl Gym;8;15;c3;;event
+162;Beryl Gym;14;15;c3;;event
+162;Beryl Gym;16;17;step;;event
+162;Beryl Gym;4;17;step;;event
+162;Beryl Gym;4;15;step exit;;event
+162;Beryl Gym;6;12;c4;;event
+162;Beryl Gym;9;12;c5;;event
+162;Beryl Gym;12;12;c6;;event
+162;Beryl Gym;16;15;step exit;;event
+162;Beryl Gym;2;14;jamisen;;event
+162;Beryl Gym;11;5;blackwell;;event
+162;Beryl Gym;18;11;police;;event
+162;Beryl Gym;2;13;jamisen;;event
+162;Beryl Gym;18;12;lambert;;event
+162;Beryl Gym;10;3;gym arena;;event
+163;Beryl Gym;4;9;heather;;event
+163;Beryl Gym;10;3;corey;;event
+163;Beryl Gym;9;8;scanner;;event
+162;Beryl Gym;15;10;bedroom;;event
+370;Beryl Gym;9;6;corey;;event
+153;The Underroot;51;72;skrelp;;event
+426;Beryl Library;11;10;trash;;event
+426;Beryl Library;11;9;trash;;event
+426;Beryl Library;10;9;trash;;event
+426;Beryl Library;7;9;trash;;event
+426;Beryl Library;4;10;trash;;event
+426;Beryl Library;9;6;trash;;event
+426;Beryl Library;7;13;something;;event
+426;Beryl Library;3;8;gothita;;event
+426;Beryl Library;5;5;trash;;event
+426;Beryl Library;3;7;trash;;event
+426;Beryl Library;3;6;trash;;event
+426;Beryl Library;2;9;trash;;event
+426;Beryl Library;7;4;trash;;event
+426;Beryl Library;12;7;trash;;event
+426;Beryl Library;3;5;something;;event
+426;Beryl Library;13;7;trash;;event
+426;Beryl Library;14;5;trash;;event
+426;Beryl Library;16;7;trash;;event
+426;Beryl Library;3;18;trash;;event
+426;Beryl Library;18;6;trash;;event
+426;Beryl Library;3;20;trash;;event
+426;Beryl Library;20;5;trash;;event
+426;Beryl Library;22;5;gothita;;event
+426;Beryl Library;26;5;trash;;event
+426;Beryl Library;27;6;trash;;event
+426;Beryl Library;27;8;trash;;event
+426;Beryl Library;28;5;trash;;event
+426;Beryl Library;28;7;trash;;event
+426;Beryl Library;28;8;trash;;event
+426;Beryl Library;29;5;trash;;event
+426;Beryl Library;8;13;trash;;event
+426;Beryl Library;10;12;trash;;event
+426;Beryl Library;11;14;trash;;event
+426;Beryl Library;13;11;trash;;event
+426;Beryl Library;14;12;trash;;event
+426;Beryl Library;6;18;trash;;event
+426;Beryl Library;5;18;trash;;event
+426;Beryl Library;4;18;trash;;event
+426;Beryl Library;3;21;trash;;event
+426;Beryl Library;6;20;trash;;event
+426;Beryl Library;3;22;trash;;event
+426;Beryl Library;3;23;trash;;event
+426;Beryl Library;6;21;trash;;event
+426;Beryl Library;7;20;trash;;event
+426;Beryl Library;7;19;trash;;event
+426;Beryl Library;9;19;trash;;event
+426;Beryl Library;9;21;trash;;event
+426;Beryl Library;11;19;trash;;event
+426;Beryl Library;12;21;trash;;event
+426;Beryl Library;12;24;trash;;event
+426;Beryl Library;12;18;trash;;event
+426;Beryl Library;14;22;trash;;event
+426;Beryl Library;15;23;trash;;event
+426;Beryl Library;15;18;trash;;event
+426;Beryl Library;15;17;trash;;event
+426;Beryl Library;16;19;trash;;event
+426;Beryl Library;17;18;trash;;event
+426;Beryl Library;17;21;trash;;event
+426;Beryl Library;18;22;trash;;event
+426;Beryl Library;19;21;trash;;event
+426;Beryl Library;17;23;trash;;event
+426;Beryl Library;20;21;trash;;event
+426;Beryl Library;21;21;trash;;event
+426;Beryl Library;21;23;trash;;event
+426;Beryl Library;24;23;trash;;event
+426;Beryl Library;25;21;trash;;event
+426;Beryl Library;26;21;trash;;event
+426;Beryl Library;26;22;trash;;event
+426;Beryl Library;27;22;trash;;event
+60;Peridot Ward;7;6;friend;;event
+102;Obsidia Ward;10;8;litlio;;event
+103;Underground Railnet;15;6;step;;event
+103;Underground Railnet;17;9;ignore;;event
+103;Underground Railnet;16;5;ignore;;event
+103;Underground Railnet;18;8;ignore;;event
+103;Underground Railnet;17;4;ignore;;event
+103;Underground Railnet;19;7;ignore;;event
+103;Underground Railnet;18;3;ignore;;event
+38;Grand Hall;20;13;anthony;;event
+38;Grand Hall;24;8;lady bo;;event
+38;Grand Hall;24;7;casinova zak;;event
+150;Rhodochrine Jungle;155;32;something;;event
+150;Rhodochrine Jungle;159;62;beryl4;;event
+133;Police Station;17;9;egg cop;;event
+133;Police Station;17;5;sad cop;;event
+133;Police Station;13;5;rescued cop;;event
+133;Police Station;1;6;rescued cop;;event
+29;Opal Ward;23;32;bart;;event
+29;Opal Ward;31;17;miku;;event
+29;Opal Ward;39;19;inuki;;event
+79;North Obsidia Ward;22;42;akemi;;event
+79;North Obsidia Ward;32;33;<>- castelia street;;event
+79;North Obsidia Ward;29;30;npc;;event
+79;North Obsidia Ward;27;29;npc;;event
+79;North Obsidia Ward;30;28;npc;;event
+79;North Obsidia Ward;30;27;npc;;event
+79;North Obsidia Ward;24;30;npc;;event
+79;North Obsidia Ward;27;27;npc;;event
+79;North Obsidia Ward;28;25;officer;;event
+79;North Obsidia Ward;26;25;officer/vendor;;event
+79;North Obsidia Ward;23;27;npc;;event
+79;North Obsidia Ward;35;27;npc;;event
+79;North Obsidia Ward;24;25;officer;;event
+79;North Obsidia Ward;65;27;walden;;event
+79;North Obsidia Ward;60;26;agate ad;;event
+79;North Obsidia Ward;56;22;house;;event
+79;North Obsidia Ward;66;26;agate ad;;event
+79;North Obsidia Ward;65;30;<- castelia street;;event
+79;North Obsidia Ward;67;26;ignore;;event
+79;North Obsidia Ward;68;26;ignore;;event
+79;North Obsidia Ward;54;30;<>- castelia street;;event
+79;North Obsidia Ward;39;27;npc;;event
+79;North Obsidia Ward;37;28;npc;;event
+79;North Obsidia Ward;34;23;nightclub sign;;event
+79;North Obsidia Ward;36;22;nightclub door;;event
+79;North Obsidia Ward;26;22;npc;;event
+79;North Obsidia Ward;25;22;npc;;event
+79;North Obsidia Ward;21;27;npc;;event
+79;North Obsidia Ward;19;27;> - castelia street;;event
+79;North Obsidia Ward;17;26;step;;event
+79;North Obsidia Ward;16;25;ignore;;event
+79;North Obsidia Ward;14;29;ignore;;event
+79;North Obsidia Ward;15;24;ignore;;event
+79;North Obsidia Ward;15;30;ignore;;event
+79;North Obsidia Ward;13;28;ignore;;event
+79;North Obsidia Ward;12;27;ignore;;event
+79;North Obsidia Ward;14;23;ignore;;event
+826;Nightclub;14;6;hint npc;;event
+826;Nightclub;6;7;npc;;event
+517;The Spyce;8;7;incense npc;;event
+517;The Spyce;5;5;attendent;;event
+517;The Spyce;10;6;npc;;event
+517;The Spyce;10;8;tips npc;;event
+517;The Spyce;11;11;tips npc;;event
+517;The Spyce;10;4;npc;;event
+517;The Spyce;8;12;npc;;event
+517;The Spyce;6;11;npc;;event
+517;The Spyce;5;11;trash heap;;event
+517;The Spyce;4;6;npc;;event
+517;The Spyce;7;3;vendor;;event
+517;The Spyce;12;5;head cook;;event
+38;Grand Hall;26;9;emil;;event
+79;North Obsidia Ward;11;26;ignore;;event
+79;North Obsidia Ward;10;25;ignore;;event
+164;North Obsidia Ward;5;7;npc;;event
+79;North Obsidia Ward;8;35;sandy's house;;event
+79;North Obsidia Ward;13;35;move deleter's house;;event
+79;North Obsidia Ward;9;24;ignore;;event
+79;North Obsidia Ward;11;21;npc;;event
+79;North Obsidia Ward;12;21;ignore;;event
+79;North Obsidia Ward;11;20;ignore;;event
+79;North Obsidia Ward;10;19;ignore;;event
+79;North Obsidia Ward;13;22;ignore;;event
+79;North Obsidia Ward;9;18;ignore;;event
+79;North Obsidia Ward;22;15;hiddenitem;;event
+80;Lapis Ward;40;69;step;;event
+80;Lapis Ward;39;70;ignore;;event
+80;Lapis Ward;38;71;ignore;;event
+80;Lapis Ward;37;72;ignore;;event
+80;Lapis Ward;36;73;ignore;;event
+80;Lapis Ward;38;58;step;;event
+80;Lapis Ward;37;59;ignore;;event
+80;Lapis Ward;36;60;ignore;;event
+80;Lapis Ward;35;61;ignore;;event
+80;Lapis Ward;35;74;ignore;;event
+80;Lapis Ward;34;62;ignore;;event
+80;Lapis Ward;33;63;ignore;;event
+80;Lapis Ward;34;75;ignore;;event
+80;Lapis Ward;32;64;ignore;;event
+80;Lapis Ward;31;65;ignore;;event
+80;Lapis Ward;33;76;ignore;;event
+80;Lapis Ward;29;61;lennor;;event
+80;Lapis Ward;32;77;ignore;;event
+80;Lapis Ward;29;67;<- peony circle;;event
+80;Lapis Ward;30;66;ignore;;event
+80;Lapis Ward;25;73;bicycle shop sign;;event
+80;Lapis Ward;28;61;lennor;;event
+80;Lapis Ward;25;54;>- crocus road;;event
+80;Lapis Ward;27;53;orphanage sign;;event
+80;Lapis Ward;28;53;ignore;;event
+80;Lapis Ward;30;53;orphanage door;;event
+169;Lapis Ward;4;8;back room;;event
+80;Lapis Ward;18;61;craudbury's house;;event
+80;Lapis Ward;18;48;npc;;event
+80;Lapis Ward;17;48;ignore;;event
+80;Lapis Ward;36;54;<- crocus road;;event
+80;Lapis Ward;20;35;coal;;event
+168;Lapis Ward;30;9;attendent;;event
+80;Lapis Ward;16;36;aqua 7st;;event
+80;Lapis Ward;23;27;<>- hydrangea street;;event
+80;Lapis Ward;11;25;tips npc;;event
+80;Lapis Ward;40;39;npc;;event
+80;Lapis Ward;40;38;npc;;event
+80;Lapis Ward;37;29;murry;;event
+80;Lapis Ward;37;27;<- hydrangea street;;event
+169;Lapis Ward;46;7;mom;;event
+169;Lapis Ward;43;8;kid;;event
+169;Lapis Ward;44;6;tv;;event
+80;Lapis Ward;34;23;sticker house;;event
+80;Lapis Ward;36;29;murry;;event
+80;Lapis Ward;28;23;anestasia;;event
+171;Lapis PokeMart;10;9;tips npc;;event
+171;Lapis PokeMart;4;8;hint npc;;event
+171;Lapis PokeMart;8;4;tips npc;;event
+171;Lapis PokeMart;5;5;clerk;;event
+171;Lapis PokeMart;12;4;tm npc;;event
+80;Lapis Ward;21;23;wiley;;event
+169;Lapis Ward;27;8;tm npc;;event
+80;Lapis Ward;20;23;wiley;;event
+80;Lapis Ward;18;22;tm house/aqua meeting point;;event
+80;Lapis Ward;14;20;flower shop;;event
+80;Lapis Ward;13;22;>- hydrangea street;;event
+80;Lapis Ward;21;11;<>- dahlia street;;event
+80;Lapis Ward;14;11;>- dahlia street;;event
+80;Lapis Ward;12;10;empty house;;event
+80;Lapis Ward;27;10;tutor's house;;event
+80;Lapis Ward;28;16;npc;;event
+80;Lapis Ward;29;16;aqua;;event
+80;Lapis Ward;33;11;npc;;event
+80;Lapis Ward;34;11;<- dahlia street;;event
+80;Lapis Ward;35;9;cutscene;;event
+80;Lapis Ward;37;14;npc;;event
+80;Lapis Ward;38;12;npc;;event
+80;Lapis Ward;40;15;npc;;event
+80;Lapis Ward;40;16;npc;;event
+80;Lapis Ward;41;12;gym door;;event
+80;Lapis Ward;42;14;gym sign;;event
+80;Lapis Ward;43;14;ignore;;event
+322;Sweet Scent Flower Shop;11;17;npc;;event
+322;Sweet Scent Flower Shop;12;10;wailmer pail npc;;event
+322;Sweet Scent Flower Shop;7;8;budew npc;;event
+322;Sweet Scent Flower Shop;5;15;vendor1;;event
+322;Sweet Scent Flower Shop;5;16;nectar vendor;;event
+322;Sweet Scent Flower Shop;6;3;spritsee;;event
+38;Grand Hall;23;5;gibson;;event
+38;Grand Hall;27;11;fawkes;;event
+38;Grand Hall;24;12;carol;;event
+79;North Obsidia Ward;31;26;cain;;event
+79;North Obsidia Ward;30;21;stealth success;;poi
+79;North Obsidia Ward;9;19;npc;;event
+79;North Obsidia Ward;8;23;ignore;;event
+177;Grand Stairway;19;16;b1f1;;event
+178;Grand Stairway B1F;33;27;b0f;;event
+178;Grand Stairway B1F;21;24;step;;event
+178;Grand Stairway B1F;21;22;ignore;;event
+178;Grand Stairway B1F;31;37;b2f1;;event
+179;Grand Stairway B2F;48;6;b1f1;;event
+179;Grand Stairway B2F;43;27;ledge down1;;poi
+179;Grand Stairway B2F;43;29;ledge down2;;poi
+179;Grand Stairway B2F;43;31;ledge down3;;poi
+179;Grand Stairway B2F;43;33;ledge down4;;poi
+179;Grand Stairway B2F;43;35;ledge down5;;poi
+179;Grand Stairway B2F;43;37;ledge down6;;poi
+179;Grand Stairway B2F;43;39;ledge down7;;poi
+179;Grand Stairway B2F;43;41;ledge down8;;poi
+179;Grand Stairway B2F;43;43;ledge down9;;poi
+179;Grand Stairway B2F;21;20;candy npc;;event
+179;Grand Stairway B2F;17;21;mine rock;;event
+179;Grand Stairway B2F;51;35;ledge down5-4;;event
+179;Grand Stairway B2F;60;39;mine rock;;event
+179;Grand Stairway B2F;57;53;b3f1;;event
+179;Grand Stairway B2F;69;47;b3f2;;event
+180;Grand Stairway B3F;67;32;b2f2;;event
+180;Grand Stairway B3F;71;28;crystal cave;;event
+512;Grand Stairway B3F;10;14;crystal cave exit;;event
+180;Grand Stairway B3F;65;20;mine rock;;event
+180;Grand Stairway B3F;66;19;b2f3;;event
+179;Grand Stairway B2F;70;31;b3f3;;event
+179;Grand Stairway B2F;71;26;b1fx;;event
+178;Grand Stairway B1F;55;42;b2fx;;event
+179;Grand Stairway B2F;39;35;ledge down5-3;;poi
+179;Grand Stairway B2F;39;37;ledge down6-3;;poi
+179;Grand Stairway B2F;38;39;ledge down7-3;;poi
+179;Grand Stairway B2F;37;41;ledge down8-3;;poi
+179;Grand Stairway B2F;37;43;ledge down9-3;;poi
+179;Grand Stairway B2F;25;45;b1f4;;event
+178;Grand Stairway B1F;17;39;b2f4;;event
+179;Grand Stairway B2F;49;35;ledge down5-4;;poi
+179;Grand Stairway B2F;49;37;ledge down7-4;;event
+179;Grand Stairway B2F;49;39;ledge down7-4;;poi
+179;Grand Stairway B2F;49;41;ledge down8-4;;poi
+179;Grand Stairway B2F;49;43;ledge down9-4;;poi
+180;Grand Stairway B3F;42;6;b2f1;;event
+180;Grand Stairway B3F;34;22;cutscene\;;event
+424;Lapis Checkpoint;6;5;npc;;event
+38;Grand Hall;19;9;silva;;event
+79;North Obsidia Ward;25;29;victoria;;event
+170;Lapis Alleyway;9;8;archer;;event
+170;Lapis Alleyway;5;12;defacto;;event
+170;Lapis Alleyway;5;17;pierce;;event
+170;Lapis Alleyway;5;20;manny;;event
+170;Lapis Alleyway;5;22;razzy;;event
+80;Lapis Ward;43;60;sick house;;event
+169;Lapis Ward;63;8;wife;;event
+169;Lapis Ward;65;6;tv;;event
+169;Lapis Ward;68;9;husband;;event
+169;Lapis Ward;29;8;defacto;;event
+169;Lapis Ward;31;7;archer;;event
+169;Lapis Ward;3;10;pierce;;event
+169;Lapis Ward;3;9;craudbury;;event
+174;Lapis Ward;6;10;darm;;event
+174;Lapis Ward;8;10;darm;;event
+174;Lapis Ward;8;4;brake;;event
+174;Lapis Ward;9;3;defacto;;event
+174;Lapis Ward;8;3;something;;event
+174;Lapis Ward;9;6;pokemon;;event
+174;Lapis Ward;10;2;maxwell;;event
+80;Lapis Ward;17;57;npc;;event
+80;Lapis Ward;10;25;npc;;event
+80;Lapis Ward;10;23;npc;;event
+80;Lapis Ward;25;70;npc;;event
+80;Lapis Ward;17;62;growlith;;event
+80;Lapis Ward;23;62;officer;;event
+167;Lapis Luxury Cycle;8;5;clerk;;event
+79;North Obsidia Ward;54;33;magma;;event
+175;Lapis Gym;5;9;cal;;event
+175;Lapis Gym;11;8;staff;;event
+175;Lapis Gym;4;7;private room;;event
+182;Lapis Gym;2;14;bookshelf1;;event
+176;Lapis Gym;14;9;gym arena;;event
+182;Lapis Gym;8;31;telecom;;event
+182;Lapis Gym;10;31;puzzle resetter;;event
+182;Lapis Gym;4;28;eugine;;event
+182;Lapis Gym;2;23;bookshelf2;;event
+182;Lapis Gym;15;27;lady eve;not the other important eve;event
+182;Lapis Gym;16;23;bookshelf3;;event
+182;Lapis Gym;14;19;something;;event
+182;Lapis Gym;5;9;lady lily;;event
+182;Lapis Gym;2;12;npc;;event
+182;Lapis Gym;8;5;something;;event
+182;Lapis Gym;12;11;something;;event
+182;Lapis Gym;28;2;shelly;;event
+166;Lapis Pokemon Center;13;7;story npc;;event
+166;Lapis Pokemon Center;15;9;npc;;event
+166;Lapis Pokemon Center;10;4;nurse;;event
+166;Lapis Pokemon Center;14;3;pc;;event
+176;Lapis Gym;10;9;cutscene;;event
+79;North Obsidia Ward;23;28;npc;;event
+79;North Obsidia Ward;24;26;npc;;event
+79;North Obsidia Ward;28;26;npc;;event
+79;North Obsidia Ward;29;28;npc;;event
+79;North Obsidia Ward;28;30;npc;;event
+79;North Obsidia Ward;26;31;npc;;event
+79;North Obsidia Ward;35;23;arclight;;event
+79;North Obsidia Ward;28;35;npc;;event
+79;North Obsidia Ward;22;9;npc;;event
+79;North Obsidia Ward;0;0;something;;event
+178;Grand Stairway B1F;20;19;b2f something;;event
+179;Grand Stairway B2F;18;13;mine rock;;event
+179;Grand Stairway B2F;20;14;lunatone/solrock;;event
+179;Grand Stairway B2F;21;8;room2;;event
